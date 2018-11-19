@@ -24,7 +24,7 @@ public:
 	Matrix(const Matrix&);
 	~Matrix() {	}
 
-	Vector<T, M>& operator[](std::size_t index) {
+	Vector<T, M>& operator[](const std::size_t index) {
 		if (index > N) {
 			throw std::out_of_range("Indexüberschreitung!");
 		}

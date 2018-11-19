@@ -13,10 +13,39 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Vulkan_1.1">
+      <UniqueIdentifier>{94d4a565-4465-4731-8ddb-cb68c0f7c425}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vulkan.cpp">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Debug.cpp">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_SwapChain.cpp">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Render.cpp">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_GrafcsPipeline.cpp">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Buffer.cpp">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Window.h">
+      <Filter>Vulkan_1.1</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Vulkan.h">
+      <Filter>Vulkan_1.1</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,8 +11,9 @@
 #include <stdexcept>
 #include <iostream>
 
-template <typename T, int N>
-class Vector {
+#define typeVector template <typename T, std::size_t N>
+
+typeVector class Vector {
 
 public:
 	//Standart Constructor
@@ -24,14 +25,14 @@ public:
 
 	std::size_t size() { return N; }
 
-	T& operator[](std::size_t index) {
+	T& operator[](const std::size_t index) {
 		if (index > N) {
 			throw std::out_of_range("Indexüberschreitung!");
 		}
 		return elements[index];
 	}
 
-	const T& operator[](std::size_t index) const{
+	const T& operator[](const std::size_t index) const{
 		if (index > N) {
 			throw std::out_of_range("Indexüberschreitung!");
 		}
@@ -47,20 +48,20 @@ private:
 	T elements[N];
 };
 
-template <typename T, int N>
-Vector<T,N>::Vector() {
+typeVector Vector<T,N>::Vector() {
+	for (std::size_t i = 0; i < N; i++) {
+		elements[i] = NULL;
+	}
 }
 
-template <typename T, int N>
-Vector<T, N>::Vector(T value)
+typeVector Vector<T, N>::Vector(T value)
 	: Vector() {
 	for (std::size_t i = 0; i < N; ++i) {
 		elements[i] = value;
 	}
 }
 
-template <typename T, int N>
-Vector<T, N>::Vector(const Vector<T,N>& vec)
+typeVector Vector<T, N>::Vector(const Vector<T,N>& vec)
 	: Vector() {
 	for (std::size_t i = 0; i < N; ++i) {
 		elements[i] = vec.elements[i];

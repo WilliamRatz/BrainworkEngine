@@ -160,6 +160,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="VK_Buffer.cpp" />
+    <ClCompile Include="VK_Debug.cpp" />
+    <ClCompile Include="VK_GrafcsPipeline.cpp" />
+    <ClCompile Include="VK_Render.cpp" />
+    <ClCompile Include="VK_SwapChain.cpp" />
+    <ClCompile Include="Vulkan.cpp" />
+    <ClCompile Include="VK_Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Vulkan.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
