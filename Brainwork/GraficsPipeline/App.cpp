@@ -1,10 +1,10 @@
-#include "Vulkan.h"
+#include "VK_Window.h"
 
 int main() {
-	Vulkan app;
+	VK_Window vulkanWindow;
 
 	try {
-		app.run();
+		vulkanWindow.run();
 	}
 	catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;

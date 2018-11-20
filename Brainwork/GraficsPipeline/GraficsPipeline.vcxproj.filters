@@ -16,36 +16,63 @@
     <Filter Include="Vulkan_1.1">
       <UniqueIdentifier>{94d4a565-4465-4731-8ddb-cb68c0f7c425}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan_1.1\Header">
+      <UniqueIdentifier>{f18d985b-f2cf-4628-8cac-feeff4a1e180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan_1.1\Source">
+      <UniqueIdentifier>{40bbd29d-47ac-446e-83ae-46012effe72f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan.cpp">
-      <Filter>Vulkan_1.1</Filter>
+    <ClCompile Include="VK_Buffer.cpp">
+      <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_Debug.cpp">
-      <Filter>Vulkan_1.1</Filter>
-    </ClCompile>
-    <ClCompile Include="VK_SwapChain.cpp">
-      <Filter>Vulkan_1.1</Filter>
+      <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_Render.cpp">
-      <Filter>Vulkan_1.1</Filter>
+      <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
-    <ClCompile Include="VK_GrafcsPipeline.cpp">
-      <Filter>Vulkan_1.1</Filter>
+    <ClCompile Include="VK_SwapChain.cpp">
+      <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
-    <ClCompile Include="VK_Buffer.cpp">
-      <Filter>Vulkan_1.1</Filter>
+    <ClCompile Include="VK_Window.cpp">
+      <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_Window.h">
-      <Filter>Vulkan_1.1</Filter>
+      <Filter>Vulkan_1.1\Header</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Device.cpp">
+      <Filter>Vulkan_1.1\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_GraficsPipeline.cpp">
+      <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vulkan.h">
+    <ClInclude Include="VK_Buffer.h">
+      <Filter>Vulkan_1.1\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_Debug.h">
+      <Filter>Vulkan_1.1\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_Render.h">
+      <Filter>Vulkan_1.1\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_SwapChain.h">
+      <Filter>Vulkan_1.1\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Standarts.h">
       <Filter>Vulkan_1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_Device.h">
+      <Filter>Vulkan_1.1\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_GraficsPipeline.h">
+      <Filter>Vulkan_1.1\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
