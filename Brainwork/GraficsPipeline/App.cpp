@@ -1,10 +1,12 @@
+#define GLFW_INCLUDE_VULKAN
+
 #include "VK_Window.h"
 
 int main() {
-	VK_Window vulkanWindow;
+	VK_Window vk_Window;
 
 	try {
-		vulkanWindow.run();
+		vk_Window.run();
 	}
 	catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;

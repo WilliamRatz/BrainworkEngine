@@ -2,11 +2,3 @@
 
 
 
-VK_Device::VK_Device()
-{
-}
-
-
-VK_Device::~VK_Device()
-{
-}

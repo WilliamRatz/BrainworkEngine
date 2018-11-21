@@ -30,10 +30,10 @@
     <ClCompile Include="VK_Buffer.cpp">
       <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
-    <ClCompile Include="VK_Debug.cpp">
+    <ClCompile Include="VK_Device.cpp">
       <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
-    <ClCompile Include="VK_Render.cpp">
+    <ClCompile Include="VK_Object.cpp">
       <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_SwapChain.cpp">
@@ -42,36 +42,21 @@
     <ClCompile Include="VK_Window.cpp">
       <Filter>Vulkan_1.1\Source</Filter>
     </ClCompile>
-    <ClCompile Include="VK_Window.h">
-      <Filter>Vulkan_1.1\Header</Filter>
-    </ClCompile>
-    <ClCompile Include="VK_Device.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="VK_GraficsPipeline.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VK_Buffer.h">
       <Filter>Vulkan_1.1\Header</Filter>
     </ClInclude>
-    <ClInclude Include="VK_Debug.h">
+    <ClInclude Include="VK_Device.h">
       <Filter>Vulkan_1.1\Header</Filter>
     </ClInclude>
-    <ClInclude Include="VK_Render.h">
+    <ClInclude Include="VK_Object.h">
       <Filter>Vulkan_1.1\Header</Filter>
     </ClInclude>
     <ClInclude Include="VK_SwapChain.h">
       <Filter>Vulkan_1.1\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Standarts.h">
-      <Filter>Vulkan_1.1</Filter>
-    </ClInclude>
-    <ClInclude Include="VK_Device.h">
-      <Filter>Vulkan_1.1\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="VK_GraficsPipeline.h">
+    <ClInclude Include="VK_Window.h">
       <Filter>Vulkan_1.1\Header</Filter>
     </ClInclude>
   </ItemGroup>
