@@ -6,8 +6,9 @@
 class VK_Window
 {
 public:
-	VK_Window();
-	~VK_Window();
+	VK_Window() {
+
+	};
 
 	void run() {
 		initWindow();
@@ -19,7 +20,7 @@ public:
 
 private:
 
-	VK_Object VKO;
+	VK_Object VKO = VK_Object();
 	VK_Device vk_Device = VK_Device(VKO);
 	VK_SwapChain vk_SwapChain = VK_SwapChain(VKO);
 	VK_Buffer vk_Buffer = VK_Buffer(VKO);
@@ -35,8 +36,8 @@ private:
 	}
 	void initVulkan() {
 		createInstance();
-		VKO.setupDebugCallback();
-		vk_Device.createSurface();
+		vk_Device.setupDebugCallback();
+		createSurface();
 		vk_Device.pickPhysicalDevice();
 		vk_Device.createLogicalDevice();
 		vk_SwapChain.createSwapChain();
@@ -54,6 +55,7 @@ private:
 		vk_Buffer.createCommandBuffers();
 		createSyncObjects();
 	}
+	
 	void mainLoop() {
 		while (!glfwWindowShouldClose(VKO.window)) {
 			glfwPollEvents();
@@ -62,25 +64,6 @@ private:
 
 		vkDeviceWaitIdle(VKO.device);
 	}
-
-	void recreateSwapChain() {
-		int width = 0, height = 0;
-		while (width == 0 || height == 0) {
-			glfwGetFramebufferSize(VKO.window, &width, &height);
-			glfwWaitEvents();
-		}
-
-		vkDeviceWaitIdle(VKO.device);
-
-		vk_SwapChain.cleanupSwapChain();
-
-		vk_SwapChain.createSwapChain();
-		vk_SwapChain.createImageViews();
-		vk_SwapChain.createRenderPass();
-		vk_Buffer.createGraphicsPipeline();
-		vk_Buffer.createFramebuffers();
-		vk_Buffer.createCommandBuffers();
-	}
 	void drawFrame() {
 		vkWaitForFences(VKO.device, 1, &VKO.inFlightFences[VKO.currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
@@ -88,7 +71,7 @@ private:
 		VkResult result = vkAcquireNextImageKHR(VKO.device, VKO.swapChain, std::numeric_limits<uint64_t>::max(), VKO.imageAvailableSemaphores[VKO.currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-			recreateSwapChain();
+			vk_SwapChain.recreateSwapChain(vk_Buffer);
 			return;
 		}
 		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
@@ -135,7 +118,7 @@ private:
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || VKO.framebufferResized) {
 			VKO.framebufferResized = false;
-			recreateSwapChain();
+			vk_SwapChain.recreateSwapChain(vk_Buffer);
 		}
 		else if (result != VK_SUCCESS) {
 			throw std::runtime_error("failed to present swap chain image!");
@@ -156,11 +139,11 @@ private:
 			vkFreeMemory(VKO.device, VKO.uniformBuffersMemory[i], nullptr);
 		}
 
-		vkDestroyBuffer(VKO.device, VKO.indexBuffer, nullptr);
-		vkFreeMemory(VKO.device, VKO.indexBufferMemory, nullptr);
+		vkDestroyBuffer(VKO.device, vk_Buffer.indexBuffer, nullptr);
+		vkFreeMemory(VKO.device, vk_Buffer.indexBufferMemory, nullptr);
 
-		vkDestroyBuffer(VKO.device, VKO.vertexBuffer, nullptr);
-		vkFreeMemory(VKO.device, VKO.vertexBufferMemory, nullptr);
+		vkDestroyBuffer(VKO.device, vk_Buffer.vertexBuffer, nullptr);
+		vkFreeMemory(VKO.device, vk_Buffer.vertexBufferMemory, nullptr);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(VKO.device, VKO.renderFinishedSemaphores[i], nullptr);
@@ -173,17 +156,22 @@ private:
 		vkDestroyDevice(VKO.device, nullptr);
 
 		if (enableValidationLayers) {
-			DestroyDebugUtilsMessengerEXT(VKO.instance, VKO.callback, nullptr);
+			vk_Device.DestroyDebugUtilsMessengerEXT(vk_Device.instance, VKO.callback, nullptr);
 		}
 
-		vkDestroySurfaceKHR(VKO.instance, VKO.surface, nullptr);
-		vkDestroyInstance(VKO.instance, nullptr);
+		vkDestroySurfaceKHR(vk_Device.instance, VKO.surface, nullptr);
+		vkDestroyInstance(vk_Device.instance, nullptr);
 
 		glfwDestroyWindow(VKO.window);
 
 		glfwTerminate();
 	}
-
+	void createSurface() {
+		if (glfwCreateWindowSurface(vk_Device.instance, VKO.window, nullptr, &VKO.surface) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create window surface!");
+		}
+		
+	}
 	void createInstance() {
 		if (enableValidationLayers && !VKO.checkValidationLayerSupport()) {
 			throw std::runtime_error("validation layers requested, but not available!");
@@ -191,11 +179,11 @@ private:
 
 		VkApplicationInfo appInfo = {};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "Hello Triangle";
+		appInfo.pApplicationName = "BrainworkEngine Sample";
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.pEngineName = "No Engine";
+		appInfo.pEngineName = "Brainwork";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.apiVersion = VK_API_VERSION_1_0;
+		appInfo.apiVersion = VK_API_VERSION_1_1;
 
 		VkInstanceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -213,7 +201,7 @@ private:
 			createInfo.enabledLayerCount = 0;
 		}
 
-		if (vkCreateInstance(&createInfo, nullptr, &VKO.instance) != VK_SUCCESS) {
+		if (vkCreateInstance(&createInfo, nullptr, &vk_Device.instance) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create instance!");
 		}
 	}

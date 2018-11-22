@@ -159,7 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="VK_Buffer.cpp" />
     <ClCompile Include="VK_Device.cpp" />
     <ClCompile Include="VK_Object.cpp" />

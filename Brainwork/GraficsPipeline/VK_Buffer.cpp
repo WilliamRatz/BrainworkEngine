@@ -3,6 +3,3 @@
 
 
 
-VK_Buffer::~VK_Buffer()
-{
-}

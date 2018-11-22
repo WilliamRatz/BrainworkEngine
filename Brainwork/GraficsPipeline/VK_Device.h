@@ -2,61 +2,43 @@
 #pragma once
 #include "VK_Object.h"
 
-
-struct QueueFamilyIndices {
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
-
-	bool isComplete() {
-		return graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
-
-struct SwapChainSupportDetails {
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
-};
-
-
-
 class VK_Device
 {
 private:
-	VK_Object VKO;
+	VK_Object* VKO;
 
 public:
+	VkInstance instance;
 	
-	VK_Device(VK_Object vk_Object) 
+	VK_Device(VK_Object& vk_Object) 
 	{
-		VKO = vk_Object;
-	}
-	~VK_Device();
+		VKO = &vk_Object;
+	};
 
 	void pickPhysicalDevice() {
 		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(VKO.instance, &deviceCount, nullptr);
+		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
 		if (deviceCount == 0) {
 			throw std::runtime_error("failed to find GPUs with Vulkan support!");
 		}
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
-		vkEnumeratePhysicalDevices(VKO.instance, &deviceCount, devices.data());
+		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
 		for (const auto& device : devices) {
 			if (isDeviceSuitable(device)) {
-				VKO.physicalDevice = device;
+				VKO->physicalDevice = device;
 				break;
 			}
 		}
 
-		if (VKO.physicalDevice == VK_NULL_HANDLE) {
+		if (VKO->physicalDevice == VK_NULL_HANDLE) {
 			throw std::runtime_error("failed to find a suitable GPU!");
 		}
 	}
 	void createLogicalDevice() {
-		QueueFamilyIndices indices = VKO.findQueueFamilies(VKO.physicalDevice);
+		QueueFamilyIndices indices = VKO->findQueueFamilies(VKO->physicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -92,23 +74,97 @@ public:
 			createInfo.enabledLayerCount = 0;
 		}
 
-		if (vkCreateDevice(VKO.physicalDevice, &createInfo, nullptr, &VKO.device) != VK_SUCCESS) {
+		if (vkCreateDevice(VKO->physicalDevice, &createInfo, nullptr, &VKO->device) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create logical device!");
 		}
 
-		vkGetDeviceQueue(VKO.device, indices.graphicsFamily.value(), 0, &VKO.graphicsQueue);
-		vkGetDeviceQueue(VKO.device, indices.presentFamily.value(), 0, &VKO.presentQueue);
+		vkGetDeviceQueue(VKO->device, indices.graphicsFamily.value(), 0, &VKO->graphicsQueue);
+		vkGetDeviceQueue(VKO->device, indices.presentFamily.value(), 0, &VKO->presentQueue);
 	}
 
+	void createDescriptorSetLayout() {
+		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(VKO->device, &layoutInfo, nullptr, &VKO->descriptorSetLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+	}
+	void createCommandPool() {
+		QueueFamilyIndices queueFamilyIndices = VKO->findQueueFamilies(VKO->physicalDevice);
+
+		VkCommandPoolCreateInfo poolInfo = {};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+		if (vkCreateCommandPool(VKO->device, &poolInfo, nullptr, &VKO->commandPool) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create graphics command pool!");
+		}
+	}
+	void createDescriptorPool() {
+		VkDescriptorPoolSize poolSize = {};
+		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSize.descriptorCount = static_cast<uint32_t>(VKO->swapChainImages.size());
+
+		VkDescriptorPoolCreateInfo poolInfo = {};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.maxSets = static_cast<uint32_t>(VKO->swapChainImages.size());
+
+		if (vkCreateDescriptorPool(VKO->device, &poolInfo, nullptr, &VKO->descriptorPool) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor pool!");
+		}
+	}
+	void createDescriptorSets() {
+		std::vector<VkDescriptorSetLayout> layouts(VKO->swapChainImages.size(), VKO->descriptorSetLayout);
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = VKO->descriptorPool;
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(VKO->swapChainImages.size());
+		allocInfo.pSetLayouts = layouts.data();
+
+		VKO->descriptorSets.resize(VKO->swapChainImages.size());
+		if (vkAllocateDescriptorSets(VKO->device, &allocInfo, VKO->descriptorSets.data()) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
+
+		for (size_t i = 0; i < VKO->swapChainImages.size(); i++) {
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = VKO->uniformBuffers[i];
+			bufferInfo.offset = 0;
+			bufferInfo.range = sizeof(UniformBufferObject);
+
+			VkWriteDescriptorSet descriptorWrite = {};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = VKO->descriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			vkUpdateDescriptorSets(VKO->device, 1, &descriptorWrite, 0, nullptr);
+		}
+	}
 
 	bool isDeviceSuitable(VkPhysicalDevice device) {
-		QueueFamilyIndices indices = VKO.findQueueFamilies(device);
+		QueueFamilyIndices indices = VKO->findQueueFamilies(device);
 
 		bool extensionsSupported = checkDeviceExtensionSupport(device);
 
 		bool swapChainAdequate = false;
 		if (extensionsSupported) {
-			SwapChainSupportDetails swapChainSupport = VKO.querySwapChainSupport(device);
+			SwapChainSupportDetails swapChainSupport = VKO->querySwapChainSupport(device);
 			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 		}
 
@@ -130,86 +186,34 @@ public:
 		return requiredExtensions.empty();
 	}
 
-	void createDescriptorSetLayout() {
-		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.pImmutableSamplers = nullptr;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	void setupDebugCallback() {
+		if (!enableValidationLayers) return;
 
-		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
+		VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+		createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		createInfo.pfnUserCallback = VKO->debugCallback;
 
-		if (vkCreateDescriptorSetLayout(VKO.device, &layoutInfo, nullptr, &VKO.descriptorSetLayout) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor set layout!");
+		if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &VKO->callback) != VK_SUCCESS) {
+			throw std::runtime_error("failed to set up debug callback!");
 		}
 	}
-	void createCommandPool() {
-		QueueFamilyIndices queueFamilyIndices = VKO.findQueueFamilies(VKO.physicalDevice);
-
-		VkCommandPoolCreateInfo poolInfo = {};
-		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
-
-		if (vkCreateCommandPool(VKO.device, &poolInfo, nullptr, &VKO.commandPool) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create graphics command pool!");
+	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT callback, const VkAllocationCallbacks* pAllocator) {
+		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+		if (func != nullptr) {
+			func(instance, callback, pAllocator);
 		}
 	}
-	void createDescriptorPool() {
-		VkDescriptorPoolSize poolSize = {};
-		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = static_cast<uint32_t>(VKO.swapChainImages.size());
-
-		VkDescriptorPoolCreateInfo poolInfo = {};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
-		poolInfo.maxSets = static_cast<uint32_t>(VKO.swapChainImages.size());
-
-		if (vkCreateDescriptorPool(VKO.device, &poolInfo, nullptr, &VKO.descriptorPool) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor pool!");
+	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback) {
+		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+		if (func != nullptr) {
+			return func(instance, pCreateInfo, pAllocator, pCallback);
+		}
+		else {
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
 		}
 	}
-	void createDescriptorSets() {
-		std::vector<VkDescriptorSetLayout> layouts(VKO.swapChainImages.size(), VKO.descriptorSetLayout);
-		VkDescriptorSetAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = VKO.descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(VKO.swapChainImages.size());
-		allocInfo.pSetLayouts = layouts.data();
-
-		VKO.descriptorSets.resize(VKO.swapChainImages.size());
-		if (vkAllocateDescriptorSets(VKO.device, &allocInfo, VKO.descriptorSets.data()) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
-		}
-
-		for (size_t i = 0; i < VKO.swapChainImages.size(); i++) {
-			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = VKO.uniformBuffers[i];
-			bufferInfo.offset = 0;
-			bufferInfo.range = sizeof(UniformBufferObject);
-
-			VkWriteDescriptorSet descriptorWrite = {};
-			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrite.dstSet = VKO.descriptorSets[i];
-			descriptorWrite.dstBinding = 0;
-			descriptorWrite.dstArrayElement = 0;
-			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			descriptorWrite.descriptorCount = 1;
-			descriptorWrite.pBufferInfo = &bufferInfo;
-
-			vkUpdateDescriptorSets(VKO.device, 1, &descriptorWrite, 0, nullptr);
-		}
-	}
-	void createSurface() {
-		if (glfwCreateWindowSurface(VKO.instance, VKO.window, nullptr, &VKO.surface) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create window surface!");
-		}
-	}
-
 
 };
 
