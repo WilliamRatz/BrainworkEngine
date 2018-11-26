@@ -35,19 +35,19 @@ public:
 
 	int getHashCode();
 
-	Matrix& translate2D(T, T);
-	Matrix& scale2D(T, T);
-	Matrix& rotation2D(T);
+	Matrix& translate2D(float x, float y);
+	Matrix& scale2D(float width, float height);
+	Matrix& rotation2D(float angle);
 
-	Matrix& translate3D(T, T, T);
-	Matrix& scale3D(T, T, T);
-	Matrix& rotation3DAroundX(T);
-	Matrix& rotation3DAroundY(T);
-	Matrix& rotation3DAroundZ(T);
-	
+	Matrix& translate3D(float x, float y, float z);
+	Matrix& scale3D(float width, float height, float depth);
+	Matrix& rotation3DAroundX(float angle);
+	Matrix& rotation3DAroundY(float angle);
+	Matrix& rotation3DAroundZ(float angle);
+
 	Matrix& identity();
-	Matrix& transpose();
 	Matrix& inverse();
+	Matrix<T, N, M>& transpose();
 #pragma endregion
 
 #pragma region arithmeticOperator
@@ -71,6 +71,7 @@ public:
 
 typeMatrix Matrix<T, M, N>::Matrix()
 {
+	(*this).identity();
 }
 typeMatrix Matrix<T, M, N>::Matrix(const Matrix& mat)
 {
@@ -81,23 +82,36 @@ typeMatrix Matrix<T, M, N>::Matrix(const Matrix& mat)
 
 #pragma region Methods
 
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::translate2D(T x, T y)
+typeMatrix int Matrix<T, M, N>::getHashCode()
 {
+	int hash = 17;
 
+	for (std::size_t i = 0; i < M; ++i) {
+		for (std::size_t ii = 0; ii < N; ++ii) {
+			hash *= (23 + std::hash<T>()(columns[i][ii]));
+
+		}
+	}
+
+	return hash;
+}
+
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::translate2D(float x, float y)
+{
 	if (M < 3 && N < 2) {
 		throw std::out_of_range("Your Matrix dont fit for 2D translation check your dimensions");
 	}
 
-	Matrix<T, M,N> trans2D;
+	Matrix<T, M, N> trans2D;
 	trans2D.identity();
-	trans2D[0][2] = x;
-	trans2D[1][2] = y;
+	trans2D[0][2] = (T)x;
+	trans2D[1][2] = (T)y;
 
 	*this *= trans2D;
 
 	return *this;
 }
-typeMatrix Matrix<T, M, N>&  Matrix<T, M, N>::scale2D(T width, T height)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::scale2D(float width, float height)
 {
 	if (M < 2 && N < 2) {
 		throw std::out_of_range("Your Matrix dont fit for 2D scaleing check your dimensions");
@@ -105,14 +119,14 @@ typeMatrix Matrix<T, M, N>&  Matrix<T, M, N>::scale2D(T width, T height)
 
 	Matrix<T, M, N> scal2D;
 	scal2D.identity();
-	scal2D[0][2] = width;
-	scal2D[1][2] = height;
+	scal2D[0][2] = (T)width;
+	scal2D[1][2] = (T)height;
 
 	*this *= scal2D;
 
 	return *this;
 }
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation2D(T angle)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation2D(float angle)
 {
 	if (M < 2 && N < 2) {
 		throw std::out_of_range("Your Matrix dont fit for 2D rotation check your dimensions");
@@ -122,31 +136,31 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation2D(T angle)
 
 	Matrix<T, M, N> rotat2D;
 	rotat2D.identity();
-	rotat2D[0][0] = std::cos(degress);
-	rotat2D[0][1] = std::sin(degress);
-	rotat2D[1][0] = -std::sin(degress);
-	rotat2D[1][1] = std::cos(degress);
+	rotat2D[0][0] = (T)std::cos(degress);
+	rotat2D[0][1] = (T)std::sin(degress);
+	rotat2D[1][0] = (T)-std::sin(degress);
+	rotat2D[1][1] = (T)std::cos(degress);
 
 	*this *= rotat2D;
 	return *this;
 }
 
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::translate3D(T x, T y, T z)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::translate3D(float x, float y, float z)
 {
 	if (M < 4 && N < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D translation check your dimensions");
 	}
-	
+
 	Matrix<T, M, N> trans3D;
-	trans3D.identity(); 
-	trans3D[0][3] = x;
-	trans3D[1][3] = y;
-	trans3D[2][3] = z;
-	
+	trans3D.identity();
+	trans3D[0][3] = (T)x;
+	trans3D[1][3] = (T)y;
+	trans3D[2][3] = (T)z;
+
 	*this *= trans3D;
 	return *this;
 }
-typeMatrix Matrix<T, M, N>&  Matrix<T, M, N>::scale3D(T width, T height, T depth)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::scale3D(float width, float height, float depth)
 {
 	if (M < 3 && N < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D scaleing check your dimensions");
@@ -154,14 +168,14 @@ typeMatrix Matrix<T, M, N>&  Matrix<T, M, N>::scale3D(T width, T height, T depth
 
 	Matrix<T, M, N> scal3D;
 	scal3D.identity();
-	scal3D[0][0] = width;
-	scal3D[1][1] = height;
-	scal3D[2][2] = depth;
+	scal3D[0][0] = (T)width;
+	scal3D[1][1] = (T)height;
+	scal3D[2][2] = (T)depth;
 
 	*this *= scal3D;
 	return *this;
 }
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundX(T angle)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundX(float angle)
 {
 	if (M < 3 && N < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"X\" check your dimensions");
@@ -171,15 +185,15 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundX(T angle)
 
 	Matrix<T, M, N> rotat3DX;
 	rotat3DX.identity();
-	rotat3DX[1][1] = std::cos(degress);
-	rotat3DX[1][2] = -std::sin(degress);
-	rotat3DX[2][1] = std::sin(degress);
-	rotat3DX[2][2] = std::cos(degress);
+	rotat3DX[1][1] = (T)std::cos(degress);
+	rotat3DX[1][2] = (T)-std::sin(degress);
+	rotat3DX[2][1] = (T)std::sin(degress);
+	rotat3DX[2][2] = (T)std::cos(degress);
 
-	*this *= rotat3DX;
+	this->operator*=(rotat3DX);
 	return *this;
 }
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundY(T angle)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundY(float angle)
 {
 	if (M < 3 && N < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Y\" check your dimensions");
@@ -189,34 +203,35 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundY(T angle)
 
 	Matrix<T, M, N> rotat3DY;
 	rotat3DY.identity();
-	rotat3DY[0][0] = std::cos(degress);
-	rotat3DY[0][2] = std::sin(degress);
-	rotat3DY[2][0] = -std::sin(degress);
-	rotat3DY[2][2] = std::cos(degress);
+	rotat3DY[0][0] = (T)std::cos(degress);
+	rotat3DY[0][2] = (T)std::sin(degress);
+	rotat3DY[2][0] = (T)-std::sin(degress);
+	rotat3DY[2][2] = (T)std::cos(degress);
 
-	*this *= rotat3DY;
+	this->operator*=(rotat3DY);
 	return *this;
 }
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundZ(T angle)
+typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::rotation3DAroundZ(float angle)
 {
 	if (M < 3 && N < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Z\" check your dimensions");
 	}
 
-	double degress = (double) angle * MathLib::PI / 180; // change from Rad to degrees
+	double degress = (double)angle * MathLib::PI / 180; // change from Rad to degrees
 
 	Matrix<T, M, N> rotat3DZ;
 	rotat3DZ.identity();
-	rotat3DZ[0][0] = std::cos(degress);
-	rotat3DZ[0][1] = std::sin(degress);
-	rotat3DZ[1][0] = -std::sin(degress);
-	rotat3DZ[1][1] = std::cos(degress);
+	rotat3DZ[0][0] = (T)std::cos(degress);
+	rotat3DZ[0][1] = (T)std::sin(degress);
+	rotat3DZ[1][0] = (T)-std::sin(degress);
+	rotat3DZ[1][1] = (T)std::cos(degress);
 
-	*this *= rotat3DZ;
+	this->operator*=(rotat3DZ);
 	return *this;
 }
 
 typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::identity() {
+
 	for (std::size_t i = 0; i < M; ++i) {
 		for (std::size_t ii = 0; ii < N; ++ii) {
 			columns[i][ii] = (i == ii) ? T(1) : T(0);
@@ -226,11 +241,17 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::identity() {
 	return *this;
 
 }
-//typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::transpose() 
-//{
-//	
-//	return throw "transpose is not implemented yet.";
-//}
+typeMatrix Matrix<T, N, M>& Matrix<T, M, N>::transpose()
+{
+	Matrix<T, N, M> temp;
+
+	for (std::size_t i = 0; i < M; ++i) {
+		for (std::size_t ii = 0; ii < N; ++ii){
+			temp[i][ii] = columns[ii][i];
+		}
+	}
+	return temp;
+}
 #pragma endregion
 
 #pragma region arithmeticOperator
@@ -281,12 +302,11 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const Matrix& mat)
 {
 	T tempValue = (T)0;
 	Matrix<T, M, M> tempMat;
-	int x = 0;
 
 	for (std::size_t i = 0; i < M; ++i) {
 		for (std::size_t ii = 0; ii < M; ++ii) {
 			for (std::size_t iii = 0; iii < N; ++iii) {
-				tempValue += columns[iii][i] * mat.columns[iii][ii];
+				tempValue += columns[i][iii] * mat.columns[iii][ii];
 			}
 			tempMat[i][ii] = tempValue;
 			tempValue = (T)0;

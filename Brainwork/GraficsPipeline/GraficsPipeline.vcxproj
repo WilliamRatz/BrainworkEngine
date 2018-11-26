@@ -159,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="VK_Buffer.cpp" />
     <ClCompile Include="VK_Device.cpp" />
@@ -167,6 +169,8 @@
     <ClCompile Include="VK_Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cube.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="VK_Buffer.h" />
     <ClInclude Include="VK_Device.h" />
     <ClInclude Include="VK_Object.h" />

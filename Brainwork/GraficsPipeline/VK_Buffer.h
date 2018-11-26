@@ -1,56 +1,7 @@
 #pragma once
 #include "VK_Object.h"
-
-
-struct Vertex {
-	Quaternion pos;
-	Vector3 color;
-
-	Vertex(float a1, float a2, float a3, float a4, float b1, float b2, float b3)
-	{
-		pos = Quaternion(a1, a2, a3, a4);
-		color = Vector3(b1, b2, b3);
-	}
-
-	static VkVertexInputBindingDescription getBindingDescription() {
-		VkVertexInputBindingDescription bindingDescription = {};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		return bindingDescription;
-	}
-
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-		return attributeDescriptions;
-	}
-};
-
-
-
-const std::vector<Vertex> vertices = {
-	Vertex(-0.5f,  -0.5f,  1.0f, 1.0f,		1.0f, 0.0f, 0.0f),
-	Vertex(0.5f,  -0.5f,  1.0f, 1.0f,		1.0f, 1.0f, 0.0f),
-	Vertex(0.5f,   0.5f,  1.0f, 1.0f,		1.0f, 0.5f, 0.5f),
-	Vertex(-0.5f,   0.5f,  1.0f, 1.0f,		1.0f, 0.0f, 0.1f)
-
-};
-
-const std::vector<uint16_t> indices = {
-	0, 1, 2, 2, 3, 0
-};
+#include "Cube.h"
+#include "Plane.h"
 
 
 class VK_Buffer
@@ -63,6 +14,9 @@ public:
 	VkDeviceMemory vertexBufferMemory;
 	VkBuffer indexBuffer;
 	VkDeviceMemory indexBufferMemory;
+
+	Cube renderObject;
+
 	VK_Buffer(VK_Object& vk_Object)
 	{
 		VKO = &vk_Object;
@@ -187,15 +141,15 @@ public:
 	}
 
 	void createVertexBuffer() {
-		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-
+		VkDeviceSize bufferSize = sizeof(renderObject.vertices[0]) * renderObject.vertices.size();
+		
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 		void* data;
 		vkMapMemory(VKO->device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, vertices.data(), (size_t)bufferSize);
+		memcpy(data, renderObject.vertices.data(), (size_t)bufferSize);
 		vkUnmapMemory(VKO->device, stagingBufferMemory);
 
 		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
@@ -206,7 +160,7 @@ public:
 		vkFreeMemory(VKO->device, stagingBufferMemory, nullptr);
 	}
 	void createIndexBuffer() {
-		VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+		VkDeviceSize bufferSize = sizeof(renderObject.indices[0]) * renderObject.indices.size();
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
@@ -214,7 +168,7 @@ public:
 
 		void* data;
 		vkMapMemory(VKO->device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, indices.data(), (size_t)bufferSize);
+		memcpy(data, renderObject.indices.data(), (size_t)bufferSize);
 		vkUnmapMemory(VKO->device, stagingBufferMemory);
 
 		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
@@ -224,9 +178,9 @@ public:
 		vkDestroyBuffer(VKO->device, stagingBuffer, nullptr);
 		vkFreeMemory(VKO->device, stagingBufferMemory, nullptr);
 	}
+	
 	void createUniformBuffers() {
 		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
 		VKO->uniformBuffers.resize(VKO->swapChainImages.size());
 		VKO->uniformBuffersMemory.resize(VKO->swapChainImages.size());
 
@@ -241,7 +195,10 @@ public:
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		UniformBufferObject ubo = {};
-		ubo.model.identity();
+		
+		renderObject.model.rotation3DAroundZ(0.1).rotation3DAroundX(0.1).rotation3DAroundY(0.1);
+		ubo.model = renderObject.model;
+		std::cout << renderObject.model;
 		ubo.view.identity();
 		ubo.proj.identity();
 		ubo.proj[1][1] *= -1;
@@ -318,7 +275,7 @@ public:
 
 			vkCmdBindDescriptorSets(VKO->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VKO->pipelineLayout, 0, 1, &VKO->descriptorSets[i], 0, nullptr);
 
-			vkCmdDrawIndexed(VKO->commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+			vkCmdDrawIndexed(VKO->commandBuffers[i], static_cast<uint32_t>(renderObject.indices.size()), 1, 0, 0, 0);
 
 			vkCmdEndRenderPass(VKO->commandBuffers[i]);
 

@@ -16,48 +16,66 @@
     <Filter Include="Vulkan_1.1">
       <UniqueIdentifier>{94d4a565-4465-4731-8ddb-cb68c0f7c425}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vulkan_1.1\Header">
+    <Filter Include="Vulkan_1.1\Render">
+      <UniqueIdentifier>{5c958641-44b2-4f13-be67-23f8891af7ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan_1.1\Render\Source">
+      <UniqueIdentifier>{40bbd29d-47ac-446e-83ae-46012effe72f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan_1.1\Render\Header">
       <UniqueIdentifier>{f18d985b-f2cf-4628-8cac-feeff4a1e180}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vulkan_1.1\Source">
-      <UniqueIdentifier>{40bbd29d-47ac-446e-83ae-46012effe72f}</UniqueIdentifier>
+    <Filter Include="Vulkan_1.1\SceneObjects">
+      <UniqueIdentifier>{257d80fe-6c8a-4482-9252-c4e26af89c9d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VK_Buffer.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
+      <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_Device.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
+      <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_Object.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
+      <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_SwapChain.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
+      <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_Window.cpp">
-      <Filter>Vulkan_1.1\Source</Filter>
+      <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VK_Buffer.h">
-      <Filter>Vulkan_1.1\Header</Filter>
+      <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
     <ClInclude Include="VK_Device.h">
-      <Filter>Vulkan_1.1\Header</Filter>
+      <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
     <ClInclude Include="VK_Object.h">
-      <Filter>Vulkan_1.1\Header</Filter>
+      <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
     <ClInclude Include="VK_SwapChain.h">
-      <Filter>Vulkan_1.1\Header</Filter>
+      <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
     <ClInclude Include="VK_Window.h">
-      <Filter>Vulkan_1.1\Header</Filter>
+      <Filter>Vulkan_1.1\Render\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,15 +17,23 @@ public:
 		cleanup();
 	}
 
+	VK_Buffer vk_Buffer = VK_Buffer(VKO);
 
 private:
 
 	VK_Object VKO = VK_Object();
 	VK_Device vk_Device = VK_Device(VKO);
 	VK_SwapChain vk_SwapChain = VK_SwapChain(VKO);
-	VK_Buffer vk_Buffer = VK_Buffer(VKO);
+
+	Matrix<float, 4, 4> mul;
+	
+
 
 	void initWindow() {
+		mul.identity();
+		mul.rotation3DAroundZ(2);
+
+
 		glfwInit();
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
