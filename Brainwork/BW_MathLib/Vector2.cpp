@@ -35,11 +35,11 @@ void Vector2::normalize()
 	vec2[2] /= Vector2::length(*this);
 }
 
-int Vector2::getHashCode() {
-	int hash = 17;
+std::size_t Vector2::getHashCode() {
+	std::size_t hash = 17;
 
-	hash *= (23 + std::hash<float>()(vec2[0]));
-	hash *= (23 + std::hash<float>()(vec2[1]));
+	hash *= static_cast<std::size_t>(23 + std::hash<float>()(vec2[0]));
+	hash *= static_cast<std::size_t>(23 + std::hash<float>()(vec2[1]));
 
 	return hash;
 }

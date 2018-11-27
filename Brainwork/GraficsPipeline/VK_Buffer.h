@@ -194,10 +194,11 @@ public:
 
 		UniformBufferObject ubo = {};
 		
-		//renderObject.model.rotation3DAroundZ(0.1).rotation3DAroundX(0.1).rotation3DAroundY(0.1);
+		renderObject.model.rotation3DAroundZ(0.01).rotation3DAroundX(-0.01).rotation3DAroundY(-0.01);
 		ubo.model = renderObject.model;
 		ubo.view.identity();
 		ubo.proj.identity();
+		//ubo.proj.perspectivProjection(WIDTH,HEIGHT,-1,1);
 		ubo.proj[1][1] *= -1;
 
 		void* data;

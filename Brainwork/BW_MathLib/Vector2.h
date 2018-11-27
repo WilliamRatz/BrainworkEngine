@@ -32,7 +32,7 @@ public:
 #pragma region Methods
 
 	void normalize();
-	int getHashCode();
+	std::size_t getHashCode();
 
 	static Vector2 normalized(const Vector2&);
 	static float length(const Vector2&);

@@ -38,12 +38,12 @@ void Vector3::normalize()
 	vec3[2] /= Vector3::length(*this);
 }
 
-int Vector3::getHashCode() {
-	int hash = 17;
+std::size_t Vector3::getHashCode() {
+	std::size_t hash = 17;
 
-	hash *= (23 + std::hash<float>()(vec3[0]));
-	hash *= (23 + std::hash<float>()(vec3[1]));
-	hash *= (23 + std::hash<float>()(vec3[2]));
+	hash *= static_cast<std::size_t>(23 + std::hash<float>()(vec3[0]));
+	hash *= static_cast<std::size_t>(23 + std::hash<float>()(vec3[1]));
+	hash *= static_cast<std::size_t>(23 + std::hash<float>()(vec3[2]));
 
 	return hash;
 }
