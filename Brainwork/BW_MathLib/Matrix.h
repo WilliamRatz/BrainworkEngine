@@ -61,8 +61,8 @@ public:
 #pragma endregion
 
 #pragma region comparisonOperator
-	bool operator==(Matrix&);
-	bool operator!=(Matrix&);
+	bool operator==(const Matrix&);
+	bool operator!=(const Matrix&);
 #pragma endregion
 
 };
@@ -89,7 +89,6 @@ typeMatrix int Matrix<T, M, N>::getHashCode()
 	for (std::size_t i = 0; i < M; ++i) {
 		for (std::size_t ii = 0; ii < N; ++ii) {
 			hash *= (23 + std::hash<T>()(columns[i][ii]));
-
 		}
 	}
 
@@ -99,7 +98,7 @@ typeMatrix int Matrix<T, M, N>::getHashCode()
 typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::translate2D(float x, float y)
 {
 	if (M < 3 && N < 2) {
-		throw std::out_of_range("Your Matrix dont fit for 2D translation check your dimensions");
+		throw std::out_of_range("Your Matrix don't fit for 2D translation check your dimensions");
 	}
 
 	Matrix<T, M, N> trans2D;
@@ -255,7 +254,7 @@ typeMatrix Matrix<T, N, M>& Matrix<T, M, N>::transpose()
 #pragma endregion
 
 #pragma region arithmeticOperator
-typeMatrix void Matrix<T, M, N>::operator=(const Matrix& mat)
+	typeMatrix void Matrix<T, M, N>::operator=(const Matrix& mat)
 {
 	for (std::size_t i = 0; i < M; ++i) {
 		for (std::size_t ii = 0; ii < N; ++ii) {
@@ -263,24 +262,24 @@ typeMatrix void Matrix<T, M, N>::operator=(const Matrix& mat)
 		}
 	}
 }
-
-typeMatrix Matrix<T, M, N> Matrix<T, M, N>::operator+(const Matrix& mat) {
+	
+	typeMatrix Matrix<T, M, N> Matrix<T, M, N>::operator+(const Matrix& mat) {
 
 	Matrix<T, M, N> temp(*this);
 	return temp += mat;
 }
-typeMatrix Matrix<T, M, N> Matrix<T, M, N>::operator-(const Matrix& mat) {
+	typeMatrix Matrix<T, M, N> Matrix<T, M, N>::operator-(const Matrix& mat) {
 
 	Matrix<T, M, N> temp(*this);
 	return temp -= mat;
 }
-typeMatrix Matrix<T, M, N> Matrix<T, M, N>::operator*(const Matrix& mat) {
+	typeMatrix Matrix<T, M, N> Matrix<T, M, N>::operator*(const Matrix& mat) {
 
 	Matrix<T, M, N> temp(*this);
 	return temp *= mat;
 }
-
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator+=(const Matrix& mat)
+	
+	typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator+=(const Matrix& mat)
 {
 	for (std::size_t i = 0; i < M; ++i) {
 		for (std::size_t ii = 0; ii < N; ++ii) {
@@ -289,7 +288,7 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator+=(const Matrix& mat)
 	}
 	return *this;
 }
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator-=(const Matrix& mat)
+	typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator-=(const Matrix& mat)
 {
 	for (std::size_t i = 0; i < M; ++i) {
 		for (std::size_t ii = 0; ii < N; ++ii) {
@@ -298,7 +297,7 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator-=(const Matrix& mat)
 	}
 	return *this;
 }
-typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const Matrix& mat)
+	typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const Matrix& mat)
 {
 	T tempValue = (T)0;
 	Matrix<T, M, M> tempMat;
@@ -315,8 +314,32 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const Matrix& mat)
 	*this = tempMat;
 	return *this;
 }
-
 #pragma endregion
+
+#pragma region comparisonOperator
+	typeMatrix bool Matrix<T, M, N>::operator==(const Matrix& mat) 
+	{
+		if (*this->getHashCode() == mat.getHashCode()) 
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	typeMatrix bool Matrix<T, M, N>::operator!=(const Matrix& mat)
+	{
+		if (*this->getHashCode() != mat.getHashCode())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+#pragma endregion	
 
 template<typename T, std::size_t M, std::size_t N>
 std::ostream& operator<<(std::ostream& os, Matrix<T, N, M>& matrix) {

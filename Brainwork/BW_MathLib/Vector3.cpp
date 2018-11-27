@@ -38,6 +38,16 @@ void Vector3::normalize()
 	vec3[2] /= Vector3::length(*this);
 }
 
+int Vector3::getHashCode() {
+	int hash = 17;
+
+	hash *= (23 + std::hash<float>()(vec3[0]));
+	hash *= (23 + std::hash<float>()(vec3[1]));
+	hash *= (23 + std::hash<float>()(vec3[2]));
+
+	return hash;
+}
+
 float Vector3::length(const Vector3& vec)
 {
 	return static_cast<float>(MathLib::Sqrt(MathLib::pow(Vector3::x(vec), 2) + MathLib::pow(Vector3::y(vec), 2) + MathLib::pow(Vector3::z(vec), 2)));

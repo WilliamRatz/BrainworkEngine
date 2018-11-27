@@ -35,6 +35,15 @@ void Vector2::normalize()
 	vec2[2] /= Vector2::length(*this);
 }
 
+int Vector2::getHashCode() {
+	int hash = 17;
+
+	hash *= (23 + std::hash<float>()(vec2[0]));
+	hash *= (23 + std::hash<float>()(vec2[1]));
+
+	return hash;
+}
+
 Vector2 Vector2::normalized(const Vector2& vec) {
 
 	return Vector2(Vector2::x(vec) / Vector2::length(vec), Vector2::y(vec) / Vector2::length(vec));

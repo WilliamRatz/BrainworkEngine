@@ -49,28 +49,28 @@ public:
 #pragma endregion
 
 #pragma region arithmeticOperator
-	inline void operator=(const Vector2&);
-	inline Vector2& operator+=(const Vector2&);
-	inline Vector2& operator-=(const Vector2&);
-	inline Vector2& operator/=(const Vector2&);
-	inline Vector2 operator+(const Vector2&);
-	inline Vector2 operator-(const Vector2&);
-	inline Vector2 operator/(const Vector2&);
-		   
-	inline Vector2& operator*=(const int&);
-	inline Vector2& operator/=(const int&);
-	inline Vector2 operator*(const int&);
-	inline Vector2 operator/(const int&);
-		   
-	inline Vector2& operator*=(const float&);
-	inline Vector2& operator/=(const float&);
-	inline Vector2 operator*(const float&);
-	inline Vector2 operator/(const float&);
-		   
-	inline Vector2& operator*=(const double&);
-	inline Vector2& operator/=(const double&);
-	inline Vector2 operator*(const double&);
-	inline Vector2 operator/(const double&);
+	void operator=(const Vector2&);
+	Vector2& operator+=(const Vector2&);
+	Vector2& operator-=(const Vector2&);
+	Vector2& operator/=(const Vector2&);
+	Vector2 operator+(const Vector2&);
+	Vector2 operator-(const Vector2&);
+	Vector2 operator/(const Vector2&);
+	
+	Vector2& operator*=(const int&);
+	Vector2& operator/=(const int&);
+	Vector2 operator*(const int&);
+	Vector2 operator/(const int&);
+	
+	Vector2& operator*=(const float&);
+	Vector2& operator/=(const float&);
+	Vector2 operator*(const float&);
+	Vector2 operator/(const float&);
+	
+	Vector2& operator*=(const double&);
+	Vector2& operator/=(const double&);
+	Vector2 operator*(const double&);
+	Vector2 operator/(const double&);
 #pragma endregion
 
 #pragma region comparisonOperator

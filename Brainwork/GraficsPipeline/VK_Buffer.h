@@ -1,7 +1,5 @@
 #pragma once
-#include "VK_Object.h"
 #include "Cube.h"
-#include "Plane.h"
 
 
 class VK_Buffer
@@ -196,9 +194,8 @@ public:
 
 		UniformBufferObject ubo = {};
 		
-		renderObject.model.rotation3DAroundZ(0.1).rotation3DAroundX(0.1).rotation3DAroundY(0.1);
+		//renderObject.model.rotation3DAroundZ(0.1).rotation3DAroundX(0.1).rotation3DAroundY(0.1);
 		ubo.model = renderObject.model;
-		std::cout << renderObject.model;
 		ubo.view.identity();
 		ubo.proj.identity();
 		ubo.proj[1][1] *= -1;
