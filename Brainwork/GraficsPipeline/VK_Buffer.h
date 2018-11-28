@@ -197,8 +197,9 @@ public:
 		renderObject.model.rotation3DAroundZ(0.01).rotation3DAroundX(-0.01).rotation3DAroundY(-0.01);
 		ubo.model = renderObject.model;
 		ubo.view.identity();
-		ubo.proj.identity();
-		//ubo.proj.perspectivProjection(WIDTH,HEIGHT,-1,1);
+		ubo.view[3][2] = 2.0;
+
+		ubo.proj.perspectivProjection(WIDTH,HEIGHT,1,5);
 		ubo.proj[1][1] *= -1;
 
 		void* data;

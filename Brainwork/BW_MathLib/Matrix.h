@@ -236,14 +236,13 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::perspectivProjection(float windowWi
 
 	Matrix<T, M, N> perProj;
 
-	perProj[0][0] = (T) ((2 * nearPlane) / windowWidth);
-	perProj[1][1] = (T) ((2 * nearPlane) / windowHeight);
+	perProj[0][0] = (T) ((200 * nearPlane) / windowWidth);
+	perProj[1][1] = (T) ((200 * nearPlane) / windowHeight);
 	perProj[2][2] = (T) (farPlane / (farPlane - nearPlane));
 	perProj[2][3] = (T) 1;
-	perProj[3][3] = (T) ((-farPlane * nearPlane) / (farPlane - nearPlane));
-	perProj[3][2] = (T) 0;
-
-	this->operator*=(perProj);
+	perProj[3][2] = (T) ((-farPlane * nearPlane) / (farPlane - nearPlane));
+	perProj[3][3] = 0;
+	*this = perProj;
 	return *this;
 }
 typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::orthogonalProjection(float windowWidth, float windowHeight, float nearPlane, float farPlane)
