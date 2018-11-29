@@ -54,6 +54,9 @@
     <ClCompile Include="Cube.cpp">
       <Filter>Vulkan_1.1\SceneObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VK_Buffer.h">
@@ -75,6 +78,9 @@
       <Filter>Vulkan_1.1\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="Cube.h">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Vulkan_1.1\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>

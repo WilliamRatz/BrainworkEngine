@@ -2,6 +2,7 @@
 #include "VK_Device.h"
 #include "VK_SwapChain.h"
 #include "VK_Buffer.h"
+#include "Camera.h"
 
 class VK_Window
 {
@@ -24,16 +25,9 @@ private:
 	VK_Object VKO = VK_Object();
 	VK_Device vk_Device = VK_Device(VKO);
 	VK_SwapChain vk_SwapChain = VK_SwapChain(VKO);
-
-	Matrix<float, 4, 4> mul;
 	
 
-
 	void initWindow() {
-		mul.identity();
-		mul.rotation3DAroundZ(2);
-
-
 		glfwInit();
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -41,7 +35,9 @@ private:
 		VKO.window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 		glfwSetWindowUserPointer(VKO.window, this);
 		glfwSetFramebufferSizeCallback(VKO.window, framebufferResizeCallback);
+
 	}
+
 	void initVulkan() {
 		createInstance();
 		vk_Device.setupDebugCallback();
@@ -68,6 +64,7 @@ private:
 		while (!glfwWindowShouldClose(VKO.window)) {
 			glfwPollEvents();
 			drawFrame();
+
 		}
 
 		vkDeviceWaitIdle(VKO.device);

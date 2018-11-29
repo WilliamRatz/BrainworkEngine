@@ -3,6 +3,9 @@
 #include "VK_Object.h"
 class Cube
 {
+private:
+	int a;
+
 public:
 	Matrix<float, 4, 4> model;
 	std::vector<Vertex> vertices{

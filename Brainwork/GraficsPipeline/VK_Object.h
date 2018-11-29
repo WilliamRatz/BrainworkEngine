@@ -74,11 +74,8 @@ struct SwapChainSupportDetails {
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-
-
-
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const int WIDTH = 600;
+const int HEIGHT = 1200;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -103,7 +100,7 @@ class VK_Object
 {
 public:
 
-	GLFWwindow* window;
+	static GLFWwindow* window;
 
 
 	VkDebugUtilsMessengerEXT callback;

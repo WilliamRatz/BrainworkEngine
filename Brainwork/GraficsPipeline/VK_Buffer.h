@@ -1,5 +1,6 @@
 #pragma once
 #include "Cube.h"
+//#include "Camera.h"
 
 
 class VK_Buffer
@@ -14,6 +15,7 @@ public:
 	VkDeviceMemory indexBufferMemory;
 
 	Cube renderObject;
+	//Camera cam;
 
 	VK_Buffer(VK_Object& vk_Object)
 	{
@@ -140,7 +142,7 @@ public:
 
 	void createVertexBuffer() {
 		VkDeviceSize bufferSize = sizeof(renderObject.vertices[0]) * renderObject.vertices.size();
-		
+
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
@@ -176,7 +178,7 @@ public:
 		vkDestroyBuffer(VKO->device, stagingBuffer, nullptr);
 		vkFreeMemory(VKO->device, stagingBufferMemory, nullptr);
 	}
-	
+
 	void createUniformBuffers() {
 		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 		VKO->uniformBuffers.resize(VKO->swapChainImages.size());
@@ -193,13 +195,12 @@ public:
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		UniformBufferObject ubo = {};
-		
-		renderObject.model.rotation3DAroundZ(0.01).rotation3DAroundX(-0.01).rotation3DAroundY(-0.01);
-		ubo.model = renderObject.model;
-		ubo.view.identity();
-		ubo.view[3][2] = 2.0;
 
-		ubo.proj.perspectivProjection(WIDTH,HEIGHT,1,5);
+		renderObject.model.rotation3DAroundZ(0.01);
+		ubo.model = renderObject.model;
+		//cam.mat[3][2] = 5.0;
+		//ubo.view = cam.mat;
+		ubo.proj.perspectivProjection((WIDTH > HEIGHT) ? WIDTH / HEIGHT : 1, (HEIGHT > WIDTH) ? HEIGHT / WIDTH : 1, 1, 60);
 		ubo.proj[1][1] *= -1;
 
 		void* data;
