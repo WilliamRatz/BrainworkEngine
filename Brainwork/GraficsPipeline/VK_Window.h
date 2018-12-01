@@ -35,7 +35,6 @@ private:
 		VKO.window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 		glfwSetWindowUserPointer(VKO.window, this);
 		glfwSetFramebufferSizeCallback(VKO.window, framebufferResizeCallback);
-
 	}
 
 	void initVulkan() {

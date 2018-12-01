@@ -100,8 +100,7 @@ class VK_Object
 {
 public:
 
-	static GLFWwindow* window;
-
+	GLFWwindow* window;
 
 	VkDebugUtilsMessengerEXT callback;
 	VkSurfaceKHR surface;

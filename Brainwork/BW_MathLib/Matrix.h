@@ -50,7 +50,7 @@ public:
 
 	Matrix& identity();
 	Matrix& inverse();
-	Matrix<T, N, M>& transpose();
+	Matrix<T, N, M> transpose();
 #pragma endregion
 
 #pragma region arithmeticOperator
@@ -278,7 +278,7 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::identity() {
 	return *this;
 
 }
-typeMatrix Matrix<T, N, M>& Matrix<T, M, N>::transpose()
+typeMatrix Matrix<T, N, M> Matrix<T, M, N>::transpose()
 {
 	Matrix<T, N, M> temp;
 

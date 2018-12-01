@@ -1,6 +1,6 @@
 #pragma once
 #include "Cube.h"
-//#include "Camera.h"
+#include "Camera.h"
 
 
 class VK_Buffer
@@ -9,13 +9,13 @@ private:
 	VK_Object* VKO;
 
 public:
+	Camera cam;
 	VkBuffer vertexBuffer;
 	VkDeviceMemory vertexBufferMemory;
 	VkBuffer indexBuffer;
 	VkDeviceMemory indexBufferMemory;
 
 	Cube renderObject;
-	//Camera cam;
 
 	VK_Buffer(VK_Object& vk_Object)
 	{
@@ -85,7 +85,7 @@ public:
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
 		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
 		VkPipelineMultisampleStateCreateInfo multisampling = {};
@@ -180,6 +180,8 @@ public:
 	}
 
 	void createUniformBuffers() {
+		cam.SetCameraToWindow(VKO->window);
+
 		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 		VKO->uniformBuffers.resize(VKO->swapChainImages.size());
 		VKO->uniformBuffersMemory.resize(VKO->swapChainImages.size());
@@ -196,10 +198,10 @@ public:
 
 		UniformBufferObject ubo = {};
 
-		renderObject.model.rotation3DAroundZ(0.01);
+		//renderObject.model.rotation3DAroundZ(0.03f).rotation3DAroundY(-0.01f).rotation3DAroundX(0.02f);
 		ubo.model = renderObject.model;
-		//cam.mat[3][2] = 5.0;
-		//ubo.view = cam.mat;
+		ubo.view = Camera::getViewCamera.mat;
+
 		ubo.proj.perspectivProjection((WIDTH > HEIGHT) ? WIDTH / HEIGHT : 1, (HEIGHT > WIDTH) ? HEIGHT / WIDTH : 1, 1, 60);
 		ubo.proj[1][1] *= -1;
 

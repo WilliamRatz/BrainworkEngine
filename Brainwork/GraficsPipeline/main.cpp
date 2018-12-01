@@ -19,6 +19,7 @@ int main() {
 	
 	VK_Window vk_Window;
 
+	
 	try {
 		vk_Window.run();
 	}

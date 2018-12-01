@@ -2,48 +2,36 @@
 #define CAMERA_H
 #include "VK_Object.h"
 
-static void Camera_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 class Camera
 {
 private:
-	static void DOOO() {
+	Matrix<float, 4, 4> MoveForward();
+	Matrix<float, 4, 4> MoveBackward();
+	Matrix<float, 4, 4> MoveLeft();
+	Matrix<float, 4, 4> MoveRight();
+	Matrix<float, 4, 4> MoveUp();
+	Matrix<float, 4, 4> MoveDown();
 
-	}
+	double cursorPosX;
+	double cursorPosY;
+
+	bool dragging;
+
 public:
 	Matrix<float, 4, 4> mat;
+	float moveSpeed = 5;
+	static void Camera_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void Mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+	static void Cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 	
+
+	static Camera getViewCamera;
+
+	Camera();
+	Camera(const Camera& cam);
 	~Camera();
 
-	friend static void Camera_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-	Camera()
-	{
-		glfwSetKeyCallback(VK_Object::window, Camera_key_callback);
-
-	}
+	void SetCameraToWindow(GLFWwindow* window);
 };
-
-static void Camera_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	Camera::DOOO();
-	if (key == GLFW_KEY_W && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		std::cout << "W";
-	}
-	if (key == GLFW_KEY_A && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		std::cout << "A";
-	}
-	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		std::cout << "S";
-	}
-	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		std::cout << "D";
-	}
-	if (key == GLFW_KEY_Q && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		std::cout << "Q";
-	}
-	if (key == GLFW_KEY_E && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		std::cout << "E";
-	}
-}
 
 #endif // !CAMERA_H
