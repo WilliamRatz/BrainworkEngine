@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-#include "VK_Object.h"
+#include <BW_Math.h>
+#include "Controls.h"
 
 class Camera
 {
@@ -12,18 +13,14 @@ private:
 	Matrix<float, 4, 4> MoveUp();
 	Matrix<float, 4, 4> MoveDown();
 
-	double cursorPosX;
-	double cursorPosY;
-
-	bool dragging;
+	
 
 public:
 	Matrix<float, 4, 4> mat;
-	float moveSpeed = 5;
-	static void Camera_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	static void Mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-	static void Cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+	float moveSpeed = 0.01;
+
 	
+	static void CameraUpdate(GLFWwindow *window);
 
 	static Camera getViewCamera;
 

@@ -16,82 +16,65 @@ Camera::~Camera()
 {
 }
 
+void Camera::CameraUpdate(GLFWwindow *window)
+{
+	if (Controls::W_PRESSING || Controls::ARROW_UP_PRESSING)
+	{
+		Camera::getViewCamera.MoveForward();
+	}
+
+	if (Controls::A_PRESSING || Controls::ARROW_LEFT_PRESSING)
+	{
+		Camera::getViewCamera.MoveLeft();
+	}
+
+	if (Controls::D_PRESSING || Controls::ARROW_RIGHT_PRESSING)
+	{
+		Camera::getViewCamera.MoveRight();
+	}
+
+	if (Controls::S_PRESSING || Controls::ARROW_DOWN_PRESSING)
+	{
+		Camera::getViewCamera.MoveBackward();
+	}
+
+	if (Controls::Q_PRESSING)
+	{
+		Camera::getViewCamera.MoveUp();
+	}
+
+	if (Controls::E_PRESSING)
+	{
+		Camera::getViewCamera.MoveDown();
+
+	}
+
+	if (Controls::MOUSE_LEFT_PRESSING) 
+	{
+		double tempX = Controls::CURSOR_POS_X;
+		double tempY = Controls::CURSOR_POS_Y;
+		glfwGetCursorPos(window, &Controls::CURSOR_POS_X, &Controls::CURSOR_POS_Y);
+		Camera::getViewCamera.mat.rotation3DAroundY(tempX - Controls::CURSOR_POS_X);
+		Camera::getViewCamera.mat.rotation3DAroundX(tempY - Controls::CURSOR_POS_Y);
+	}
+}
+
 void Camera::SetCameraToWindow(GLFWwindow* window)
 {
 	Camera::getViewCamera = *this;
-	glfwSetKeyCallback(window, Camera::Camera_key_callback);
-	glfwSetCursorPosCallback(window, Camera::Cursor_position_callback);
-	glfwSetMouseButtonCallback(window, Camera::Mouse_button_callback);
+	glfwSetKeyCallback(window, Controls::key_callback);
+	glfwSetCursorPosCallback(window, Controls::Cursor_position_callback);
+	glfwSetMouseButtonCallback(window, Controls::Mouse_button_callback);
 }
 
-void Camera::Camera_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 
 
-
-
-	if (key == GLFW_KEY_W && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		Camera::getViewCamera.MoveForward();
-		std::cout << "W MoveForward" << std::endl;
-	}
-	if (key == GLFW_KEY_A && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		Camera::getViewCamera.MoveLeft();
-		std::cout << "A MoveLeft" << std::endl;
-	}
-	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		Camera::getViewCamera.MoveBackward();
-		std::cout << "S MoveBackward" << std::endl;
-	}
-	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		Camera::getViewCamera.MoveRight();
-		std::cout << "D MoveRight" << std::endl;
-	}
-	if (key == GLFW_KEY_Q && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		Camera::getViewCamera.MoveUp();
-		std::cout << "Q MoveUp" << std::endl;
-	}
-	if (key == GLFW_KEY_E && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
-		Camera::getViewCamera.MoveDown();
-		std::cout << "E MoveDown" << std::endl;
-	}
-}
-
-void Camera::Mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-	{
-		Camera::getViewCamera.dragging = true;
-		glfwGetCursorPos(window, &Camera::getViewCamera.cursorPosX, &Camera::getViewCamera.cursorPosY);
-	}
-	else
-	{
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-		{
-			Camera::getViewCamera.dragging = false;
-		}
-	}
-}
-
-void Camera::Cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-{
-	if (Camera::getViewCamera.dragging)
-	{
-
-		double tempX = Camera::getViewCamera.cursorPosX;
-		double tempY = Camera::getViewCamera.cursorPosY;
-		glfwGetCursorPos(window, &Camera::getViewCamera.cursorPosX, &Camera::getViewCamera.cursorPosY);
-		Camera::getViewCamera.mat.rotation3DAroundY(tempX - Camera::getViewCamera.cursorPosX);
-		Camera::getViewCamera.mat.rotation3DAroundX(tempY - Camera::getViewCamera.cursorPosY);
-		std::cout << tempX - Camera::getViewCamera.cursorPosX << std::endl;
-		std::cout << tempY - Camera::getViewCamera.cursorPosY << std::endl;
-	}
-
-}
 
 Matrix<float, 4, 4> Camera::MoveForward()
 {
 	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, 0, -0.01 * moveSpeed);
+	tempMat.translate3D(0, 0, -moveSpeed);
 	tempMat = tempMat.transpose();
 	mat *= tempMat;
 	return mat;
@@ -99,7 +82,7 @@ Matrix<float, 4, 4> Camera::MoveForward()
 Matrix<float, 4, 4> Camera::MoveBackward()
 {
 	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, 0, 0.01* moveSpeed);
+	tempMat.translate3D(0, 0, moveSpeed);
 	tempMat = tempMat.transpose();
 	mat *= tempMat;
 	return mat;
@@ -107,7 +90,7 @@ Matrix<float, 4, 4> Camera::MoveBackward()
 Matrix<float, 4, 4> Camera::MoveLeft()
 {
 	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0.01* moveSpeed, 0, 0);
+	tempMat.translate3D(moveSpeed, 0, 0);
 	tempMat = tempMat.transpose();
 	mat *= tempMat;
 	return mat;
@@ -115,7 +98,7 @@ Matrix<float, 4, 4> Camera::MoveLeft()
 Matrix<float, 4, 4> Camera::MoveRight()
 {
 	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(-0.01* moveSpeed, 0, 0);
+	tempMat.translate3D(-moveSpeed, 0, 0);
 	tempMat = tempMat.transpose();
 	mat *= tempMat;
 	return mat;
@@ -123,7 +106,7 @@ Matrix<float, 4, 4> Camera::MoveRight()
 Matrix<float, 4, 4> Camera::MoveUp()
 {
 	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, 0.01* moveSpeed, 0);
+	tempMat.translate3D(0, moveSpeed, 0);
 	tempMat = tempMat.transpose();
 	mat *= tempMat;
 	return mat;
@@ -131,7 +114,7 @@ Matrix<float, 4, 4> Camera::MoveUp()
 Matrix<float, 4, 4> Camera::MoveDown()
 {
 	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, -0.01* moveSpeed, 0);
+	tempMat.translate3D(0, -moveSpeed, 0);
 	tempMat = tempMat.transpose();
 	mat *= tempMat;
 	return mat;

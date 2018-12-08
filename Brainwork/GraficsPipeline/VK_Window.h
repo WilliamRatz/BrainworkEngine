@@ -63,6 +63,7 @@ private:
 		while (!glfwWindowShouldClose(VKO.window)) {
 			glfwPollEvents();
 			drawFrame();
+			Camera::CameraUpdate(VKO.window);
 
 		}
 
