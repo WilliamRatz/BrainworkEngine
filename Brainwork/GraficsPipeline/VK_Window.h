@@ -1,7 +1,7 @@
 #pragma once
 #include "VK_Device.h"
 #include "VK_SwapChain.h"
-#include "VK_Buffer.h"
+#include "BufferManager.h"
 #include "Camera.h"
 
 class VK_Window
@@ -18,7 +18,7 @@ public:
 		cleanup();
 	}
 
-	VK_Buffer vk_Buffer = VK_Buffer(VKO);
+	BufferManager vk_Buffer = BufferManager(VKO);
 
 private:
 
@@ -26,6 +26,7 @@ private:
 	VK_Device vk_Device = VK_Device(VKO);
 	VK_SwapChain vk_SwapChain = VK_SwapChain(VKO);
 	
+	Camera cam;
 
 	void initWindow() {
 		glfwInit();
@@ -35,6 +36,8 @@ private:
 		VKO.window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
 		glfwSetWindowUserPointer(VKO.window, this);
 		glfwSetFramebufferSizeCallback(VKO.window, framebufferResizeCallback);
+
+		cam.SetCameraToWindow(VKO.window);
 	}
 
 	void initVulkan() {
@@ -50,9 +53,7 @@ private:
 		vk_Buffer.createGraphicsPipeline();
 		vk_Buffer.createFramebuffers();
 		vk_Device.createCommandPool();
-		vk_Buffer.createVertexBuffer();
-		vk_Buffer.createIndexBuffer();
-		vk_Buffer.createUniformBuffers();
+		vk_Buffer.createBufferObject();
 		vk_Device.createDescriptorPool();
 		vk_Device.createDescriptorSets();
 		vk_Buffer.createCommandBuffers();
@@ -83,7 +84,7 @@ private:
 			throw std::runtime_error("failed to acquire swap chain image!");
 		}
 
-		vk_Buffer.updateUniformBuffer(imageIndex);
+		vk_Buffer.UpdateUniformBuffers(imageIndex);
 
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -139,16 +140,16 @@ private:
 
 		vkDestroyDescriptorSetLayout(VKO.device, VKO.descriptorSetLayout, nullptr);
 
+		
 		for (size_t i = 0; i < VKO.swapChainImages.size(); i++) {
 			vkDestroyBuffer(VKO.device, VKO.uniformBuffers[i], nullptr);
 			vkFreeMemory(VKO.device, VKO.uniformBuffersMemory[i], nullptr);
 		}
+		vkDestroyBuffer(VKO.device, vk_Buffer.bufferObjects[0].indexBuffer, nullptr);
+		vkFreeMemory(VKO.device, vk_Buffer.bufferObjects[0].indexBufferMemory, nullptr);
 
-		vkDestroyBuffer(VKO.device, vk_Buffer.indexBuffer, nullptr);
-		vkFreeMemory(VKO.device, vk_Buffer.indexBufferMemory, nullptr);
-
-		vkDestroyBuffer(VKO.device, vk_Buffer.vertexBuffer, nullptr);
-		vkFreeMemory(VKO.device, vk_Buffer.vertexBufferMemory, nullptr);
+		vkDestroyBuffer(VKO.device, vk_Buffer.bufferObjects[0].vertexBuffer, nullptr);
+		vkFreeMemory(VKO.device, vk_Buffer.bufferObjects[0].vertexBufferMemory, nullptr);
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(VKO.device, VKO.renderFinishedSemaphores[i], nullptr);

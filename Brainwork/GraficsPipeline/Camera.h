@@ -17,7 +17,7 @@ private:
 
 public:
 	Matrix<float, 4, 4> mat;
-	float moveSpeed = 0.01;
+	float moveSpeed = 0.01f;
 
 	
 	static void CameraUpdate(GLFWwindow *window);

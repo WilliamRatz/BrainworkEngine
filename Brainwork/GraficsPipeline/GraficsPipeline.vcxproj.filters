@@ -28,11 +28,14 @@
     <Filter Include="Vulkan_1.1\SceneObjects">
       <UniqueIdentifier>{257d80fe-6c8a-4482-9252-c4e26af89c9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan_1.1\SceneObjects\Objects">
+      <UniqueIdentifier>{6042e062-387d-4a8a-aed9-e7df29d2185c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan_1.1\Render\Buffer">
+      <UniqueIdentifier>{ac77c038-9621-453f-8c4d-359c34e240aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VK_Buffer.cpp">
-      <Filter>Vulkan_1.1\Render\Source</Filter>
-    </ClCompile>
     <ClCompile Include="VK_Device.cpp">
       <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
@@ -48,23 +51,32 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Plane.cpp">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube.cpp">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Vulkan_1.1\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="Controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Plane.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferObject.cpp">
+      <Filter>Vulkan_1.1\Render\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferManager.cpp">
+      <Filter>Vulkan_1.1\Render\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VK_Buffer.h">
-      <Filter>Vulkan_1.1\Render\Header</Filter>
-    </ClInclude>
     <ClInclude Include="VK_Device.h">
       <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
@@ -77,16 +89,28 @@
     <ClInclude Include="VK_Window.h">
       <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Plane.h">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube.h">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Vulkan_1.1\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="Controls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Plane.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferObject.h">
+      <Filter>Vulkan_1.1\Render\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferManager.h">
+      <Filter>Vulkan_1.1\Render\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

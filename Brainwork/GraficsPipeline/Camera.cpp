@@ -67,10 +67,6 @@ void Camera::SetCameraToWindow(GLFWwindow* window)
 	glfwSetMouseButtonCallback(window, Controls::Mouse_button_callback);
 }
 
-
-
-
-
 Matrix<float, 4, 4> Camera::MoveForward()
 {
 	Matrix<float, 4, 4> tempMat;

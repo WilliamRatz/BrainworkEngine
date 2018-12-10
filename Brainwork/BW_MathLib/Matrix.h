@@ -64,8 +64,8 @@ public:
 #pragma endregion
 
 #pragma region comparisonOperator
-	bool operator==(const Matrix&);
-	bool operator!=(const Matrix&);
+	bool operator==(Matrix&);
+	bool operator!=(Matrix&);
 #pragma endregion
 
 };
@@ -355,27 +355,25 @@ typeMatrix Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const Matrix& mat)
 #pragma endregion
 
 #pragma region comparisonOperator
-typeMatrix bool Matrix<T, M, N>::operator==(const Matrix& mat)
+typeMatrix bool Matrix<T, M, N>::operator==(Matrix& mat)
 {
-	if (*this->getHashCode() == mat.getHashCode())
-	{
-		return true;
+	for (std::size_t i = 0; i < M; ++i) {
+		for (std::size_t ii = 0; ii < N; ++ii) {
+			if (columns[i][ii] != mat[i][ii])
+				return false;
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
-typeMatrix bool Matrix<T, M, N>::operator!=(const Matrix& mat)
+typeMatrix bool Matrix<T, M, N>::operator!=(Matrix& mat)
 {
-	if (*this->getHashCode() != mat.getHashCode())
-	{
-		return true;
+	for (std::size_t i = 0; i < M; ++i) {
+		for (std::size_t ii = 0; ii < N; ++ii) {
+			if (columns[i][ii] != mat[i][ii])
+				return true;
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 #pragma endregion	
 

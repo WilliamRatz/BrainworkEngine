@@ -21,7 +21,6 @@ Controls::Controls()
 {
 }
 
-
 Controls::~Controls()
 {
 }

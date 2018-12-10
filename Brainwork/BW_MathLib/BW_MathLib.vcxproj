@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BW_Math.cpp" />
     <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="Tests.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
@@ -28,6 +29,7 @@
     <ClInclude Include="BW_Math.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Tests.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />

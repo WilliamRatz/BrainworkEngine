@@ -159,23 +159,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="BufferObject.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="VK_Buffer.cpp" />
+    <ClCompile Include="BufferManager.cpp" />
     <ClCompile Include="VK_Device.cpp" />
     <ClCompile Include="VK_Object.cpp" />
     <ClCompile Include="VK_SwapChain.cpp" />
     <ClCompile Include="VK_Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="BufferObject.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Plane.h" />
-    <ClInclude Include="VK_Buffer.h" />
+    <ClInclude Include="BufferManager.h" />
     <ClInclude Include="VK_Device.h" />
     <ClInclude Include="VK_Object.h" />
     <ClInclude Include="VK_SwapChain.h" />

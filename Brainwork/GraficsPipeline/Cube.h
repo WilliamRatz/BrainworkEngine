@@ -1,14 +1,13 @@
 #ifndef CUBE_H
 #define CUBE_H
-#include "VK_Object.h"
+#include "GameObject.h"
 class Cube
 {
 private:
-	int a;
 
 public:
-	Matrix<float, 4, 4> model;
-	std::vector<Vertex> vertices{
+	Matrix<float, 4, 4> m_model;
+	std::vector<Vertex> m_vertices{
 		Vertex(-0.5f, -0.5f,  0.5f, 1.0f,		1.0f, 0.0f, 0.0f),
 		Vertex( 0.5f, -0.5f,  0.5f, 1.0f,		0.0f, 1.0f, 0.0f),
 		Vertex( 0.5f,  0.5f,  0.5f, 1.0f,		0.0f, 0.0f, 1.0f),
@@ -19,7 +18,7 @@ public:
 		Vertex(	0.5f,  0.5f, -0.5f, 1.0f,		0.0f, 1.0f, 0.0f),
 		Vertex(-0.5f,  0.5f, -0.5f, 1.0f,		1.0f, 0.0f, 0.0f)
 	};
-	std::vector<uint16_t> indices{
+	std::vector<uint16_t> m_indices{
 		3, 0, 1, 1, 2, 3, //front
 		7, 4, 0, 0, 3, 7, //left
 		2, 1, 5, 5, 6, 2, //right
@@ -31,8 +30,8 @@ public:
 
 	Cube();
 	Cube(const Matrix<float, 4, 4>& defaultValue);
-	Cube(const Cube& cube);
-	~Cube();
+
+	operator GameObject();
 };
 
 #endif

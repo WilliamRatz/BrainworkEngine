@@ -17,41 +17,7 @@
 #include <set>
 
 
-struct Vertex {
-	Quaternion pos;
-	Vector3 color;
 
-	Vertex(float a1, float a2, float a3, float a4, float b1, float b2, float b3)
-	{
-		pos = Quaternion(a1, a2, a3, a4);
-		color = Vector3(b1, b2, b3);
-	}
-
-	static VkVertexInputBindingDescription getBindingDescription() {
-		VkVertexInputBindingDescription bindingDescription = {};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		return bindingDescription;
-	}
-
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-		return attributeDescriptions;
-	}
-};
 
 struct UniformBufferObject {
 	Matrix<float, 4, 4> model;
@@ -74,8 +40,8 @@ struct SwapChainSupportDetails {
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-const int WIDTH = 600;
-const int HEIGHT = 1200;
+const int WIDTH = 800;
+const int HEIGHT = 800;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 

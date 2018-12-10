@@ -1,26 +1,20 @@
 #pragma once
-#include "Cube.h"
-#include "Camera.h"
+#include "BufferObject.h"
 
 
-class VK_Buffer
+class BufferManager
 {
 private:
 	VK_Object* VKO;
 
 public:
-	Camera cam;
-	VkBuffer vertexBuffer;
-	VkDeviceMemory vertexBufferMemory;
-	VkBuffer indexBuffer;
-	VkDeviceMemory indexBufferMemory;
-
-	Cube renderObject;
-
-	VK_Buffer(VK_Object& vk_Object)
+	std::vector<BufferObject> bufferObjects; 
+	
+	BufferManager(VK_Object& vk_Object)
 	{
 		VKO = &vk_Object;
-	};
+	}
+	
 
 	void createGraphicsPipeline() {
 		auto vertShaderCode = readFile("shaders/vert.spv");
@@ -139,77 +133,6 @@ public:
 		vkDestroyShaderModule(VKO->device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(VKO->device, vertShaderModule, nullptr);
 	}
-
-	void createVertexBuffer() {
-		VkDeviceSize bufferSize = sizeof(renderObject.vertices[0]) * renderObject.vertices.size();
-
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
-		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-		void* data;
-		vkMapMemory(VKO->device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, renderObject.vertices.data(), (size_t)bufferSize);
-		vkUnmapMemory(VKO->device, stagingBufferMemory);
-
-		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
-
-		copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-		vkDestroyBuffer(VKO->device, stagingBuffer, nullptr);
-		vkFreeMemory(VKO->device, stagingBufferMemory, nullptr);
-	}
-	void createIndexBuffer() {
-		VkDeviceSize bufferSize = sizeof(renderObject.indices[0]) * renderObject.indices.size();
-
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
-		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-		void* data;
-		vkMapMemory(VKO->device, stagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, renderObject.indices.data(), (size_t)bufferSize);
-		vkUnmapMemory(VKO->device, stagingBufferMemory);
-
-		createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
-
-		copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-		vkDestroyBuffer(VKO->device, stagingBuffer, nullptr);
-		vkFreeMemory(VKO->device, stagingBufferMemory, nullptr);
-	}
-
-	void createUniformBuffers() {
-		cam.SetCameraToWindow(VKO->window);
-
-		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-		VKO->uniformBuffers.resize(VKO->swapChainImages.size());
-		VKO->uniformBuffersMemory.resize(VKO->swapChainImages.size());
-
-		for (size_t i = 0; i < VKO->swapChainImages.size(); i++) {
-			createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VKO->uniformBuffers[i], VKO->uniformBuffersMemory[i]);
-		}
-	}
-	void updateUniformBuffer(uint32_t currentImage) {
-		static auto startTime = std::chrono::high_resolution_clock::now();
-
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-		UniformBufferObject ubo = {};
-
-		//renderObject.model.rotation3DAroundZ(0.03f).rotation3DAroundY(-0.01f).rotation3DAroundX(0.02f);
-		ubo.model = renderObject.model;
-		ubo.view = Camera::getViewCamera.mat;
-
-		ubo.proj.perspectivProjection((WIDTH > HEIGHT) ? WIDTH / HEIGHT : 1, (HEIGHT > WIDTH) ? HEIGHT / WIDTH : 1, 1, 60);
-		ubo.proj[1][1] *= -1;
-
-		void* data;
-		vkMapMemory(VKO->device, VKO->uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(VKO->device, VKO->uniformBuffersMemory[currentImage]);
-	}
 	void createFramebuffers() {
 		VKO->swapChainFramebuffers.resize(VKO->swapChainImageViews.size());
 
@@ -231,6 +154,18 @@ public:
 				throw std::runtime_error("failed to create framebuffer!");
 			}
 		}
+	}
+
+	void createBufferObject() 
+	{
+		bufferObjects.push_back(BufferObject(*VKO));
+		//bufferObjects.push_back(BufferObject(*VKO));
+	}
+
+	void UpdateUniformBuffers(uint32_t currentImage) 
+	{
+		bufferObjects[0].updateUniformBuffer(currentImage);
+		//bufferObjects[1].updateUniformBuffer(currentImage);
 	}
 	void createCommandBuffers() {
 		VKO->commandBuffers.resize(VKO->swapChainFramebuffers.size());
@@ -269,15 +204,15 @@ public:
 
 			vkCmdBindPipeline(VKO->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VKO->graphicsPipeline);
 
-			VkBuffer vertexBuffers[] = { vertexBuffer };
+			VkBuffer vertexBuffers[] = { bufferObjects[0].vertexBuffer };
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(VKO->commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-			vkCmdBindIndexBuffer(VKO->commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindIndexBuffer(VKO->commandBuffers[i], bufferObjects[0].indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
 			vkCmdBindDescriptorSets(VKO->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VKO->pipelineLayout, 0, 1, &VKO->descriptorSets[i], 0, nullptr);
 
-			vkCmdDrawIndexed(VKO->commandBuffers[i], static_cast<uint32_t>(renderObject.indices.size()), 1, 0, 0, 0);
+			vkCmdDrawIndexed(VKO->commandBuffers[i], static_cast<uint32_t>(bufferObjects[0].gameObject.getIndices().size()), 1, 0, 0, 0);
 
 			vkCmdEndRenderPass(VKO->commandBuffers[i]);
 
@@ -285,66 +220,10 @@ public:
 				throw std::runtime_error("failed to record command buffer!");
 			}
 		}
+
 	}
 
 
-	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
-		VkBufferCreateInfo bufferInfo = {};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = size;
-		bufferInfo.usage = usage;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		if (vkCreateBuffer(VKO->device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create buffer!");
-		}
-
-		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(VKO->device, buffer, &memRequirements);
-
-		VkMemoryAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
-
-		if (vkAllocateMemory(VKO->device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate buffer memory!");
-		}
-
-		vkBindBufferMemory(VKO->device, buffer, bufferMemory, 0);
-	}
-	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-		VkCommandBufferAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = VKO->commandPool;
-		allocInfo.commandBufferCount = 1;
-
-		VkCommandBuffer commandBuffer;
-		vkAllocateCommandBuffers(VKO->device, &allocInfo, &commandBuffer);
-
-		VkCommandBufferBeginInfo beginInfo = {};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-		vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-		VkBufferCopy copyRegion = {};
-		copyRegion.size = size;
-		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-		vkEndCommandBuffer(commandBuffer);
-
-		VkSubmitInfo submitInfo = {};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffer;
-
-		vkQueueSubmit(VKO->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(VKO->graphicsQueue);
-
-		vkFreeCommandBuffers(VKO->device, VKO->commandPool, 1, &commandBuffer);
-	}
 	static std::vector<char> readFile(const std::string& filename) {
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -362,19 +241,6 @@ public:
 
 		return buffer;
 	}
-
-	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VKO->physicalDevice, &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-				return i;
-			}
-		}
-
-		throw std::runtime_error("failed to find suitable memory type!");
-	}
 	VkShaderModule createShaderModule(const std::vector<char>& code) {
 		VkShaderModuleCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -388,7 +254,6 @@ public:
 
 		return shaderModule;
 	}
-
 
 };
 

@@ -5,18 +5,12 @@ Plane::Plane()
 {
 }
 
-Plane::Plane(const Matrix<float, 4, 4>& defaultValue)
+Plane::Plane(const Matrix<float, 4, 4>& p_defaultValue)
 {
-	model = defaultValue;
-}
-Plane::Plane(const Plane& plane)
-{
-	model = plane.model;
-	vertices = plane.vertices;
-	indices = plane.indices;
+	m_model = p_defaultValue;
 }
 
-
-Plane::~Plane()
+Plane::operator GameObject()
 {
+	return GameObject(m_model, m_vertices, m_indices);
 }

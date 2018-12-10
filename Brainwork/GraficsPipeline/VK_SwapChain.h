@@ -1,6 +1,6 @@
 #pragma once
 #include "VK_Object.h"
-#include "VK_Buffer.h"
+#include "BufferManager.h"
 
 class VK_SwapChain
 {
@@ -148,7 +148,7 @@ public:
 		VKO->swapChainExtent = extent;
 	}
 	
-	void recreateSwapChain(VK_Buffer vkBuffer) {
+	void recreateSwapChain(BufferManager vkBuffer) {
 		int width = 0, height = 0;
 		while (width == 0 || height == 0) {
 			glfwGetFramebufferSize(VKO->window, &width, &height);

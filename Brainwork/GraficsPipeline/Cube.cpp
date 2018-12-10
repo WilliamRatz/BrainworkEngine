@@ -5,17 +5,14 @@
 Cube::Cube()
 {
 }
-Cube::Cube(const Matrix<float, 4, 4>& defaultValue)
+Cube::Cube(const Matrix<float, 4, 4>& p_defaultValue)
 {
 
-	model = defaultValue;
+	m_model = p_defaultValue;
 }
-Cube::Cube(const Cube& cube)
+
+
+Cube::operator GameObject()
 {
-	model = cube.model;
-	vertices = cube.vertices;
-	indices = cube.indices;
-}
-Cube::~Cube()
-{
+	return GameObject(m_model, m_vertices, m_indices);
 }

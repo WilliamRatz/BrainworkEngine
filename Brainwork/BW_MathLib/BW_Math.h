@@ -14,6 +14,8 @@
 #include "Quaternion.h"
 #include "Matrix.h"
 
+#include "Tests.h"
+
 class MathLib {
 public:
 
