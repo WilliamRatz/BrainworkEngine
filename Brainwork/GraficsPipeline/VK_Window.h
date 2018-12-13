@@ -1,8 +1,9 @@
 #pragma once
 #include "VK_Device.h"
-#include "VK_SwapChain.h"
 #include "BufferManager.h"
 #include "Camera.h"
+#include "VK_SwapChain.h"
+
 
 class VK_Window
 {
@@ -49,13 +50,14 @@ private:
 		vk_SwapChain.createSwapChain();
 		vk_SwapChain.createImageViews();
 		vk_SwapChain.createRenderPass();
-		vk_Device.createDescriptorSetLayout();
+		vk_SwapChain.createDescriptorSetLayout();
 		vk_Buffer.createGraphicsPipeline();
 		vk_Buffer.createFramebuffers();
 		vk_Device.createCommandPool();
-		vk_Buffer.createBufferObject();
+		vk_Buffer.CreateBufferObjects();
 		vk_Device.createDescriptorPool();
-		vk_Device.createDescriptorSets();
+
+		vk_Buffer.CreateDescriptorSets();
 		vk_Buffer.createCommandBuffers();
 		createSyncObjects();
 	}
@@ -137,19 +139,10 @@ private:
 		vk_SwapChain.cleanupSwapChain();
 
 		vkDestroyDescriptorPool(VKO.device, VKO.descriptorPool, nullptr);
-
 		vkDestroyDescriptorSetLayout(VKO.device, VKO.descriptorSetLayout, nullptr);
 
-		
-		for (size_t i = 0; i < VKO.swapChainImages.size(); i++) {
-			vkDestroyBuffer(VKO.device, VKO.uniformBuffers[i], nullptr);
-			vkFreeMemory(VKO.device, VKO.uniformBuffersMemory[i], nullptr);
-		}
-		vkDestroyBuffer(VKO.device, vk_Buffer.bufferObjects[0].indexBuffer, nullptr);
-		vkFreeMemory(VKO.device, vk_Buffer.bufferObjects[0].indexBufferMemory, nullptr);
 
-		vkDestroyBuffer(VKO.device, vk_Buffer.bufferObjects[0].vertexBuffer, nullptr);
-		vkFreeMemory(VKO.device, vk_Buffer.bufferObjects[0].vertexBufferMemory, nullptr);
+		vk_Buffer.cleanUpBuffers();
 
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(VKO.device, VKO.renderFinishedSemaphores[i], nullptr);

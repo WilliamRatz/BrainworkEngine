@@ -8,12 +8,13 @@ private:
 	VK_Object* VKO;
 
 public:
-	VK_SwapChain(VK_Object& vk_Object)
+
+	inline VK_SwapChain(VK_Object& vk_Object)
 	{
 		VKO = &vk_Object;
 	};
 
-	void cleanupSwapChain() {
+	inline void cleanupSwapChain() {
 		for (auto framebuffer : VKO->swapChainFramebuffers) {
 			vkDestroyFramebuffer(VKO->device, framebuffer, nullptr);
 		}
@@ -30,8 +31,8 @@ public:
 
 		vkDestroySwapchainKHR(VKO->device, VKO->swapChain, nullptr);
 	}
-	
-	void createRenderPass() {
+
+	inline void createRenderPass() {
 		VkAttachmentDescription colorAttachment = {};
 		colorAttachment.format = VKO->swapChainImageFormat;
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -72,7 +73,7 @@ public:
 			throw std::runtime_error("failed to create render pass!");
 		}
 	}
-	void createImageViews() {
+	inline void createImageViews() {
 		VKO->swapChainImageViews.resize(VKO->swapChainImages.size());
 
 		for (size_t i = 0; i < VKO->swapChainImages.size(); i++) {
@@ -96,7 +97,7 @@ public:
 			}
 		}
 	}
-	void createSwapChain() {
+	inline void createSwapChain() {
 		SwapChainSupportDetails swapChainSupport = VKO->querySwapChainSupport(VKO->physicalDevice);
 
 		VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -148,7 +149,25 @@ public:
 		VKO->swapChainExtent = extent;
 	}
 	
-	void recreateSwapChain(BufferManager vkBuffer) {
+	inline void createDescriptorSetLayout() {
+		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(VKO->device, &layoutInfo, nullptr, &VKO->descriptorSetLayout) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create descriptor set layout!");
+		}
+	}
+
+	inline void recreateSwapChain(BufferManager vkBuffer) {
 		int width = 0, height = 0;
 		while (width == 0 || height == 0) {
 			glfwGetFramebufferSize(VKO->window, &width, &height);
@@ -167,7 +186,7 @@ public:
 		vkBuffer.createCommandBuffers();
 	}
 
-	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes) {
+	inline VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes) {
 		VkPresentModeKHR bestMode = VK_PRESENT_MODE_FIFO_KHR;
 
 		for (const auto& availablePresentMode : availablePresentModes) {
@@ -181,7 +200,7 @@ public:
 
 		return bestMode;
 	}
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+	inline VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
 		if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
 			return { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 		}
@@ -194,7 +213,7 @@ public:
 
 		return availableFormats[0];
 	}
-	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+	inline VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
 		if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
 			return capabilities.currentExtent;
 		}

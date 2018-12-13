@@ -1,16 +1,18 @@
 
 #pragma once
 #include "VK_Object.h"
+#include "BufferManager.h"
 
 class VK_Device
 {
 private:
 	VK_Object* VKO;
 
+
 public:
 	VkInstance instance;
-	
-	VK_Device(VK_Object& vk_Object) 
+
+	VK_Device(VK_Object& vk_Object)
 	{
 		VKO = &vk_Object;
 	};
@@ -82,23 +84,6 @@ public:
 		vkGetDeviceQueue(VKO->device, indices.presentFamily.value(), 0, &VKO->presentQueue);
 	}
 
-	void createDescriptorSetLayout() {
-		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.pImmutableSamplers = nullptr;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
-
-		if (vkCreateDescriptorSetLayout(VKO->device, &layoutInfo, nullptr, &VKO->descriptorSetLayout) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor set layout!");
-		}
-	}
 	void createCommandPool() {
 		QueueFamilyIndices queueFamilyIndices = VKO->findQueueFamilies(VKO->physicalDevice);
 
@@ -119,41 +104,10 @@ public:
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = 1;
 		poolInfo.pPoolSizes = &poolSize;
-		poolInfo.maxSets = static_cast<uint32_t>(VKO->swapChainImages.size());
+		poolInfo.maxSets = static_cast<uint32_t>(VKO->swapChainImages.size())*30;
 
 		if (vkCreateDescriptorPool(VKO->device, &poolInfo, nullptr, &VKO->descriptorPool) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create descriptor pool!");
-		}
-	}
-	void createDescriptorSets() {
-		std::vector<VkDescriptorSetLayout> layouts(VKO->swapChainImages.size(), VKO->descriptorSetLayout);
-		VkDescriptorSetAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = VKO->descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(VKO->swapChainImages.size());
-		allocInfo.pSetLayouts = layouts.data();
-
-		VKO->descriptorSets.resize(VKO->swapChainImages.size());
-		if (vkAllocateDescriptorSets(VKO->device, &allocInfo, VKO->descriptorSets.data()) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
-		}
-
-		for (size_t i = 0; i < VKO->swapChainImages.size(); i++) {
-			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = VKO->uniformBuffers[i];
-			bufferInfo.offset = 0;
-			bufferInfo.range = sizeof(UniformBufferObject);
-
-			VkWriteDescriptorSet descriptorWrite = {};
-			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrite.dstSet = VKO->descriptorSets[i];
-			descriptorWrite.dstBinding = 0;
-			descriptorWrite.dstArrayElement = 0;
-			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			descriptorWrite.descriptorCount = 1;
-			descriptorWrite.pBufferInfo = &bufferInfo;
-
-			vkUpdateDescriptorSets(VKO->device, 1, &descriptorWrite, 0, nullptr);
 		}
 	}
 

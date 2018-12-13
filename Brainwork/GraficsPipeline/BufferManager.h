@@ -8,13 +8,22 @@ private:
 	VK_Object* VKO;
 
 public:
-	std::vector<BufferObject> bufferObjects; 
-	
+
+	std::vector<BufferObject> bufferObjects;
+
 	BufferManager(VK_Object& vk_Object)
 	{
 		VKO = &vk_Object;
 	}
-	
+
+
+	void UpdateUniformBuffers(uint32_t currentImage)
+	{
+		for (size_t i = 0; i < bufferObjects.size(); ++i)
+		{
+			bufferObjects[i].updateUniformBuffer(currentImage);
+		}
+	}
 
 	void createGraphicsPipeline() {
 		auto vertShaderCode = readFile("shaders/vert.spv");
@@ -155,19 +164,30 @@ public:
 			}
 		}
 	}
-
-	void createBufferObject() 
+	void CreateBufferObjects()
 	{
-		bufferObjects.push_back(BufferObject(*VKO));
-		//bufferObjects.push_back(BufferObject(*VKO));
+		int u = 0;
+		for (int i = 0; i < 5; ++i)
+		{
+			for (int ii = 0; ii < 5; ++ii)
+			{
+				bufferObjects.push_back(BufferObject(*VKO));
+				bufferObjects[u].gameObject.m_matrix[3][0] = ii * 1.2f;
+				bufferObjects[u].gameObject.m_matrix[3][1] = i * 1.2f;
+				++u;
+			}
+		}
+	}
+	void CreateDescriptorSets()
+	{
+		for (size_t i = 0; i < bufferObjects.size(); ++i)
+		{
+			bufferObjects[i].createDescriptorSets();
+		}
 	}
 
-	void UpdateUniformBuffers(uint32_t currentImage) 
-	{
-		bufferObjects[0].updateUniformBuffer(currentImage);
-		//bufferObjects[1].updateUniformBuffer(currentImage);
-	}
 	void createCommandBuffers() {
+
 		VKO->commandBuffers.resize(VKO->swapChainFramebuffers.size());
 
 		VkCommandBufferAllocateInfo allocInfo = {};
@@ -181,6 +201,7 @@ public:
 		}
 
 		for (size_t i = 0; i < VKO->commandBuffers.size(); i++) {
+
 			VkCommandBufferBeginInfo beginInfo = {};
 			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
@@ -204,15 +225,21 @@ public:
 
 			vkCmdBindPipeline(VKO->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VKO->graphicsPipeline);
 
-			VkBuffer vertexBuffers[] = { bufferObjects[0].vertexBuffer };
-			VkDeviceSize offsets[] = { 0 };
-			vkCmdBindVertexBuffers(VKO->commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-			vkCmdBindIndexBuffer(VKO->commandBuffers[i], bufferObjects[0].indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+			for (size_t ii = 0; ii < bufferObjects.size(); ++ii)
+			{
 
-			vkCmdBindDescriptorSets(VKO->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VKO->pipelineLayout, 0, 1, &VKO->descriptorSets[i], 0, nullptr);
+				VkBuffer vertexBuffers[] = { bufferObjects[ii].vertexBuffer };
+				VkDeviceSize offsets[] = { 0 };
+				vkCmdBindVertexBuffers(VKO->commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-			vkCmdDrawIndexed(VKO->commandBuffers[i], static_cast<uint32_t>(bufferObjects[0].gameObject.getIndices().size()), 1, 0, 0, 0);
+				vkCmdBindIndexBuffer(VKO->commandBuffers[i], bufferObjects[ii].indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+				vkCmdBindDescriptorSets(VKO->commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VKO->pipelineLayout, 0, 1, &bufferObjects[ii].descriptorSets[i], 0, nullptr);
+
+				vkCmdDrawIndexed(VKO->commandBuffers[i], static_cast<uint32_t>(bufferObjects[ii].gameObject.getIndices().size()), 1, 0, 0, 0);
+			}
+
 
 			vkCmdEndRenderPass(VKO->commandBuffers[i]);
 
@@ -223,6 +250,13 @@ public:
 
 	}
 
+	void cleanUpBuffers()
+	{
+		for (size_t i = 0; i < bufferObjects.size(); ++i)
+		{
+			bufferObjects[i].cleanup();
+		}
+	}
 
 	static std::vector<char> readFile(const std::string& filename) {
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);

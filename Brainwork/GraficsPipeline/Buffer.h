@@ -3,21 +3,32 @@
 #include "VK_Object.h"
 #include "Camera.h"
 #include "GameObject.h"
-#include "Cube.h"
-#include "Plane.h"
+
 
 class Buffer
 {
-private:
+protected:
+
 	VK_Object* VKO;
 
+	std::vector<VkBuffer> uniformBuffers;
+
+	VkDeviceMemory vertexBufferMemory;
+	VkDeviceMemory indexBufferMemory;
+	std::vector<VkDeviceMemory> uniformBuffersMemory;
+
 public:
+	
+
+	VkBuffer indexBuffer;
+	VkBuffer vertexBuffer;
+	std::vector<VkDescriptorSet> descriptorSets;
+
 	Buffer(VK_Object& vko) {
 		VKO = &vko;
 	}
-	~Buffer();
 
-	void createVertexBuffer(std::vector<Vertex> vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory) {
+	void createVertexBuffer(std::vector<Vertex> vertices) {
 		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
 		VkBuffer stagingBuffer;
@@ -36,7 +47,7 @@ public:
 		vkDestroyBuffer(VKO->device, stagingBuffer, nullptr);
 		vkFreeMemory(VKO->device, stagingBufferMemory, nullptr);
 	}
-	void createIndexBuffer(std::vector<uint16_t> indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory) {
+	void createIndexBuffer(std::vector<uint16_t> indices) {
 		VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
 		VkBuffer stagingBuffer;
@@ -58,12 +69,45 @@ public:
 	void createUniformBuffers() {
 
 		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-		VKO->uniformBuffers.resize(VKO->swapChainImages.size());
-		VKO->uniformBuffersMemory.resize(VKO->swapChainImages.size());
+		uniformBuffers.resize(VKO->swapChainImages.size());
+		uniformBuffersMemory.resize(VKO->swapChainImages.size());
 
 		for (size_t i = 0; i < VKO->swapChainImages.size(); i++) {
-			createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, VKO->uniformBuffers[i], VKO->uniformBuffersMemory[i]);
+			createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
 		}
+	}
+
+	void createDescriptorSets() {
+		std::vector<VkDescriptorSetLayout> layouts(VKO->swapChainImages.size(), VKO->descriptorSetLayout);
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = VKO->descriptorPool;
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(VKO->swapChainImages.size());
+		allocInfo.pSetLayouts = layouts.data();
+
+		descriptorSets.resize(VKO->swapChainImages.size());
+		if (vkAllocateDescriptorSets(VKO->device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate descriptor sets!");
+		}
+
+		for (size_t i = 0; i < VKO->swapChainImages.size(); i++) {
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = uniformBuffers[i];
+			bufferInfo.offset = 0;
+			bufferInfo.range  = sizeof(UniformBufferObject);
+
+			VkWriteDescriptorSet descriptorWrite = {};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = descriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			vkUpdateDescriptorSets(VKO->device, 1, &descriptorWrite, 0, nullptr);
+		}
+
 	}
 
 	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {

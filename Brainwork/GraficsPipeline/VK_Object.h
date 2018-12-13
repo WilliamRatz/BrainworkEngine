@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 
 #include <BW_Math.h>
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -85,19 +84,16 @@ public:
 	std::vector<VkFramebuffer> swapChainFramebuffers;
 
 	VkRenderPass renderPass;
-	VkDescriptorSetLayout descriptorSetLayout;
 	VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
 	VkCommandPool commandPool;
 
+	VkDescriptorSetLayout descriptorSetLayout;
+
 	
 
-	std::vector<VkBuffer> uniformBuffers;
-	std::vector<VkDeviceMemory> uniformBuffersMemory;
-
 	VkDescriptorPool descriptorPool;
-	std::vector<VkDescriptorSet> descriptorSets;
 
 	std::vector<VkCommandBuffer> commandBuffers;
 

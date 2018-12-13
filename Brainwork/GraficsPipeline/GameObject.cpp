@@ -1,6 +1,8 @@
 #include "GameObject.h"
 
 
+#pragma region GameObject
+
 
 GameObject::GameObject(Matrix<float, 4, 4>& p_model, std::vector<Vertex>& p_vertices, std::vector<uint16_t>& p_indices)
 {
@@ -100,3 +102,39 @@ std::vector<GameObject>& GameObject::getChildren()
 {
 	return  m_children;
 }
+#pragma endregion
+
+#pragma region Cube
+Cube::Cube()
+{
+}
+Cube::Cube(const Matrix<float, 4, 4>& p_defaultValue)
+{
+
+	m_model = p_defaultValue;
+}
+
+
+Cube::operator GameObject()
+{
+	return GameObject(m_model, m_vertices, m_indices);
+}
+
+#pragma endregion
+
+#pragma region Plane
+Plane::Plane()
+{
+}
+
+Plane::Plane(const Matrix<float, 4, 4>& p_defaultValue)
+{
+	m_model = p_defaultValue;
+}
+
+Plane::operator GameObject()
+{
+	return GameObject(m_model, m_vertices, m_indices);
+}
+
+#pragma endregion
