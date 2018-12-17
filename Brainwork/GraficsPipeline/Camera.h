@@ -16,19 +16,16 @@ private:
 	
 
 public:
+	Camera				();
+	Camera				(const Camera& cam);
+	~Camera				();
+
 	Matrix<float, 4, 4> mat;
-	float moveSpeed = 0.01f;
-
+	float				moveSpeed = 0.01f;
 	
-	static void CameraUpdate(GLFWwindow *window);
-
-	static Camera getViewCamera;
-
-	Camera();
-	Camera(const Camera& cam);
-	~Camera();
-
-	void SetCameraToWindow(GLFWwindow* window);
+	static void			CameraUpdate(GLFWwindow *window);
+	static				Camera getViewCamera;
+	void				SetCameraToWindow(GLFWwindow* window);
 };
 
 #endif // !CAMERA_H

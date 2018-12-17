@@ -17,14 +17,6 @@ bool Controls::MOUSE_RIGHT_PRESSING = false;
 double Controls::CURSOR_POS_X = 0.0;
 double Controls::CURSOR_POS_Y = 0.0;
 
-Controls::Controls()
-{
-}
-
-Controls::~Controls()
-{
-}
-
 void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	if (action == GLFW_PRESS)

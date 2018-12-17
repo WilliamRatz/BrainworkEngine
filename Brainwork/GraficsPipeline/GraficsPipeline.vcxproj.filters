@@ -34,12 +34,12 @@
     <Filter Include="Vulkan_1.1\Render\Buffer">
       <UniqueIdentifier>{ac77c038-9621-453f-8c4d-359c34e240aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan_1.1\SceneObjects\Camera">
+      <UniqueIdentifier>{92b85661-5edc-4c2f-a1f0-0c1d69caa47e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VK_Device.cpp">
-      <Filter>Vulkan_1.1\Render\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="VK_Object.cpp">
       <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
     <ClCompile Include="VK_SwapChain.cpp">
@@ -51,30 +51,33 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Objects.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="BufferObject.cpp">
+    <ClCompile Include="Camera.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Buffer.cpp">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
     </ClCompile>
-    <ClCompile Include="BufferManager.cpp">
+    <ClCompile Include="VK_BufferManager.cpp">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
+    <ClCompile Include="VK_BufferObject.cpp">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_Renderer.cpp">
+      <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VK_Device.h">
-      <Filter>Vulkan_1.1\Render\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="VK_Object.h">
       <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
     <ClInclude Include="VK_SwapChain.h">
@@ -83,23 +86,32 @@
     <ClInclude Include="VK_Window.h">
       <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Controls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Objects.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Vulkan_1.1\SceneObjects</Filter>
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="BufferObject.h">
+    <ClInclude Include="Camera.h">
+      <Filter>Vulkan_1.1\SceneObjects\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_Buffer.h">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="BufferManager.h">
+    <ClInclude Include="VK_BufferManager.h">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer.h">
+    <ClInclude Include="VK_BufferObject.h">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_inc.h">
+      <Filter>Vulkan_1.1\Render\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_Renderer.h">
+      <Filter>Vulkan_1.1\Render\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

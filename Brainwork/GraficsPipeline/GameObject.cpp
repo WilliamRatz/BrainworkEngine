@@ -4,30 +4,18 @@
 #pragma region GameObject
 
 
-GameObject::GameObject(Matrix<float, 4, 4>& p_model, std::vector<Vertex>& p_vertices, std::vector<uint16_t>& p_indices)
+GameObject::GameObject(std::vector<Vertex>& p_vertices, std::vector<uint16_t>& p_indices)
 {
-	m_matrix = p_model;
 	m_vertices = p_vertices;
 	m_indices = p_indices;
 }
 
-//GameObject::GameObject(const Cube& p_cube)
-//{
-//	m_matrix = p_cube.m_model;
-//	m_vertices = p_cube.m_vertices;
-//	m_indices = p_cube.m_indices;
-//}
-//
-//GameObject::GameObject(const Plane & p_plane)
-//{
-//	m_matrix = p_plane.m_model;
-//	m_vertices = p_plane.m_vertices;
-//	m_indices = p_plane.m_indices;
-//}
-
 GameObject::GameObject(const GameObject& p_gameObject)
 {
-	m_matrix = p_gameObject.m_matrix;
+	globalMatrix = p_gameObject.globalMatrix;
+	localMatrix = p_gameObject.localMatrix;
+	m_parentObject = p_gameObject.m_parentObject;
+	m_children = p_gameObject.m_children;
 	m_vertices = p_gameObject.m_vertices;
 	m_indices = p_gameObject.m_indices;
 }
@@ -42,7 +30,7 @@ Matrix<float, 4, 4> GameObject::recalculateMatrix()
 
 	while (parent != NULL) 
 	{
-		m_matrix *= parent->m_matrix;
+		globalMatrix *= parent->globalMatrix;
 		parent = parent->m_parentObject;
 	}
 
@@ -51,7 +39,12 @@ Matrix<float, 4, 4> GameObject::recalculateMatrix()
 		child.recalculateMatrix();
 	}
 
-	return m_matrix;
+	return globalMatrix;
+}
+
+Matrix<float, 4, 4> GameObject::getGlobalMatrix()
+{
+	return localMatrix * globalMatrix;
 }
 
 void GameObject::setParent(GameObject* p_parentObject)
@@ -102,39 +95,4 @@ std::vector<GameObject>& GameObject::getChildren()
 {
 	return  m_children;
 }
-#pragma endregion
-
-#pragma region Cube
-Cube::Cube()
-{
-}
-Cube::Cube(const Matrix<float, 4, 4>& p_defaultValue)
-{
-
-	m_model = p_defaultValue;
-}
-
-
-Cube::operator GameObject()
-{
-	return GameObject(m_model, m_vertices, m_indices);
-}
-
-#pragma endregion
-
-#pragma region Plane
-Plane::Plane()
-{
-}
-
-Plane::Plane(const Matrix<float, 4, 4>& p_defaultValue)
-{
-	m_model = p_defaultValue;
-}
-
-Plane::operator GameObject()
-{
-	return GameObject(m_model, m_vertices, m_indices);
-}
-
 #pragma endregion

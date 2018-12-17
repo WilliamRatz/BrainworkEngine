@@ -159,27 +159,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Buffer.cpp" />
-    <ClCompile Include="BufferObject.cpp" />
+    <ClCompile Include="VK_Buffer.cpp" />
+    <ClCompile Include="VK_BufferObject.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="BufferManager.cpp" />
+    <ClCompile Include="VK_BufferManager.cpp" />
+    <ClCompile Include="Objects.cpp" />
+    <ClCompile Include="VK_Renderer.cpp" />
     <ClCompile Include="VK_Device.cpp" />
-    <ClCompile Include="VK_Object.cpp" />
     <ClCompile Include="VK_SwapChain.cpp" />
     <ClCompile Include="VK_Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Buffer.h" />
-    <ClInclude Include="BufferObject.h" />
+    <ClInclude Include="VK_Buffer.h" />
+    <ClInclude Include="VK_BufferObject.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="BufferManager.h" />
+    <ClInclude Include="VK_BufferManager.h" />
+    <ClInclude Include="Objects.h" />
+    <ClInclude Include="VK_Renderer.h" />
     <ClInclude Include="VK_Device.h" />
-    <ClInclude Include="VK_Object.h" />
+    <ClInclude Include="VK_inc.h" />
     <ClInclude Include="VK_SwapChain.h" />
     <ClInclude Include="VK_Window.h" />
   </ItemGroup>
