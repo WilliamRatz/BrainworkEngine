@@ -44,6 +44,7 @@ void VK_Device::CreateLogicalDevice() {
 	}
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -123,6 +124,9 @@ bool VK_Device::isDeviceSuitable(VkPhysicalDevice& device, VK_SwapChain& vk_Swap
 		SwapChainSupportDetails swapChainSupport = vk_SwapChain.querySwapChainSupport(device);
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
+
+	VkPhysicalDeviceFeatures supportedFeatures;
+	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
 	return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }

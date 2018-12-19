@@ -3,15 +3,22 @@
 #include "VK_Renderer.h"
 
 
-BufferObject::BufferObject(VK_Renderer& renderer)
-	:Buffer(renderer)
+VK_BufferObject::VK_BufferObject(VK_Renderer& renderer)
+	:VK_Buffer(renderer)
 {
+	texture.SetBuffer(*this);
+	texture.CreateTextureImage();
+	texture.CreateTextureImageViews();
+	texture.CreateTextureSampler();
 	this->createVertexBuffer(gameObject.getVertices());
 	this->createIndexBuffer(gameObject.getIndices());
 	this->createUniformBuffers();
-};
+}
+VK_BufferObject::~VK_BufferObject()
+{
+}
 
-void BufferObject::updateUniformBuffer(uint32_t currentImage) {
+void VK_BufferObject::updateUniformBuffer(uint32_t currentImage) {
 	static auto startTime = std::chrono::high_resolution_clock::now();
 
 	auto currentTime = std::chrono::high_resolution_clock::now();
@@ -19,7 +26,9 @@ void BufferObject::updateUniformBuffer(uint32_t currentImage) {
 
 	UniformBufferObject ubo = {};
 
-	//gameObject.m_matrix.rotation3DAroundZ(0.03f).rotation3DAroundY(-0.01f).rotation3DAroundX(0.02f);
+	//gameObject.localMatrix.rotation3DAroundZlocal(0.1f)/*.rotation3DAroundYlocal(0.15f).rotation3DAroundXlocal(0.05f)*/;
+
+
 	ubo.model = gameObject.getGlobalMatrix();
 	ubo.view = Camera::getViewCamera.mat;
 	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
@@ -31,7 +40,7 @@ void BufferObject::updateUniformBuffer(uint32_t currentImage) {
 	vkUnmapMemory(renderer->vk_device->device, uniformBuffersMemory[currentImage]);
 }
 
-void BufferObject::cleanup()
+void VK_BufferObject::cleanup()
 {
 
 	for (size_t i = 0; i < uniformBuffers.size(); ++i) {

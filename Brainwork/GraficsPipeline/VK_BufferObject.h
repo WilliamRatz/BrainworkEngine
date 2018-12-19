@@ -5,13 +5,16 @@
 
 class VK_Renderer;
 
-class BufferObject : public Buffer
+
+class VK_BufferObject : public VK_Buffer
 {
 public:
+	Texture						texture;
 	Cube						cube;
 	GameObject					gameObject = GameObject(cube);
 
-	BufferObject				(VK_Renderer& renderer);
+	VK_BufferObject				(VK_Renderer& renderer);
+	~VK_BufferObject			();
 
 	void updateUniformBuffer	(uint32_t currentImage);
 	

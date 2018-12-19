@@ -2,7 +2,7 @@
 #define GAMEOBJECT_H
 
 #include "Objects.h"
-
+#include "Texture.h"
 
 
 class GameObject

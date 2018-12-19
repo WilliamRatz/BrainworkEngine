@@ -15,6 +15,9 @@
 
 typeVector class Vector {
 
+private:
+	T elements[N];
+
 public:
 	//Standart Constructor
 	Vector();
@@ -26,7 +29,7 @@ public:
 	std::size_t size() { return N; }
 
 	T& operator[](const std::size_t index) {
-		if (index > N) {
+		if (index >= N) {
 			throw std::out_of_range("Indexüberschreitung!");
 		}
 		return elements[index];
@@ -38,18 +41,10 @@ public:
 		}
 		return elements[index];
 	}
-
-	T* begin() { return elements; }
-	T* end() { return elements + N; }
-	const T* begin() const { return elements; }
-	const T* end() const { return elements + N; }
-
-private:
-	T elements[N];
 };
 
 typeVector Vector<T,N>::Vector() {
-	for (std::size_t i = 0; i < N; i++) {
+	for (std::size_t i = 0; i < N; ++i) {
 		elements[i] = NULL;
 	}
 }

@@ -8,11 +8,13 @@ class GameObject;
 struct Vertex {
 	Quaternion pos;
 	Vector3 color;
+	Vector2 texCoord;
 
-	Vertex(float a1, float a2, float a3, float a4, float b1, float b2, float b3)
+	Vertex(Quaternion p_position, Vector3 p_color, Vector2 p_texCoord)
 	{
-		pos = Quaternion(a1, a2, a3, a4);
-		color = Vector3(b1, b2, b3);
+		pos = p_position;
+		color = p_color;
+		texCoord = p_texCoord;
 	}
 
 	static VkVertexInputBindingDescription getBindingDescription() {
@@ -24,8 +26,8 @@ struct Vertex {
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
@@ -37,6 +39,11 @@ struct Vertex {
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[1].offset = offsetof(Vertex, color);
 
+		attributeDescriptions[2].binding = 0;
+		attributeDescriptions[2].location = 2;
+		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
 		return attributeDescriptions;
 	}
 };
@@ -45,15 +52,15 @@ class Cube
 {
 private:
 	std::vector<Vertex> m_vertices{
-		Vertex(-0.5f, -0.5f,  0.5f, 1.0f,		1.0f, 0.0f, 0.0f),
-		Vertex(0.5f, -0.5f,  0.5f, 1.0f,		0.0f, 1.0f, 0.0f),
-		Vertex(0.5f,  0.5f,  0.5f, 1.0f,		0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f,  0.5f,  0.5f, 1.0f,		1.0f, 1.0f, 1.0f),
-
-		Vertex(-0.5f, -0.5f, -0.5f, 1.0f,		1.0f, 1.0f, 1.0f),
-		Vertex(0.5f, -0.5f, -0.5f, 1.0f,		0.0f, 0.0f, 1.0f),
-		Vertex(0.5f,  0.5f, -0.5f, 1.0f,		0.0f, 1.0f, 0.0f),
-		Vertex(-0.5f,  0.5f, -0.5f, 1.0f,		1.0f, 0.0f, 0.0f)
+		Vertex(Quaternion(-0.5f, -0.5f,  0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f,  0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f,  0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f,  0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f)),
+												   	
+		Vertex(Quaternion(-0.5f, -0.5f, -0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f, -0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f, -0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f, -0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 1.0f))
 	};
 	std::vector<uint16_t> m_indices{
 		3, 0, 1, 1, 2, 3, //front
@@ -74,10 +81,10 @@ class Plane
 {
 public:
 	std::vector<Vertex> m_vertices{
-		Vertex(-0.5f, -0.5f,  1.0f, 1.0f,		1.0f, 0.0f, 0.0f),
-		Vertex(0.5f, -0.5f,  1.0f, 1.0f,		0.0f, 1.0f, 0.0f),
-		Vertex(0.5f,  0.5f,  1.0f, 1.0f,		0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f,  0.5f,  1.0f, 1.0f,		1.0f, 1.0f, 1.0f),
+		Vertex(Quaternion(-0.5f, -0.5f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f, 1.0f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f, 1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f))
 	};
 	std::vector<uint16_t> m_indices{
 		0, 1, 2, 2, 3, 0
@@ -88,13 +95,13 @@ public:
 	operator GameObject();
 };
 
-class Sphere 
+class Sphere
 {
 	std::vector<Vertex> m_vertices{
-		Vertex(-0.5f, -0.5f,  1.0f, 1.0f,		1.0f, 0.0f, 0.0f),
-		Vertex(0.5f, -0.5f,  1.0f, 1.0f,		0.0f, 1.0f, 0.0f),
-		Vertex(0.5f,  0.5f,  1.0f, 1.0f,		0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f,  0.5f,  1.0f, 1.0f,		1.0f, 1.0f, 1.0f),
+		Vertex(Quaternion(-0.5f, -0.5f,  1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f,  1.0f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f,  1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f,  1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f))
 	};
 	std::vector<uint16_t> m_indices{
 		0, 1, 2, 2, 3, 0
@@ -108,10 +115,10 @@ class Sphere
 class Capsule
 {
 	std::vector<Vertex> m_vertices{
-		Vertex(-0.5f, -0.5f,  1.0f, 1.0f,		1.0f, 0.0f, 0.0f),
-		Vertex(0.5f, -0.5f,  1.0f, 1.0f,		0.0f, 1.0f, 0.0f),
-		Vertex(0.5f,  0.5f,  1.0f, 1.0f,		0.0f, 0.0f, 1.0f),
-		Vertex(-0.5f,  0.5f,  1.0f, 1.0f,		1.0f, 1.0f, 1.0f),
+		Vertex(Quaternion(-0.5f, -0.5f,  1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f,  1.0f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f,  1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f,  1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f))
 	};
 	std::vector<uint16_t> m_indices{
 		0, 1, 2, 2, 3, 0

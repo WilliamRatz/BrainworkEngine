@@ -44,7 +44,7 @@ Matrix<float, 4, 4> GameObject::recalculateMatrix()
 
 Matrix<float, 4, 4> GameObject::getGlobalMatrix()
 {
-	return localMatrix * globalMatrix;
+	return (localMatrix * globalMatrix).transpose();
 }
 
 void GameObject::setParent(GameObject* p_parentObject)

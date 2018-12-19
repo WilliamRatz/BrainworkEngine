@@ -37,8 +37,8 @@ void VK_Window::initVulkan() {
 	renderer.CreateGraphicsPipeline();
 	vk_SwapChain.CreateFramebuffers(renderer);
 	renderer.CreateCommandPool();
-	renderer.CreateDescriptorPool();
 	vk_Buffer.CreateBufferObjects();
+	renderer.CreateDescriptorPool();
 
 	vk_Buffer.CreateDescriptorSets();
 	vk_Buffer.CreateCommandBuffers();
@@ -121,7 +121,6 @@ void VK_Window::drawFrame() {
 
 void VK_Window::cleanup() {
 	vk_SwapChain.CleanupSwapChain(renderer);
-
 	vkDestroyDescriptorPool(vk_Device.device, renderer.descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(vk_Device.device, renderer.descriptorSetLayout, nullptr);
 

@@ -10,11 +10,10 @@ class VK_Renderer
 {
 public:
 	VK_Device*				vk_device;
-	VK_SwapChain*			vk_SwapChain;
+	VK_SwapChain*			vk_swapChain;
 
 public:
 	VK_Renderer				(VK_Device& p_vk_device, VK_SwapChain& p_vk_SwapChain);
-
 	VkPipeline				graphicsPipeline;
 	VkPipelineLayout		pipelineLayout;
 

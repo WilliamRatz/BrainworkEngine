@@ -75,6 +75,12 @@
     <ClCompile Include="VK_Renderer.cpp">
       <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VK_Device.h">
@@ -107,11 +113,17 @@
     <ClInclude Include="VK_BufferObject.h">
       <Filter>Vulkan_1.1\Render\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="VK_inc.h">
-      <Filter>Vulkan_1.1\Render\Header</Filter>
-    </ClInclude>
     <ClInclude Include="VK_Renderer.h">
       <Filter>Vulkan_1.1\Render\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_inc.h">
+      <Filter>Vulkan_1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

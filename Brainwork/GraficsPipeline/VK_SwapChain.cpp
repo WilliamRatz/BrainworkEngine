@@ -106,6 +106,12 @@ void VK_SwapChain::CreateFramebuffers(VK_Renderer& renderer) {
 	}
 }
 
+void VK_SwapChain::CreateDepthResources()
+{
+	VkFormat depthFormat = findDepthFormat();
+
+}
+
 void VK_SwapChain::RecreateSwapChain(GLFWwindow* window, VK_BufferManager& vkBuffer, VK_Renderer& renderer) {
 	int width = 0, height = 0;
 	while (width == 0 || height == 0) {
@@ -129,6 +135,7 @@ void  VK_SwapChain::CleanupSwapChain(VK_Renderer renderer) {
 	for (auto framebuffer : swapChainFramebuffers) {
 		vkDestroyFramebuffer(vk_device->device, framebuffer, nullptr);
 	}
+
 	//clean up in buffer Manager
 	//vkFreeCommandBuffers(vk_device->device, renderer.commandPool, static_cast<uint32_t>(renderer.commandBuffers.size()), VKO->commandBuffers.data());
 
@@ -232,5 +239,37 @@ SwapChainSupportDetails VK_SwapChain::querySwapChainSupport(VkPhysicalDevice dev
 	}
 
 	return details;
+}
+
+bool VK_SwapChain::isFormatSupported(VkFormat format, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+		VkFormatProperties formatProperties;
+		vkGetPhysicalDeviceFormatProperties(vk_device->physicalDevice, format, &formatProperties);
+		if (tiling == VK_IMAGE_TILING_LINEAR && (formatProperties.linearTilingFeatures & features) == features) {
+			return true;
+		}
+		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (formatProperties.optimalTilingFeatures & features) == features) {
+			return true;
+		}
+		return false;
+}
+
+VkFormat VK_SwapChain::findSupportedFormat(const std::vector<VkFormat>& formats, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+	for (VkFormat format : formats)
+	{
+		if (isFormatSupported(format, tiling, features))
+			return format;
+	}
+	throw std::runtime_error("No supported format found!");
+}
+
+VkFormat VK_SwapChain::findDepthFormat()
+{
+	return findSupportedFormat(
+		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+	);
 }
 
