@@ -6,10 +6,6 @@
 VK_BufferObject::VK_BufferObject(VK_Renderer& renderer)
 	:VK_Buffer(renderer)
 {
-	texture.SetBuffer(*this);
-	texture.CreateTextureImage();
-	texture.CreateTextureImageViews();
-	texture.CreateTextureSampler();
 	this->createVertexBuffer(gameObject.getVertices());
 	this->createIndexBuffer(gameObject.getIndices());
 	this->createUniformBuffers();

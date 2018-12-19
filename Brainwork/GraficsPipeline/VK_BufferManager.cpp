@@ -20,13 +20,11 @@ void VK_BufferManager::UpdateUniformBuffers(uint32_t currentImage)
 void VK_BufferManager::CreateBufferObjects()
 {
 	int u = 0;
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
-		for (int ii = 0; ii < 1; ++ii)
+		for (int ii = 0; ii < 5; ++ii)
 		{
 			bufferObjects.push_back(VK_BufferObject(*renderer));
-			bufferObjects[u].texture.CreateTextureImageViews();
-			bufferObjects[u].texture.CreateTextureSampler();
 			bufferObjects[u].gameObject.localMatrix[0][3] = ii * 1.2f;
 			bufferObjects[u].gameObject.localMatrix[1][3] = i * 1.2f;
 			++u;

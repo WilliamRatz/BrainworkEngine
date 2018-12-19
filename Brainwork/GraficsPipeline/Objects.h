@@ -52,15 +52,15 @@ class Cube
 {
 private:
 	std::vector<Vertex> m_vertices{
-		Vertex(Quaternion(-0.5f, -0.5f,  0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)),
-		Vertex(Quaternion(+0.5f, -0.5f,  0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
-		Vertex(Quaternion(+0.5f,  0.5f,  0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
-		Vertex(Quaternion(-0.5f,  0.5f,  0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f)),
+		Vertex(Quaternion(-0.5f, -0.5f,  0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f,  0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(1.0f, 1.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f,  0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(1.0f, 0.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f,  0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(0.0f, 0.0f)),
 												   	
-		Vertex(Quaternion(-0.5f, -0.5f, -0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 0.0f)),
-		Vertex(Quaternion(+0.5f, -0.5f, -0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 0.0f)),
-		Vertex(Quaternion(+0.5f,  0.5f, -0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 1.0f)),
-		Vertex(Quaternion(-0.5f,  0.5f, -0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 1.0f))
+		Vertex(Quaternion(-0.5f, -0.5f, -0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f, -0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f, -0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f, -0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f))
 	};
 	std::vector<uint16_t> m_indices{
 		3, 0, 1, 1, 2, 3, //front
@@ -81,10 +81,10 @@ class Plane
 {
 public:
 	std::vector<Vertex> m_vertices{
-		Vertex(Quaternion(-0.5f, -0.5f, 1.0f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 0.0f)),
-		Vertex(Quaternion(+0.5f, -0.5f, 1.0f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 0.0f)),
-		Vertex(Quaternion(+0.5f,  0.5f, 1.0f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 1.0f)),
-		Vertex(Quaternion(-0.5f,  0.5f, 1.0f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 1.0f))
+		Vertex(Quaternion(-0.5f, -0.5f, -0.5f, 1.0f),	Vector3(1.0f, 0.0f, 0.0f),	Vector2(1.0f, 1.0f)),
+		Vertex(Quaternion(+0.5f, -0.5f, -0.5f, 1.0f),	Vector3(0.0f, 1.0f, 0.0f),	Vector2(0.0f, 1.0f)),
+		Vertex(Quaternion(+0.5f,  0.5f, -0.5f, 1.0f),	Vector3(0.0f, 0.0f, 1.0f),	Vector2(0.0f, 0.0f)),
+		Vertex(Quaternion(-0.5f,  0.5f, -0.5f, 1.0f),	Vector3(1.0f, 1.0f, 1.0f),	Vector2(1.0f, 0.0f))
 	};
 	std::vector<uint16_t> m_indices{
 		0, 1, 2, 2, 3, 0

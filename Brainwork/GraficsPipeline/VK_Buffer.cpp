@@ -58,6 +58,13 @@ void VK_Buffer::createUniformBuffers() {
 }
 
 void VK_Buffer::createDescriptorSets(Texture& texture) {
+
+	texture.SetBuffer(*this);
+
+	texture.CreateTextureImage();
+	texture.CreateTextureImageViews();
+	texture.CreateTextureSampler();
+
 	std::vector<VkDescriptorSetLayout> layouts(renderer->vk_swapChain->swapChainImages.size(), renderer->descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
