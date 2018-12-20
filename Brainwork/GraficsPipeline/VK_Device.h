@@ -52,8 +52,9 @@ public:
 
 	std::vector<const char*>			getRequiredExtensions();
 
-	bool checkValidationLayerSupport();
-	void SetupDebugCallback();
+	uint32_t												findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	bool checkValidationLayerSupport						();
+	void SetupDebugCallback									();
 	VkResult CreateDebugUtilsMessengerEXT					(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback);
 	void DestroyDebugUtilsMessengerEXT						(VkInstance instance, VkDebugUtilsMessengerEXT callback, const VkAllocationCallbacks* pAllocator);
 	QueueFamilyIndices findQueueFamilies					(VkPhysicalDevice device);

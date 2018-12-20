@@ -13,10 +13,8 @@ public:
 	VK_SwapChain*			vk_swapChain;
 
 public:
-	VK_Renderer				(VK_Device& p_vk_device, VK_SwapChain& p_vk_SwapChain);
-	VkPipeline				graphicsPipeline;
-	VkPipelineLayout		pipelineLayout;
-
+	VK_Renderer				(VK_SwapChain& vk_swapChain);
+	
 	VkRenderPass			renderPass;
 
 	VkDescriptorPool		descriptorPool;
@@ -25,16 +23,14 @@ public:
 
 	
 	void CreateRenderPass				();
-	void CreateGraphicsPipeline			();
+	void CreateFramebuffers				();
 
 	void CreateDescriptorSetLayout		();
-
 	void CreateDescriptorPool			();
 	void CreateCommandPool				();
 
-	static std::vector<char> readFile	(const std::string& filename);
-	VkShaderModule createShaderModule	(const std::vector<char>& code);
-
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 };
 
 #endif // !VK_RENDERER_H

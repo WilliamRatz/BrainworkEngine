@@ -5,6 +5,7 @@
 #include "VK_Renderer.h"
 #include "VK_SwapChain.h"
 #include "VK_BufferManager.h"
+#include "VK_GraphicsPipeline.h"
 
 class VK_Window
 {
@@ -19,10 +20,11 @@ private:
 	bool			framebufferResized	= false;
 	Camera			cam;
 
-	VK_Device		vk_Device			= VK_Device();
-	VK_SwapChain	vk_SwapChain		= VK_SwapChain(vk_Device);
-	VK_Renderer		renderer			= VK_Renderer(vk_Device, vk_SwapChain);
-	VK_BufferManager	vk_Buffer			= VK_BufferManager(renderer);
+	VK_Device			vk_Device			= VK_Device();
+	VK_SwapChain		vk_swapChain		= VK_SwapChain(vk_Device);
+	VK_Renderer			vk_renderer			= VK_Renderer(vk_swapChain);
+	VK_BufferManager	vk_bufferManager	= VK_BufferManager(vk_renderer);
+	VK_GraphicsPipeline vk_graphicsPipeline = VK_GraphicsPipeline(vk_renderer);
 	
 
 	void			initWindow();

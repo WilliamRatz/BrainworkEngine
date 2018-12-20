@@ -15,10 +15,10 @@ struct SwapChainSupportDetails {
 
 class VK_SwapChain
 {
-private:
-	VK_Device*					vk_device;
+public:
 
 public:
+	VK_Device*					vk_device;
 	VK_SwapChain				(VK_Device& p_vk_device);
 
 	VkSwapchainKHR				swapChain;
@@ -35,24 +35,25 @@ public:
 	std::vector<VkFence>		inFlightFences;
 	const int					MAX_FRAMES_IN_FLIGHT = 2;
 
+	void CreateImage			(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	void CreateImageViews		();
 	void CreateSwapChain		(GLFWwindow* window);
-	void CreateFramebuffers		(VK_Renderer& renderer);
-	void CreateDepthResources	();
+	void CreateDepthResources	(VK_Renderer& renderer);
 
-	void RecreateSwapChain		(GLFWwindow* window, VK_BufferManager& vkBuffer, VK_Renderer& renderer);
-	void CleanupSwapChain		(VK_Renderer renderer);
 
 	void CreateSyncObjects		();
 
+	void TransitionImageLayout	(VK_Renderer& renderer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+	VkImageView				CreateImageView			(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	VkPresentModeKHR		ChooseSwapPresentMode	(const std::vector<VkPresentModeKHR> availablePresentModes);
 	VkSurfaceFormatKHR		ChooseSwapSurfaceFormat	(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 	VkExtent2D				ChooseSwapExtent		(GLFWwindow* window, const VkSurfaceCapabilitiesKHR& capabilities);
 	SwapChainSupportDetails querySwapChainSupport	(VkPhysicalDevice device);
-	bool					isFormatSupported		(VkFormat format, VkImageTiling tiling, VkFormatFeatureFlags features);
 	VkFormat				findSupportedFormat		(const std::vector<VkFormat>& formats, VkImageTiling tiling, VkFormatFeatureFlags features);
 	VkFormat				findDepthFormat			();
-	bool					isStencilFormat			(VkFormat format) {
+	bool					isFormatSupported		(VkFormat format, VkImageTiling tiling, VkFormatFeatureFlags features);
+	bool					HasStencilComponent		(VkFormat format) {
 		return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 	}
 

@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VK_Buffer.cpp" />
@@ -169,12 +170,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="VK_BufferManager.cpp" />
     <ClCompile Include="Objects.cpp" />
+    <ClCompile Include="VK_GraphicsPipeline.cpp" />
     <ClCompile Include="VK_Renderer.cpp" />
     <ClCompile Include="VK_Device.cpp" />
     <ClCompile Include="VK_SwapChain.cpp" />
     <ClCompile Include="VK_Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VK_Buffer.h" />
@@ -184,11 +187,18 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="VK_BufferManager.h" />
     <ClInclude Include="Objects.h" />
+    <ClInclude Include="VK_GraphicsPipeline.h" />
     <ClInclude Include="VK_Renderer.h" />
     <ClInclude Include="VK_Device.h" />
     <ClInclude Include="VK_inc.h" />
     <ClInclude Include="VK_SwapChain.h" />
     <ClInclude Include="VK_Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\TexturedShader.frag" />
+    <None Include="shaders\TexturedFrag.spv" />
+    <None Include="shaders\TexturedShader.vert" />
+    <None Include="shaders\TexturedVert.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

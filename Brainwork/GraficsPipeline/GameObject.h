@@ -2,12 +2,14 @@
 #define GAMEOBJECT_H
 
 #include "Objects.h"
-#include "Texture.h"
+#include "Material.h"
 
 
 class GameObject
 {
 private:
+	Material					material;
+
 	std::vector<Vertex>			m_vertices;
 	std::vector<uint16_t>		m_indices;
 	

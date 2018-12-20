@@ -10,7 +10,7 @@ class VK_BufferObject : public VK_Buffer
 {
 public:
 	Texture						texture;
-	Cube						cube;
+	Plane						cube;
 	GameObject					gameObject = GameObject(cube);
 
 	VK_BufferObject				(VK_Renderer& renderer);

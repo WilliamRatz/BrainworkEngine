@@ -4,6 +4,7 @@
 #include "VK_BufferObject.h"
 
 class VK_Renderer;
+class VK_GraphicsPipeline;
 
 class VK_BufferManager
 {
@@ -20,7 +21,7 @@ public:
 
 	void CreateBufferObjects		();
 	void CreateDescriptorSets		();
-	void CreateCommandBuffers		();
+	void CreateCommandBuffers		(VK_GraphicsPipeline& vk_graphicsPipeline);
 
 	void CleanUpBuffers				();
 };

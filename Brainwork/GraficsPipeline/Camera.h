@@ -21,7 +21,7 @@ public:
 	~Camera				();
 
 	Matrix<float, 4, 4> mat;
-	float				moveSpeed = 0.01f;
+	float				moveSpeed = 0.001f;
 	
 	static void			CameraUpdate(GLFWwindow *window);
 	static				Camera getViewCamera;

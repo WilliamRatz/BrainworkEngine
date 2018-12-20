@@ -37,6 +37,12 @@
     <Filter Include="Vulkan_1.1\SceneObjects\Camera">
       <UniqueIdentifier>{92b85661-5edc-4c2f-a1f0-0c1d69caa47e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan_1.1\VK_Shader">
+      <UniqueIdentifier>{c5a19956-54b4-4a80-b346-381f3c1348ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan_1.1\SceneObjects\Objects\Material">
+      <UniqueIdentifier>{4dc0a52f-d96a-4744-8410-e4d9e5fea4c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VK_Device.cpp">
@@ -57,9 +63,6 @@
     <ClCompile Include="Objects.cpp">
       <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Vulkan_1.1\SceneObjects\Camera</Filter>
     </ClCompile>
@@ -75,11 +78,20 @@
     <ClCompile Include="VK_Renderer.cpp">
       <Filter>Vulkan_1.1\Render\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="VK_GraphicsPipeline.cpp">
+      <Filter>Vulkan_1.1\Render\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects\Material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,9 +108,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects.h">
-      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
       <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -119,11 +128,34 @@
     <ClInclude Include="VK_inc.h">
       <Filter>Vulkan_1.1</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Vulkan_1.1\SceneObjects\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Vulkan_1.1\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="VK_GraphicsPipeline.h">
+      <Filter>Vulkan_1.1\Render\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects\Material</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\TexturedFrag.spv">
+      <Filter>Vulkan_1.1\VK_Shader</Filter>
+    </None>
+    <None Include="shaders\TexturedShader.frag">
+      <Filter>Vulkan_1.1\VK_Shader</Filter>
+    </None>
+    <None Include="shaders\TexturedShader.vert">
+      <Filter>Vulkan_1.1\VK_Shader</Filter>
+    </None>
+    <None Include="shaders\TexturedVert.spv">
+      <Filter>Vulkan_1.1\VK_Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
