@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\ModelLib;$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\ModelLib;$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -125,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\ModelLib;$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -146,7 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\ModelLib;$(SolutionDir)BW_MathLib;$(SolutionDir)External\ImageLib;$(SolutionDir)External\GLFW64\include;$(VULKAN_SDK)\Include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -162,13 +162,12 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VK_Buffer.cpp" />
     <ClCompile Include="VK_BufferObject.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controls.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="VK_BufferManager.cpp" />
+    <ClCompile Include="VK_GameObjectManager.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="VK_GraphicsPipeline.cpp" />
     <ClCompile Include="VK_Renderer.cpp" />
@@ -180,12 +179,11 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="VK_Buffer.h" />
     <ClInclude Include="VK_BufferObject.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controls.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="VK_BufferManager.h" />
+    <ClInclude Include="VK_GameObjectManager.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="VK_GraphicsPipeline.h" />
     <ClInclude Include="VK_Renderer.h" />

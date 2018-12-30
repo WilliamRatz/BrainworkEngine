@@ -25,8 +25,8 @@ public:
 	void CreateRenderPass				();
 	void CreateFramebuffers				();
 
-	void CreateDescriptorSetLayout		();
-	void CreateDescriptorPool			();
+	void CreateDescriptorSetLayouts		();
+	void CreateDescriptorPools			();
 	void CreateCommandPool				();
 
 	VkCommandBuffer beginSingleTimeCommands();

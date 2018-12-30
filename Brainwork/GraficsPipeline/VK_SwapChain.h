@@ -1,8 +1,7 @@
 #ifndef VK_SWAPCHAIN_H
 #define VK_SWAPCHAIN_H
 
-#include "VK_BufferManager.h"
-#include "VK_Renderer.h"
+#include "VK_inc.h"
 
 class VK_Device;
 class VK_Renderer;
@@ -15,8 +14,6 @@ struct SwapChainSupportDetails {
 
 class VK_SwapChain
 {
-public:
-
 public:
 	VK_Device*					vk_device;
 	VK_SwapChain				(VK_Device& p_vk_device);

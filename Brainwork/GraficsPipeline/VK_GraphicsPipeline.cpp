@@ -2,6 +2,9 @@
 #include "VK_Renderer.h"
 #include "VK_SwapChain.h"
 #include "VK_Device.h"
+#include "Objects.h"
+#include "VK_GameObjectManager.h"
+#include "GameObject.h"
 
 
 VK_GraphicsPipeline::VK_GraphicsPipeline(VK_Renderer& p_vk_renderer)
@@ -149,7 +152,7 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline()
 	
 }
 
-void VK_GraphicsPipeline::RecreateSwapChain(GLFWwindow * window, VK_BufferManager* vk_bufferManager)
+void VK_GraphicsPipeline::RecreateSwapChain(GLFWwindow * window, VK_GameObjectManager* vk_bufferManager)
 {
 	int width = 0, height = 0;
 	while (width == 0 || height == 0) {
@@ -169,7 +172,7 @@ void VK_GraphicsPipeline::RecreateSwapChain(GLFWwindow * window, VK_BufferManage
 	vk_renderer->CreateFramebuffers();
 	vk_bufferManager->CreateCommandBuffers(*this);
 }
-void VK_GraphicsPipeline::CleanupSwapChain(VK_BufferManager* vk_bufferManager)
+void VK_GraphicsPipeline::CleanupSwapChain(VK_GameObjectManager* vk_bufferManager)
 {
 	for (auto framebuffer : vk_swapChain->swapChainFramebuffers) {
 		vkDestroyFramebuffer(vk_device->device, framebuffer, nullptr);
@@ -191,6 +194,12 @@ void VK_GraphicsPipeline::CleanupSwapChain(VK_BufferManager* vk_bufferManager)
 	}
 
 	vkDestroySwapchainKHR(vk_device->device, vk_swapChain->swapChain, nullptr);
+
+	for (int i = 0; i < vk_bufferManager->gameObjects.size(); ++i) 
+	{
+
+		vk_bufferManager->gameObjects[i].GetMaterial().GetTextureRef().cleanup();
+	}
 }
 
 VkShaderModule VK_GraphicsPipeline::createShaderModule(const std::vector<char>& code)

@@ -64,7 +64,7 @@ VkImageView VK_SwapChain::CreateImageView(VkImage image, VkFormat format, VkImag
 void  VK_SwapChain::CreateImageViews() {
 	swapChainImageViews.resize(swapChainImages.size());
 
-	for (size_t i = 0; i < swapChainImages.size(); i++) {
+	for (size_t i = 0; i < swapChainImages.size(); ++i) {
 		swapChainImageViews[i] = CreateImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 }
@@ -143,7 +143,7 @@ void VK_SwapChain::CreateSyncObjects() {
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
 		if (vkCreateSemaphore(vk_device->device, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
 			vkCreateSemaphore(vk_device->device, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
 			vkCreateFence(vk_device->device, &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {

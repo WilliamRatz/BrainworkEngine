@@ -1,6 +1,6 @@
 #include "VK_Renderer.h"
 #include "VK_Device.h"
-#include "VK_BufferManager.h"
+#include "VK_GameObjectManager.h"
 #include "VK_SwapChain.h"
 
 VK_Renderer::VK_Renderer(VK_SwapChain& p_vk_swapChain)
@@ -42,6 +42,7 @@ void VK_Renderer::CreateRenderPass(){
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
+	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
 	VkSubpassDependency dependency = {};
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -70,7 +71,7 @@ void VK_Renderer::CreateFramebuffers()
 {
 	vk_swapChain->swapChainFramebuffers.resize(vk_swapChain->swapChainImageViews.size());
 
-	for (size_t i = 0; i < vk_swapChain->swapChainImageViews.size(); i++) {
+	for (size_t i = 0; i < vk_swapChain->swapChainImageViews.size(); ++i) {
 		std::array<VkImageView, 2> attachments = {
 		vk_swapChain->swapChainImageViews[i],
 		vk_swapChain->depthImageView
@@ -91,7 +92,7 @@ void VK_Renderer::CreateFramebuffers()
 	}
 }
 
-void VK_Renderer::CreateDescriptorSetLayout() {
+void VK_Renderer::CreateDescriptorSetLayouts() {
 	VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 	uboLayoutBinding.binding = 0;
 	uboLayoutBinding.descriptorCount = 1;
@@ -118,20 +119,20 @@ void VK_Renderer::CreateDescriptorSetLayout() {
 	}
 }
 
-void VK_Renderer::CreateDescriptorPool() {
+void VK_Renderer::CreateDescriptorPools() {
 	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = static_cast<uint32_t>(vk_swapChain->swapChainImages.size());
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	poolSizes[1].descriptorCount = static_cast<uint32_t>(vk_swapChain->swapChainImages.size());
 
-	VkDescriptorPoolCreateInfo poolInfo = {};
-	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(vk_swapChain->swapChainImages.size()*60);
+	VkDescriptorPoolCreateInfo poolTextureInfo = {};
+	poolTextureInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolTextureInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+	poolTextureInfo.pPoolSizes = poolSizes.data();
+	poolTextureInfo.maxSets = static_cast<uint32_t>(vk_swapChain->swapChainImages.size()*60);
 
-	if (vkCreateDescriptorPool(vk_device->device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+	if (vkCreateDescriptorPool(vk_device->device, &poolTextureInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor pool!");
 	}
 }

@@ -194,7 +194,7 @@ uint32_t VK_Device::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pr
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
-	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
 		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
 			return i;
 		}
@@ -260,7 +260,7 @@ QueueFamilyIndices VK_Device::findQueueFamilies(VkPhysicalDevice device) {
 			break;
 		}
 
-		i++;
+		++i;
 	}
 
 	return indices;

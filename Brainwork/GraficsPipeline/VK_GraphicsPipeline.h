@@ -5,7 +5,7 @@
 class VK_Renderer;
 class VK_SwapChain;
 class VK_Device;
-class VK_BufferManager;
+class VK_GameObjectManager;
 
 
 class VK_GraphicsPipeline
@@ -23,12 +23,10 @@ public:
 
 	void CreateGraphicsPipeline();
 
+	void RecreateSwapChain(GLFWwindow* window, VK_GameObjectManager* vk_bufferManager);
+	void CleanupSwapChain(VK_GameObjectManager* vk_bufferManager);
+
 	static std::vector<char> readFile(const std::string& filename);
 	VkShaderModule createShaderModule(const std::vector<char>& code);
-
-	void CleanupSwapChain(VK_BufferManager* vk_bufferManager);
-
-
-	void RecreateSwapChain(GLFWwindow* window, VK_BufferManager* vk_bufferManager);
 };
 

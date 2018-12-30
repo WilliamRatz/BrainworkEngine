@@ -20,7 +20,7 @@
 #include <set>
 
 const int WIDTH = 800;
-const int HEIGHT = 800;
+const int HEIGHT = 600;
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;

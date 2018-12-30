@@ -3,38 +3,52 @@
 
 #include "Objects.h"
 #include "Material.h"
+#include "VK_BufferObject.h"
 
+class VK_Renderer;
 
 class GameObject
 {
 private:
-	Material					material;
-
-	std::vector<Vertex>			m_vertices;
-	std::vector<uint16_t>		m_indices;
+	VK_Renderer*				m_renderer;
+	VK_BufferObject				m_BufferObject;
+	Object						m_object;
+	Material					m_material;
 	
 	GameObject*					m_parentObject = NULL;
 	std::vector<GameObject>		m_children;
 	Matrix<float, 4, 4>			globalMatrix;
+
+	Matrix<float, 4, 4>			recalculateMatrix();
 public:
-	GameObject					(std::vector<Vertex>& vertices, std::vector<uint16_t>& indices);
+	GameObject					(VK_Renderer& renderer);
 	GameObject					(const GameObject& gameObject);
 	~GameObject					();
 
-	Matrix<float, 4, 4>			localMatrix;
+	void updateGameObject		(uint32_t currentImage);
+	void SetObject				(const Object object);
+	void SetMaterial			(Material material);
 
-	Matrix<float, 4, 4>			recalculateMatrix();
+	VK_BufferObject GetBufferObject	();
+	Object			GetObject		();
+	Material		GetMaterial		();
+
+	void CreateBuffer			();
+	void CreateDescriptorSets	();
+
+
+	Matrix<float, 4, 4>			localMatrix;
 	Matrix<float, 4, 4>			getGlobalMatrix();
 
 	void setParent				(GameObject* parentObject);
 	void addChild				(GameObject& childObject);
 	void addChildren			(std::vector<GameObject>& childrenObject);
 
-	std::vector<Vertex>			getVertices();
-	std::vector<uint16_t>		getIndices();
 	GameObject*					getParent();
 	GameObject&					getChild(uint16_t index);
 	std::vector<GameObject>&	getChildren();
+
+	void CleanupGameObject();
 };
 
 

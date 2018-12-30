@@ -4,8 +4,9 @@
 #include "VK_Device.h"
 #include "VK_Renderer.h"
 #include "VK_SwapChain.h"
-#include "VK_BufferManager.h"
+#include "VK_GameObjectManager.h"
 #include "VK_GraphicsPipeline.h"
+#include "Camera.h"
 
 class VK_Window
 {
@@ -23,7 +24,7 @@ private:
 	VK_Device			vk_Device			= VK_Device();
 	VK_SwapChain		vk_swapChain		= VK_SwapChain(vk_Device);
 	VK_Renderer			vk_renderer			= VK_Renderer(vk_swapChain);
-	VK_BufferManager	vk_bufferManager	= VK_BufferManager(vk_renderer);
+	VK_GameObjectManager	vk_bufferManager	= VK_GameObjectManager(vk_renderer);
 	VK_GraphicsPipeline vk_graphicsPipeline = VK_GraphicsPipeline(vk_renderer);
 	
 

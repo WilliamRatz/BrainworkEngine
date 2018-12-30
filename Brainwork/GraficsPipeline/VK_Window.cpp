@@ -17,7 +17,7 @@ void VK_Window::initWindow() {
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Brainwork", nullptr, nullptr);
 	glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
@@ -33,25 +33,25 @@ void VK_Window::initVulkan() {
 	vk_swapChain.CreateSwapChain(window);
 	vk_swapChain.CreateImageViews();
 	vk_renderer.CreateRenderPass();
-	vk_renderer.CreateDescriptorSetLayout();
+	vk_renderer.CreateDescriptorSetLayouts();
 	vk_graphicsPipeline.CreateGraphicsPipeline();
 	vk_renderer.CreateCommandPool();
 	vk_swapChain.CreateDepthResources(vk_renderer);
 	vk_renderer.CreateFramebuffers();
-	vk_bufferManager.CreateBufferObjects();
-	vk_renderer.CreateDescriptorPool();
+	vk_renderer.CreateDescriptorPools();
 
+	vk_bufferManager.CreateBufferObjects();
 	vk_bufferManager.CreateDescriptorSets();
 	vk_bufferManager.CreateCommandBuffers(vk_graphicsPipeline);
 	vk_swapChain.CreateSyncObjects();
 }
 
 void VK_Window::mainLoop() {
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		drawFrame();
 		Camera::CameraUpdate(window);
-
 	}
 
 	vkDeviceWaitIdle(vk_Device.device);
@@ -124,10 +124,7 @@ void VK_Window::cleanup() {
 	vkDestroyDescriptorPool(vk_Device.device, vk_renderer.descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(vk_Device.device, vk_renderer.descriptorSetLayout, nullptr);
 
-
-	vk_bufferManager.CleanUpBuffers();
-
-	for (size_t i = 0; i < vk_swapChain.MAX_FRAMES_IN_FLIGHT; i++) {
+	for (size_t i = 0; i < vk_swapChain.MAX_FRAMES_IN_FLIGHT; ++i) {
 		vkDestroySemaphore(vk_Device.device, vk_swapChain.renderFinishedSemaphores[i], nullptr);
 		vkDestroySemaphore(vk_Device.device, vk_swapChain.imageAvailableSemaphores[i], nullptr);
 		vkDestroyFence(vk_Device.device, vk_swapChain.inFlightFences[i], nullptr);

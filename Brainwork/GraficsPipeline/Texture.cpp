@@ -11,26 +11,34 @@ Texture::Texture()
 {
 }
 
-Texture::Texture(VK_Buffer& p_vk_buffer)
+Texture::Texture(const char* p_texturePath)
 {
-	vk_buffer = &p_vk_buffer;
+	m_texturePath = p_texturePath;
 }
 
-Texture::Texture(const Texture& texture)
+Texture::Texture(const Texture& p_texture)
 {
-	vk_buffer = texture.vk_buffer;
-	textureImage = texture.textureImage;
-	textureImageMemory = texture.textureImageMemory;
+	m_bufferObject			= p_texture.m_bufferObject;
+	m_renderer				= p_texture.m_renderer;
+	m_texturePath			= p_texture.m_texturePath;
+	m_textureImage			= p_texture.m_textureImage;
+	m_textureImageMemory	= p_texture.m_textureImageMemory;
+	textureSampler			= p_texture.textureSampler;
+	textureImageView		= p_texture.textureImageView;
 }
 
 Texture::~Texture()
 {
 }
 
-void Texture::SetBuffer(VK_Buffer& p_vk_renderer)
+void Texture::CreateTexture(VK_BufferObject* p_bufferObject, VK_Renderer* p_renderer)
 {
-	vk_buffer = &p_vk_renderer;
+	m_bufferObject = p_bufferObject;
+	m_renderer = p_renderer;
 
+	this->CreateTextureImage();
+	this->CreateTextureImageViews();
+	this->CreateTextureSampler();
 }
 
 void Texture::CreateTextureImage() {
@@ -44,27 +52,27 @@ void Texture::CreateTextureImage() {
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
-	vk_buffer->createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	m_bufferObject->CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
-	vkMapMemory(vk_buffer->renderer->vk_device->device, stagingBufferMemory, 0, imageSize, 0, &data);
+	vkMapMemory(m_renderer->vk_device->device, stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(vk_buffer->renderer->vk_device->device, stagingBufferMemory);
+	vkUnmapMemory(m_renderer->vk_device->device, stagingBufferMemory);
 
 	stbi_image_free(pixels);
 
-	vk_buffer->renderer->vk_swapChain->CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+	m_renderer->vk_swapChain->CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
 
-	vk_buffer->renderer->vk_swapChain->TransitionImageLayout(*vk_buffer->renderer,textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	CopyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	vk_buffer->renderer->vk_swapChain->TransitionImageLayout(*vk_buffer->renderer,textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	m_renderer->vk_swapChain->TransitionImageLayout(*m_renderer, m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	CopyBufferToImage(stagingBuffer, m_textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	m_renderer->vk_swapChain->TransitionImageLayout(*m_renderer, m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkDestroyBuffer(vk_buffer->renderer->vk_device->device, stagingBuffer, nullptr);
-	vkFreeMemory(vk_buffer->renderer->vk_device->device, stagingBufferMemory, nullptr);
+	vkDestroyBuffer(m_renderer->vk_device->device, stagingBuffer, nullptr);
+	vkFreeMemory(m_renderer->vk_device->device, stagingBufferMemory, nullptr);
 }
 void Texture::CreateTextureImageViews()
 {
-	textureImageView = vk_buffer->renderer->vk_swapChain->CreateImageView(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+	textureImageView = m_renderer->vk_swapChain->CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 void Texture::CreateTextureSampler()
@@ -84,12 +92,12 @@ void Texture::CreateTextureSampler()
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-	if (vkCreateSampler(vk_buffer->renderer->vk_device->device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+	if (vkCreateSampler(m_renderer->vk_device->device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create texture sampler!");
 	}
 }
 void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
-	VkCommandBuffer commandBuffer = vk_buffer->renderer->beginSingleTimeCommands();
+	VkCommandBuffer commandBuffer = m_renderer->beginSingleTimeCommands();
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
 	region.bufferRowLength = 0;
@@ -109,16 +117,27 @@ void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, 
 
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-	vk_buffer->renderer->endSingleTimeCommands(commandBuffer);
+	m_renderer->endSingleTimeCommands(commandBuffer);
 }
 
 void Texture::cleanup() {
 	//after cleanup swapchain
-	
-	vkDestroySampler(vk_buffer->renderer->vk_device->device, textureSampler, nullptr);
-	vkDestroyImageView(vk_buffer->renderer->vk_device->device, textureImageView, nullptr);
 
-	vkDestroyImage(vk_buffer->renderer->vk_device->device, textureImage, nullptr);
-	vkFreeMemory(vk_buffer->renderer->vk_device->device, textureImageMemory, nullptr);
+	vkDestroySampler(m_renderer->vk_device->device, textureSampler, nullptr);
+	vkDestroyImageView(m_renderer->vk_device->device, textureImageView, nullptr);
 
+	vkDestroyImage(m_renderer->vk_device->device, m_textureImage, nullptr);
+	vkFreeMemory(m_renderer->vk_device->device, m_textureImageMemory, nullptr);
+
+}
+
+void Texture::operator=(const Texture& p_texture)
+{
+	m_bufferObject = p_texture.m_bufferObject;
+	m_renderer = p_texture.m_renderer;
+	m_texturePath = p_texture.m_texturePath;
+	m_textureImage = p_texture.m_textureImage;
+	m_textureImageMemory = p_texture.m_textureImageMemory;
+	textureSampler = p_texture.textureSampler;
+	textureImageView = p_texture.textureImageView;
 }
