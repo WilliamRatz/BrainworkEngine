@@ -9,8 +9,6 @@ GameObject::GameObject(VK_Renderer& p_renderer)
 	m_renderer = &p_renderer;
 
 	m_BufferObject.SetRenderer(m_renderer);
-
-
 }
 
 GameObject::GameObject(const GameObject& p_gameObject)
@@ -37,14 +35,15 @@ void GameObject::updateGameObject(uint32_t currentImage) {
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+
 	UniformBufferObject ubo = {};
 
 
-	//gameObject.localMatrix.rotation3DAroundZlocal(0.1f)/*.rotation3DAroundYlocal(0.15f).rotation3DAroundXlocal(0.05f)*/;
-
+	localMatrix.rotation3DAroundZ(0.1f).rotation3DAroundY(0.15f).rotation3DAroundX(0.05f);
 
 	ubo.model = this->getGlobalMatrix();
-	ubo.view = Camera::getViewCamera.mat;
+	//ubo.model = localMatrix.transpose();
+	ubo.view = Camera::ViewCamera.GetCameraMatrix();
 	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	ubo.proj[1][1] *= -1;
 
@@ -60,9 +59,11 @@ void GameObject::SetMaterial(Material p_material)
 {
 	m_material = p_material;
 
-	for (int i = 0; i < m_object.GetVertices().size(); ++i) 
-	{
-		m_object.GetVerticesRef()[i].ColorChange(m_material.GetColorRef());
+	if (m_object.GetVerticesRef()[0].color != m_material.GetColorRef()) {
+		for (int i = 0; i < m_object.GetVertices().size(); ++i)
+		{
+			m_object.GetVerticesRef()[i].ColorChange(m_material.GetColorRef());
+		}
 	}
 }
 
@@ -114,7 +115,7 @@ Matrix<float, 4, 4> GameObject::recalculateMatrix()
 
 Matrix<float, 4, 4> GameObject::getGlobalMatrix()
 {
-	return (localMatrix * globalMatrix).transpose();
+	return (globalMatrix * localMatrix).transpose();
 }
 
 void GameObject::setParent(GameObject* p_parentObject)

@@ -5,16 +5,9 @@
 //  Created by William Ratz on 18.09.18.
 //  Copyright © 2018 William Ratz. All rights reserved.
 //
-
-
 #ifndef Math_H
 #define Math_H
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Quaternion.h"
-#include "Matrix.h"
-
-#include "Tests.h"
+#include <iostream>
 
 class MathLib {
 public:
@@ -38,7 +31,7 @@ public:
 	static double floor(const double& value, const int& position);
 	static double ceil(const double& value, const int& position);
 	
-	static int sign(const int& value);
+	static int sign(const float& value);
 
 	static double PI_Calc();
 	static double E_Calc();

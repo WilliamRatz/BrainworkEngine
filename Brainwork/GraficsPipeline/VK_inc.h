@@ -6,8 +6,7 @@
 //
 
 
-#include <BW_Math.h>
-#include <iostream>
+#include <BW_Inc.h>
 #include <fstream>
 #include <stdexcept>
 #include <algorithm>

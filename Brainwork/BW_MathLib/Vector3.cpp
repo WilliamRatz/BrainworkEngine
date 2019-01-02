@@ -6,7 +6,8 @@
 //  Copyright © 2018 William Ratz. All rights reserved.
 //
 #include "Vector3.h"
-#include "BW_Math.h"
+#include "Matrix.h"
+#include "MathBW.h"
 
 
 

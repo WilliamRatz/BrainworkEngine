@@ -1,31 +1,33 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-#include <BW_Math.h>
+#include <BW_Inc.h>
 #include "Controls.h"
 
 class Camera
 {
 private:
-	Matrix<float, 4, 4> MoveForward();
-	Matrix<float, 4, 4> MoveBackward();
-	Matrix<float, 4, 4> MoveLeft();
-	Matrix<float, 4, 4> MoveRight();
-	Matrix<float, 4, 4> MoveUp();
-	Matrix<float, 4, 4> MoveDown();
+	Matrix<float, 4, 4> m_matrix;
+	float				m_moveSpeed = 0.001f;
+	float				m_rotationSpeed = 0.1f;
 
-	
+	void MoveForward();
+	void MoveBackward();
+	void MoveLeft();
+	void MoveRight();
+	void MoveUp();
+	void MoveDown();
+	void RotateCamera(double cursorX, double cursorY);
 
 public:
+	static	Camera		ViewCamera;
 	Camera				();
 	Camera				(const Camera& cam);
 	~Camera				();
 
-	Matrix<float, 4, 4> mat;
-	float				moveSpeed = 0.001f;
-	
-	static void			CameraUpdate(GLFWwindow *window);
-	static				Camera getViewCamera;
+	Matrix<float, 4, 4> GetCameraMatrix();
 	void				SetCameraToWindow(GLFWwindow* window);
+	
+	static	void		CameraUpdate(GLFWwindow *window);
 };
 
 #endif // !CAMERA_H

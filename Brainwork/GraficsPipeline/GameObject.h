@@ -17,8 +17,8 @@ private:
 	
 	GameObject*					m_parentObject = NULL;
 	std::vector<GameObject>		m_children;
-	Matrix<float, 4, 4>			globalMatrix;
 
+	Matrix<float, 4, 4>			globalMatrix;
 	Matrix<float, 4, 4>			recalculateMatrix();
 public:
 	GameObject					(VK_Renderer& renderer);

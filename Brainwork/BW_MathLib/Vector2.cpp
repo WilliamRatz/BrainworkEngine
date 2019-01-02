@@ -6,7 +6,7 @@
 //  Copyright © 2018 William Ratz. All rights reserved.
 //
 #include "Vector2.h"
-#include "BW_Math.h"
+#include "MathBW.h"
 
 
 Vector2::Vector2()

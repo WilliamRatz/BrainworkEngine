@@ -37,8 +37,7 @@ void VK_GameObjectManager::CreateBufferObjects()
 			Texture text(cha);
 
 			gameObjects[u].GetMaterial().SetTexture(text);
-			gameObjects[u].localMatrix[0][3] = 1.2 * i;
-			gameObjects[u].localMatrix[1][3] = 1.2 * ii;
+			gameObjects[u].localMatrix.translate3D(1.2*i, 1.2*ii, 0);
 			gameObjects[u].CreateBuffer();
 			++u;
 		}
