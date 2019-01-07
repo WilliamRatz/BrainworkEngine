@@ -39,8 +39,10 @@ void GameObject::updateGameObject(uint32_t currentImage) {
 	UniformBufferObject ubo = {};
 
 
-	localMatrix.rotation3DAroundZ(0.1f).rotation3DAroundY(0.15f).rotation3DAroundX(0.05f);
+	localMatrix.rotation3DAroundY(0.05f);
 
+
+	ubo.lightPos = Vector3(-10, -10, -10);
 	ubo.model = this->getGlobalMatrix();
 	//ubo.model = localMatrix.transpose();
 	ubo.view = Camera::ViewCamera.GetCameraMatrix();

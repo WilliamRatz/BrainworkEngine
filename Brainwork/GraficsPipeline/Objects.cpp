@@ -37,7 +37,8 @@ void Object::SetMesh(std::string directoryPath)
 				Vertex vertex(
 					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
 					Vector3(1.0f, 1.0f, 1.0f),
-					Vector2(attrib.texcoords[2 * index.texcoord_index + 0], 2 * attrib.texcoords[index.texcoord_index + 1])
+					Vector2(attrib.texcoords[2 * index.texcoord_index + 0], 2 * attrib.texcoords[index.texcoord_index + 1]),
+					Vector3(-attrib.normals[3 * index.normal_index +0], -attrib.normals[3 * index.normal_index + 1], -attrib.normals[3 * index.normal_index + 2])
 				);
 
 				m_vertices.push_back(vertex);
@@ -51,7 +52,8 @@ void Object::SetMesh(std::string directoryPath)
 				Vertex vertex(
 					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
 					Vector3(1.0f, 1.0f, 1.0f),
-					Vector2(0.0f, 0.0f)
+					Vector2(0.0f, 0.0f),
+					Vector3(attrib.normals[3 * index.normal_index + 0], attrib.normals[3 * index.normal_index + 1], attrib.normals[3 * index.normal_index + 2])
 				);
 
 				m_vertices.push_back(vertex);
@@ -101,8 +103,8 @@ Cube::~Cube()
 Cube::operator Object()
 {
 	Object temp;
-	temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);
+	/*temp.SetVertices(m_vertices);
+	temp.SetIndices(m_indices);*/
 
 	return temp;
 }
@@ -116,8 +118,8 @@ Plane::Plane()
 Plane::operator Object()
 {
 	Object temp;
-	temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);
+	/*temp.SetVertices(m_vertices);
+	temp.SetIndices(m_indices);*/
 
 	return temp;
 }
@@ -131,9 +133,9 @@ Sphere::Sphere()
 Sphere::operator Object()
 {
 	Object temp;
-	temp.SetVertices(m_vertices);
+	/*temp.SetVertices(m_vertices);
 	temp.SetIndices(m_indices);
-
+*/
 	return temp;
 }
 #pragma endregion
@@ -146,8 +148,8 @@ Capsule::Capsule()
 Capsule::operator Object()
 {
 	Object temp;
-	temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);
+	/*temp.SetVertices(m_vertices);
+	temp.SetIndices(m_indices);*/
 
 	return temp;
 }

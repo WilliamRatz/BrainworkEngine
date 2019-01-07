@@ -23,21 +23,24 @@ void VK_GameObjectManager::UpdateUniformBuffers(uint32_t currentImage)
 void VK_GameObjectManager::CreateBufferObjects()
 {
 	Material mat;
+	Object ob;
+	ob.SetMesh("models/Brain.obj");
 	const char* cha = "textures/texture.png";
 	int u = 0;
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
-		for (int ii = 0; ii < 5; ++ii)
+		for (int ii = 0; ii < 1; ++ii)
 		{
 			gameObjects.push_back(GameObject(*renderer));
-			gameObjects[u].SetObject(Cube());
+			gameObjects[u].SetObject(ob);
 			gameObjects[u].SetMaterial(mat);
 
 			Texture text(cha);
 
 			gameObjects[u].GetMaterial().SetTexture(text);
 			gameObjects[u].localMatrix.translate3D(1.2*i, 1.2*ii, 0);
+			gameObjects[u].localMatrix.scale3D(0.1, 0.1, 0.1);
 			gameObjects[u].CreateBuffer();
 			++u;
 		}

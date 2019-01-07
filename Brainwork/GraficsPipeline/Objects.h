@@ -8,12 +8,14 @@ struct Vertex {
 	Vector3 pos;
 	Vector3 color;
 	Vector2 texCoord;
+	Vector3 normal;
 
-	Vertex(Vector3 p_position, Vector3 p_color, Vector2 p_texCoord)
+	Vertex(Vector3 p_position, Vector3 p_color, Vector2 p_texCoord, Vector3 p_normal)
 	{
 		pos = p_position;
 		color = p_color;
 		texCoord = p_texCoord;
+		normal = p_normal;
 	}
 
 	static VkVertexInputBindingDescription getBindingDescription() {
@@ -25,8 +27,8 @@ struct Vertex {
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
+	static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions = {};
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
@@ -42,6 +44,11 @@ struct Vertex {
 		attributeDescriptions[2].location = 2;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
 		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+		attributeDescriptions[3].binding = 0;
+		attributeDescriptions[3].location = 3;
+		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[3].offset = offsetof(Vertex, normal);
 
 		return attributeDescriptions;
 	}
@@ -78,52 +85,52 @@ class Cube
 {
 private:
 	Vector3					m_color = Vector3(1.0f, 1.0f, 1.0f);
-	std::vector<Vertex>		m_vertices{
-		//front
-		Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(1.0f, 0.0f)),
-		Vertex(Vector3(+0.5f, +0.5f, -0.5f),	m_color,	Vector2(0.0f, 0.0f)),
-		Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(0.0f, 1.0f)),
-		Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
+	//std::vector<Vertex>		m_vertices{
+	//	//front
+	//	Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(1.0f, 0.0f)),
+	//	Vertex(Vector3(+0.5f, +0.5f, -0.5f),	m_color,	Vector2(0.0f, 0.0f)),
+	//	Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(0.0f, 1.0f)),
+	//	Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
 
-		//left
-		Vertex(Vector3(-0.5f, +0.5f, +0.5f),	m_color,	Vector2(2.0f, 1.0f)),
-		Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
-		Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 2.0f)),
-		Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(2.0f, 2.0f)),
+	//	//left
+	//	Vertex(Vector3(-0.5f, +0.5f, +0.5f),	m_color,	Vector2(2.0f, 1.0f)),
+	//	Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
+	//	Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 2.0f)),
+	//	Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(2.0f, 2.0f)),
 
-		//right
-		Vertex(Vector3(+0.5f, -0.5f, +0.5f),	m_color,	Vector2(2.0f, 3.0f)),
-		Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(3.0f, 3.0f)),
-		Vertex(Vector3(+0.5f, +0.5f, -0.5f),	m_color,	Vector2(3.0f, 2.0f)),
-		Vertex(Vector3(+0.5f, +0.5f, +0.5f),	m_color,	Vector2(2.0f, 2.0f)),
+	//	//right
+	//	Vertex(Vector3(+0.5f, -0.5f, +0.5f),	m_color,	Vector2(2.0f, 3.0f)),
+	//	Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(3.0f, 3.0f)),
+	//	Vertex(Vector3(+0.5f, +0.5f, -0.5f),	m_color,	Vector2(3.0f, 2.0f)),
+	//	Vertex(Vector3(+0.5f, +0.5f, +0.5f),	m_color,	Vector2(2.0f, 2.0f)),
 
-		//top
-		Vertex(Vector3(-0.5f, +0.5f, +0.5f),	m_color,	Vector2(4.0f, 3.0f)),
-		Vertex(Vector3(+0.5f, +0.5f, +0.5f),	m_color,	Vector2(3.0f, 3.0f)),
-		Vertex(Vector3(+0.5f, +0.5f, -0.5f),	m_color,	Vector2(3.0f, 4.0f)),
-		Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(4.0f, 4.0f)),
+	//	//top
+	//	Vertex(Vector3(-0.5f, +0.5f, +0.5f),	m_color,	Vector2(4.0f, 3.0f)),
+	//	Vertex(Vector3(+0.5f, +0.5f, +0.5f),	m_color,	Vector2(3.0f, 3.0f)),
+	//	Vertex(Vector3(+0.5f, +0.5f, -0.5f),	m_color,	Vector2(3.0f, 4.0f)),
+	//	Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(4.0f, 4.0f)),
 
-		//bottom
-		Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(5.0f, 4.0f)),
-		Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(4.0f, 4.0f)),
-		Vertex(Vector3(+0.5f, -0.5f, +0.5f),	m_color,	Vector2(4.0f, 5.0f)),
-		Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(5.0f, 5.0f)),
+	//	//bottom
+	//	Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(5.0f, 4.0f)),
+	//	Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(4.0f, 4.0f)),
+	//	Vertex(Vector3(+0.5f, -0.5f, +0.5f),	m_color,	Vector2(4.0f, 5.0f)),
+	//	Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(5.0f, 5.0f)),
 
-		//back
-		Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(5.0f, 6.0f)),
-		Vertex(Vector3(+0.5f, -0.5f, +0.5f),	m_color,	Vector2(6.0f, 6.0f)),
-		Vertex(Vector3(+0.5f, +0.5f, +0.5f),	m_color,	Vector2(6.0f, 5.0f)),
-		Vertex(Vector3(-0.5f, +0.5f, +0.5f),	m_color,	Vector2(5.0f, 5.0f))
+	//	//back
+	//	Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(5.0f, 6.0f)),
+	//	Vertex(Vector3(+0.5f, -0.5f, +0.5f),	m_color,	Vector2(6.0f, 6.0f)),
+	//	Vertex(Vector3(+0.5f, +0.5f, +0.5f),	m_color,	Vector2(6.0f, 5.0f)),
+	//	Vertex(Vector3(-0.5f, +0.5f, +0.5f),	m_color,	Vector2(5.0f, 5.0f))
 
-	};
-	std::vector<uint32_t>	m_indices{
-		2, 1, 0, 0, 3, 2, //front
-		6, 5, 4, 4, 7, 6, //left
-		10, 9,8,8,11, 10, //right
-	   14,13,12,12,15,14, //top
-	   18,17,16,16,19,18, //bottom
-	   22,21,20,20,23,22,  //back
-	};
+	//};
+	//std::vector<uint32_t>	m_indices{
+	//	2, 1, 0, 0, 3, 2, //front
+	//	6, 5, 4, 4, 7, 6, //left
+	//	10, 9,8,8,11, 10, //right
+	//   14,13,12,12,15,14, //top
+	//   18,17,16,16,19,18, //bottom
+	//   22,21,20,20,23,22,  //back
+	//};
 
 	//std::vector<Vertex>		m_vertices{
 	//	Vertex(Vector3(-0.5f, -0.5f, +0.5f),	m_color,	Vector2(0.0f,0.0f)),
@@ -156,7 +163,7 @@ class Plane
 {
 private:
 	Vector3					m_color = Vector3(1.0f, 1.0f, 1.0f);
-	std::vector<Vector2*>	m_texCoords;
+	/*std::vector<Vector2*>	m_texCoords;
 	std::vector<Vertex>		m_vertices{
 		Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
 		Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(0.0f, 1.0f)),
@@ -165,7 +172,7 @@ private:
 	};
 	std::vector<uint32_t>	m_indices{
 		0, 1, 2, 2, 3, 0
-	};
+	};*/
 
 public:
 	Plane					();
@@ -177,7 +184,7 @@ class Sphere
 {
 private:
 	Vector3					m_color = Vector3(1.0f, 1.0f, 1.0f);
-	std::vector<Vector2*>	m_texCoords;
+	/*std::vector<Vector2*>	m_texCoords;
 	std::vector<Vertex>		m_vertices{
 		Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
 		Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(0.0f, 1.0f)),
@@ -187,7 +194,7 @@ private:
 	std::vector<uint32_t>	m_indices{
 		0, 1, 2, 2, 3, 0
 	};
-
+*/
 public:
 	Sphere					();
 
@@ -198,7 +205,7 @@ class Capsule
 {
 private:
 	Vector3					m_color = Vector3(1.0f, 1.0f, 1.0f);
-	std::vector<Vector2*>	m_texCoords;
+	/*std::vector<Vector2*>	m_texCoords;
 	std::vector<Vertex>		m_vertices{
 		Vertex(Vector3(-0.5f, -0.5f, -0.5f),	m_color,	Vector2(1.0f, 1.0f)),
 		Vertex(Vector3(+0.5f, -0.5f, -0.5f),	m_color,	Vector2(0.0f, 1.0f)),
@@ -207,7 +214,7 @@ private:
 	};
 	std::vector<uint32_t>	m_indices{
 		0, 1, 2, 2, 3, 0
-	};
+	};*/
 
 public:
 	Capsule					();
