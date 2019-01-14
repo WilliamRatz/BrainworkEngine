@@ -30,24 +30,19 @@ GameObject::~GameObject()
 
 
 void GameObject::updateGameObject(uint32_t currentImage) {
-	static auto startTime = std::chrono::high_resolution_clock::now();
-
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-
+	
 	UniformBufferObject ubo = {};
 
+	//localMatrix.rotation3DAroundY(0.05f);
 
-	localMatrix.rotation3DAroundY(0.05f);
-
-
-	ubo.lightPos = Vector3(-10, -10, -10);
 	ubo.model = this->getGlobalMatrix();
-	//ubo.model = localMatrix.transpose();
 	ubo.view = Camera::ViewCamera.GetCameraMatrix();
 	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	ubo.proj[1][1] *= -1;
+	ubo.lightPos = Vector3(1.0f, 2.0f, 3.0f);
+	ubo.lightColor = Vector3(4.0f, 5.0f, 6.0f);
+	ubo.groundColor = Vector3(7.0f, 8.0f, 9.0f);
+
 
 	m_BufferObject.UpdateUniformBuffer(ubo, currentImage);
 }
@@ -60,13 +55,7 @@ void GameObject::SetObject(const Object p_object)
 void GameObject::SetMaterial(Material p_material)
 {
 	m_material = p_material;
-
-	if (m_object.GetVerticesRef()[0].color != m_material.GetColorRef()) {
-		for (int i = 0; i < m_object.GetVertices().size(); ++i)
-		{
-			m_object.GetVerticesRef()[i].ColorChange(m_material.GetColorRef());
-		}
-	}
+	std::cout << m_object.GetVerticesRef().size() << std::endl;
 }
 
 VK_BufferObject GameObject::GetBufferObject()

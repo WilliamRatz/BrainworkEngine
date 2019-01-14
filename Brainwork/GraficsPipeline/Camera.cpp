@@ -74,7 +74,7 @@ void Camera::SetCameraToWindow(GLFWwindow* window)
 
 void Camera::MoveForward()
 {
-	m_matrix.translate3D(0, 0, -m_moveSpeed);
+	m_matrix.translate3D(0, 0, -m_moveSpeed).transpose();
 }
 void Camera::MoveBackward()
 {

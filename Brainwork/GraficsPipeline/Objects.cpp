@@ -36,7 +36,6 @@ void Object::SetMesh(std::string directoryPath)
 			for (const auto& index : shape.mesh.indices) {
 				Vertex vertex(
 					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
-					Vector3(1.0f, 1.0f, 1.0f),
 					Vector2(attrib.texcoords[2 * index.texcoord_index + 0], 2 * attrib.texcoords[index.texcoord_index + 1]),
 					Vector3(-attrib.normals[3 * index.normal_index +0], -attrib.normals[3 * index.normal_index + 1], -attrib.normals[3 * index.normal_index + 2])
 				);
@@ -51,7 +50,6 @@ void Object::SetMesh(std::string directoryPath)
 			for (const auto& index : shape.mesh.indices) {
 				Vertex vertex(
 					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
-					Vector3(1.0f, 1.0f, 1.0f),
 					Vector2(0.0f, 0.0f),
 					Vector3(attrib.normals[3 * index.normal_index + 0], attrib.normals[3 * index.normal_index + 1], attrib.normals[3 * index.normal_index + 2])
 				);

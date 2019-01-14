@@ -133,7 +133,7 @@ void VK_BufferObject::CreateDescriptorSet(Material& material) {
 
 }
 
-void VK_BufferObject::UpdateUniformBuffer(UniformBufferObject& ubo, uint32_t currentImage)
+void VK_BufferObject::UpdateUniformBuffer(UniformBufferObject& ubo, uint32_t& currentImage)
 {
 	void* data;
 	vkMapMemory(m_renderer->vk_device->device, m_uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);

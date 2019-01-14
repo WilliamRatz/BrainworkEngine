@@ -6,14 +6,12 @@
 
 struct Vertex {
 	Vector3 pos;
-	Vector3 color;
 	Vector2 texCoord;
 	Vector3 normal;
 
-	Vertex(Vector3 p_position, Vector3 p_color, Vector2 p_texCoord, Vector3 p_normal)
+	Vertex(Vector3 p_position,Vector2 p_texCoord, Vector3 p_normal)
 	{
 		pos = p_position;
-		color = p_color;
 		texCoord = p_texCoord;
 		normal = p_normal;
 	}
@@ -27,8 +25,8 @@ struct Vertex {
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions = {};
+	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
 
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
@@ -37,25 +35,15 @@ struct Vertex {
 
 		attributeDescriptions[1].binding = 0;
 		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
+		attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(Vertex, texCoord);
 
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
-		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
-
-		attributeDescriptions[3].binding = 0;
-		attributeDescriptions[3].location = 3;
-		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[3].offset = offsetof(Vertex, normal);
+		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(Vertex, normal);
 
 		return attributeDescriptions;
-	}
-
-	void ColorChange(Vector3& p_color)
-	{
-		color = p_color;
 	}
 };
 
@@ -84,7 +72,6 @@ public:
 class Cube
 {
 private:
-	Vector3					m_color = Vector3(1.0f, 1.0f, 1.0f);
 	//std::vector<Vertex>		m_vertices{
 	//	//front
 	//	Vertex(Vector3(-0.5f, +0.5f, -0.5f),	m_color,	Vector2(1.0f, 0.0f)),

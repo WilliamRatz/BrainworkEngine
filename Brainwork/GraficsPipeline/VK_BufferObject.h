@@ -11,7 +11,10 @@ struct UniformBufferObject {
 	Matrix<float, 4, 4> model;
 	Matrix<float, 4, 4> view;
 	Matrix<float, 4, 4> proj;
+
 	Vector3 lightPos;
+	Vector3 lightColor;
+	Vector3 groundColor;
 };
 
 
@@ -40,7 +43,7 @@ public:
 	void CreateUniformBuffers	();
 	void CreateDescriptorSet	(Material& texture);
 
-	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t currentImage);
+	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t& currentImage);
 
 	void CreateBuffer			(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void CopyBuffer				(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

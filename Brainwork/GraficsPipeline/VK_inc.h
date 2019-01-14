@@ -3,7 +3,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-//
+
 
 
 #include <BW_Inc.h>
@@ -18,13 +18,18 @@
 #include <optional>
 #include <set>
 
-const int WIDTH = 1920;
-const int HEIGHT = 1080;
+const int WIDTH = 1000;
+const int HEIGHT = 800;
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
 const bool enableValidationLayers = true;
 #endif
+
+
+
+#define Print(x) std::cout << x << std::endl;
+
 
 #endif // !VK_INC
