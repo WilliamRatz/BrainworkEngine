@@ -24,13 +24,13 @@ void VK_GameObjectManager::CreateBufferObjects()
 {
 	Material mat;
 	Object ob;
-	ob.SetMesh("models/Brain.obj");
+	ob.SetMesh("models/Cube.obj");
 	const char* cha = "textures/texture.png";
 	int u = 0;
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
-		for (int ii = 0; ii < 1; ++ii)
+		for (int ii = 0; ii < 5; ++ii)
 		{
 			gameObjects.push_back(GameObject(*renderer));
 			gameObjects[u].SetObject(ob);
@@ -40,7 +40,7 @@ void VK_GameObjectManager::CreateBufferObjects()
 
 			gameObjects[u].GetMaterial().SetTexture(text);
 			gameObjects[u].localMatrix.translate3D(1.2*i, 1.2*ii, 0);
-			gameObjects[u].localMatrix.scale3D(0.1, 0.1, 0.1);
+			//gameObjects[u].localMatrix.scale3D(0.1, 0.1, 0.1);
 			gameObjects[u].CreateBuffer();
 			++u;
 		}

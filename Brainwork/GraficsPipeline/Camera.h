@@ -6,7 +6,8 @@
 class Camera
 {
 private:
-	Matrix<float, 4, 4> m_matrix;
+	Matrix<float, 4, 4> m_gloabalMatrix;
+	Matrix<float, 4, 4> m_localMatrix;
 	float				m_moveSpeed = 0.001f;
 	float				m_rotationSpeed = 0.1f;
 

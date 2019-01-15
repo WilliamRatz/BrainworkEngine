@@ -4,12 +4,13 @@ Camera Camera::ViewCamera = Camera();
 
 Camera::Camera()
 {
-	m_matrix.translate3D(0, 0, 5);
+	m_localMatrix.translate3D(0, 0, 5);
 }
 
 Camera::Camera(const Camera& cam)
 {
-	m_matrix = cam.m_matrix;
+	m_localMatrix = cam.m_localMatrix;
+	m_gloabalMatrix = cam.m_gloabalMatrix;
 }
 
 Camera::~Camera()
@@ -61,7 +62,7 @@ void Camera::CameraUpdate(GLFWwindow *window)
 
 Matrix<float, 4, 4> Camera::GetCameraMatrix()
 {
-	return m_matrix.transpose();
+	return (m_gloabalMatrix * m_localMatrix).transpose();
 }
 
 void Camera::SetCameraToWindow(GLFWwindow* window)
@@ -74,30 +75,30 @@ void Camera::SetCameraToWindow(GLFWwindow* window)
 
 void Camera::MoveForward()
 {
-	m_matrix.translate3D(m_matrix.transpose().Backwards().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(this->GetCameraMatrix().Backwards().normalize() * m_moveSpeed);
 }
 void Camera::MoveBackward()
 {
-	m_matrix.translate3D(m_matrix.transpose().Forward().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(this->GetCameraMatrix().Forward().normalize() * m_moveSpeed);
 }
 void Camera::MoveLeft()
 {
-	m_matrix.translate3D(m_matrix.transpose().Right().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(this->GetCameraMatrix().Right().normalize() * m_moveSpeed);
 }
 void Camera::MoveRight()
 {
-	m_matrix.translate3D(m_matrix.transpose().Left().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(this->GetCameraMatrix().Left().normalize() * m_moveSpeed);
 }
 void Camera::MoveUp()
 {
-	m_matrix.translate3D(m_matrix.transpose().Up().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(this->GetCameraMatrix().Up().normalize() * m_moveSpeed);
 }
 void Camera::MoveDown()
 {
-	m_matrix.translate3D(m_matrix.transpose().Down().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(this->GetCameraMatrix().Down().normalize() * m_moveSpeed);
 }
 void Camera::RotateCamera(double p_cursorX, double p_cursorY)
 {
-	m_matrix.rotation3DAroundX((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
-	m_matrix.rotation3DAroundY((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
+	m_gloabalMatrix.rotation3DAroundX((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
+	m_gloabalMatrix.rotation3DAroundY((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
 }

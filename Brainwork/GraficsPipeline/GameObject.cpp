@@ -33,7 +33,7 @@ void GameObject::updateGameObject(uint32_t currentImage) {
 	
 	UniformBufferObject ubo = {};
 
-	//localMatrix.rotation3DAroundY(0.05f);
+	localMatrix.rotation3DAroundY(0.05f);
 
 	ubo.model = this->getGlobalMatrix();
 	ubo.view = Camera::ViewCamera.GetCameraMatrix();
@@ -55,7 +55,6 @@ void GameObject::SetObject(const Object p_object)
 void GameObject::SetMaterial(Material p_material)
 {
 	m_material = p_material;
-	std::cout << m_object.GetVerticesRef().size() << std::endl;
 }
 
 VK_BufferObject GameObject::GetBufferObject()
