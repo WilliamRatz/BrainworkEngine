@@ -34,32 +34,38 @@ public:
 
 #pragma region Methods
 
-	Vector3				ForwardVector			();
+	Vector3			Forward					();
+	Vector3			Backwards				();
+	Vector3			Left					();
+	Vector3			Right					();
+	Vector3			Up						();
+	Vector3			Down					();
 
-	std::size_t			getHashCode				();
-	std::size_t			countRows				();
-	std::size_t			countColumns			();
+	std::size_t		getHashCode				();
+	std::size_t		countRows				();
+	std::size_t		countColumns			();
 
-	Matrix&				translate2D				(float x, float y);
-	Matrix&				scale2D					(float width, float height);
-	Matrix&				rotation2D				(float angle);
+	Matrix&			translate2D				(float x, float y);
+	Matrix&			scale2D					(float width, float height);
+	Matrix&			rotation2D				(float angle);
 
-	Matrix&				translate3D				(float x, float y, float z);
-	Matrix&				scale3D					(float width, float height, float depth);
-	Matrix&				rotation3DAroundX		(float angle);
-	Matrix&				rotation3DAroundY		(float angle);
-	Matrix&				rotation3DAroundZ		(float angle);
+	Matrix&			translate3D				(float x, float y, float z);
+	Matrix&			translate3D				(Vector3 vec3);
+	Matrix&			scale3D					(float width, float height, float depth);
+	Matrix&			rotation3DAroundX		(float angle);
+	Matrix&			rotation3DAroundY		(float angle);
+	Matrix&			rotation3DAroundZ		(float angle);
 
-	Matrix&				rotation3DAroundXlocal	(float angle);
-	Matrix&				rotation3DAroundYlocal	(float angle);
-	Matrix&				rotation3DAroundZlocal	(float angle);
+	Matrix&			rotation3DAroundXlocal	(float angle);
+	Matrix&			rotation3DAroundYlocal	(float angle);
+	Matrix&			rotation3DAroundZlocal	(float angle);
 
-	Matrix&				perspectivProjection	(float windowWidth, float windowHeight, float nearPlane, float farPlane);
-	Matrix&				orthogonalProjection	(float windowWidth, float windowHeight, float nearPlane, float farPlane);
+	Matrix&			perspectivProjection	(float windowWidth, float windowHeight, float nearPlane, float farPlane);
+	Matrix&			orthogonalProjection	(float windowWidth, float windowHeight, float nearPlane, float farPlane);
 
-	Matrix&				identity				();
-	Matrix&				inverse					();
-	Matrix<T, C, R>		transpose				();
+	Matrix&			identity				();
+	Matrix&			inverse					();
+	Matrix<T, C, R>	transpose				();
 #pragma endregion
 #pragma region arithmeticOperator
 	void		operator=			(const Matrix&);
@@ -91,9 +97,34 @@ typeMatrix inline Matrix<T, R, C>::Matrix(const Matrix& mat)
 #pragma endregion
 #pragma region Methods
 
-typeMatrix inline Vector3  Matrix<T, R, C>::ForwardVector()
+typeMatrix inline Vector3 Matrix<T, R, C>::Forward()
 {
-	return Vector3();
+	return Vector3(columns[0][2], columns[1][2], columns[2][2]);
+}
+
+typeMatrix inline Vector3 Matrix<T, R, C>::Backwards()
+{
+	return Vector3(-columns[0][2], -columns[1][2], -columns[2][2]);
+}
+
+typeMatrix inline Vector3 Matrix<T, R, C>::Left()
+{
+	return Vector3(-columns[0][0], -columns[1][0], -columns[2][0]);
+}
+
+typeMatrix inline Vector3 Matrix<T, R, C>::Right()
+{
+	return Vector3(columns[0][0], columns[1][0], columns[2][0]);
+}
+
+typeMatrix inline Vector3 Matrix<T, R, C>::Up()
+{
+	return Vector3(columns[0][1], columns[1][1], columns[2][1]);
+}
+
+typeMatrix inline Vector3 Matrix<T, R, C>::Down()
+{
+	return Vector3(-columns[0][1], -columns[1][1], -columns[2][1]);
 }
 
 typeMatrix inline std::size_t Matrix<T, R, C>::getHashCode()
@@ -176,6 +207,21 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::translate3D(float x, float y
 	trans3D[0][3] = (T)x;
 	trans3D[1][3] = (T)y;
 	trans3D[2][3] = (T)z;
+
+	*this *= trans3D;
+	return *this;
+}
+typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::translate3D(Vector3 vec3)
+{
+	if (R < 4 && C < 3) {
+		throw std::out_of_range("Your Matrix dont fit for 3D translation check your dimensions");
+	}
+
+	Matrix<T, R, C> trans3D;
+
+	trans3D[0][3] = (T)vec3.x();
+	trans3D[1][3] = (T)vec3.y();
+	trans3D[2][3] = (T)vec3.z();
 
 	*this *= trans3D;
 	return *this;

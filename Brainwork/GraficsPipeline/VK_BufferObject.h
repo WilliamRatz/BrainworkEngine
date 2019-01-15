@@ -12,9 +12,9 @@ struct UniformBufferObject {
 	Matrix<float, 4, 4> view;
 	Matrix<float, 4, 4> proj;
 
-	Vector3 lightPos;
-	Vector3 lightColor;
-	Vector3 groundColor;
+	Vector4 lightPos;
+	Vector4 lightColor;
+	Vector4 groundColor;
 };
 
 

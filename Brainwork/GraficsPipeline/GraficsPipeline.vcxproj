@@ -195,7 +195,15 @@
   <ItemGroup>
     <None Include="shaders\TexturedShader.frag" />
     <None Include="shaders\TexturedFrag.spv" />
-    <None Include="shaders\TexturedShader.vert" />
+    <CustomBuild Include="shaders\TexturedShader.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:
+cd C:\Users\william.ratz\Documents\BrainworkSample\Brainwork\GraficsPipeline\shaders
+C:\VulkanSDK\1.1.85.0\Bin32\glslangValidator.exe -V TexturedShader.vert</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:
+cd C:\Users\william.ratz\Documents\BrainworkSample\Brainwork\GraficsPipeline\shaders
+C:\VulkanSDK\1.1.85.0\Bin32\glslangValidator.exe -V TexturedShader.vert</Command>
+    </CustomBuild>
     <None Include="shaders\TexturedVert.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

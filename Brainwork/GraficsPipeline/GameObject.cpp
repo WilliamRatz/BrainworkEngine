@@ -39,9 +39,9 @@ void GameObject::updateGameObject(uint32_t currentImage) {
 	ubo.view = Camera::ViewCamera.GetCameraMatrix();
 	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	ubo.proj[1][1] *= -1;
-	ubo.lightPos = Vector3(1.0f, 2.0f, 3.0f);
-	ubo.lightColor = Vector3(4.0f, 5.0f, 6.0f);
-	ubo.groundColor = Vector3(7.0f, 8.0f, 9.0f);
+	ubo.lightPos = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	ubo.lightColor = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	ubo.groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
 
 
 	m_BufferObject.UpdateUniformBuffer(ubo, currentImage);

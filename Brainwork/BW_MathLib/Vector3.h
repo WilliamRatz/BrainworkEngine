@@ -37,7 +37,7 @@ public:
 
 #pragma region Methods
 	
-	void normalize();
+	Vector3 normalize();
 	std::size_t getHashCode();
 
 	static Vector3 normalized(const Vector3&);
