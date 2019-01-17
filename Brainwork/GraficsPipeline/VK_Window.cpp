@@ -33,17 +33,23 @@ void VK_Window::initVulkan() {
 	vk_swapChain.CreateSwapChain(window);
 	vk_swapChain.CreateImageViews();
 	vk_renderer.CreateRenderPass();
-	vk_renderer.CreateDescriptorSetLayouts();
-	vk_graphicsPipeline.CreateGraphicsPipeline();
-	vk_renderer.CreateCommandPool();
-	vk_swapChain.CreateDepthResources(vk_renderer);
-	vk_renderer.CreateFramebuffers();
-	vk_renderer.CreateDescriptorPools();
 
-	vk_bufferManager.CreateBufferObjects();
-	vk_bufferManager.CreateDescriptorSets();
-	vk_bufferManager.CreateCommandBuffers(vk_graphicsPipeline);
+	this->initObjects();
+	
+}
+
+void VK_Window::initObjects()
+{
+	vk_graphicsPipelines[0].CreateGraphicsPipeline("TexturedVert", "TexturedFrag");
+
+	
+	
+
+	vk_gameObjectManager.CreateBufferObjects();
+	vk_gameObjectManager.CreateDescriptorSets();
+	vk_gameObjectManager.CreateCommandBuffers(vk_graphicsPipelines[0]);
 	vk_swapChain.CreateSyncObjects();
+
 }
 
 void VK_Window::mainLoop() {
@@ -64,14 +70,14 @@ void VK_Window::drawFrame() {
 	VkResult result = vkAcquireNextImageKHR(vk_Device.device, vk_swapChain.swapChain, std::numeric_limits<uint64_t>::max(), vk_swapChain.imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-		vk_graphicsPipeline.RecreateSwapChain(window, &vk_bufferManager);
+		vk_graphicsPipelines[0].RecreateSwapChain(window, &vk_gameObjectManager);
 		return;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	vk_bufferManager.UpdateUniformBuffers(imageIndex);
+	vk_gameObjectManager.UpdateUniformBuffers(imageIndex);
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -82,7 +88,7 @@ void VK_Window::drawFrame() {
 	submitInfo.pWaitDstStageMask = waitStages;
 
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &vk_bufferManager.commandBuffers[imageIndex];
+	submitInfo.pCommandBuffers = &vk_gameObjectManager.commandBuffers[imageIndex];
 
 	VkSemaphore signalSemaphores[] = { vk_swapChain.renderFinishedSemaphores[currentFrame] };
 	submitInfo.signalSemaphoreCount = 1;
@@ -110,7 +116,7 @@ void VK_Window::drawFrame() {
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
 		framebufferResized = false;
-		vk_graphicsPipeline.RecreateSwapChain(window, &vk_bufferManager);
+		vk_graphicsPipelines[0].RecreateSwapChain(window, &vk_gameObjectManager);
 	}
 	else if (result != VK_SUCCESS) {
 		throw std::runtime_error("failed to present swap chain image!");
@@ -120,7 +126,7 @@ void VK_Window::drawFrame() {
 }
 
 void VK_Window::cleanup() {
-	vk_graphicsPipeline.CleanupSwapChain(&vk_bufferManager);
+	vk_graphicsPipelines[0].CleanupSwapChain(&vk_gameObjectManager);
 	vkDestroyDescriptorPool(vk_Device.device, vk_renderer.descriptorPool, nullptr);
 	vkDestroyDescriptorSetLayout(vk_Device.device, vk_renderer.descriptorSetLayout, nullptr);
 

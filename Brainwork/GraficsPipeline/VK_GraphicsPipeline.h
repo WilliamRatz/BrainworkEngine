@@ -21,12 +21,18 @@ public:
 	VK_GraphicsPipeline(const VK_GraphicsPipeline& vk_graphicsPipeline);
 	~VK_GraphicsPipeline();
 
-	void CreateGraphicsPipeline();
+	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader);
+	void CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader);
 
 	void RecreateSwapChain(GLFWwindow* window, VK_GameObjectManager* vk_bufferManager);
 	void CleanupSwapChain(VK_GameObjectManager* vk_bufferManager);
 
 	static std::vector<char> readFile(const std::string& filename);
 	VkShaderModule createShaderModule(const std::vector<char>& code);
+};
+
+struct BW_PiplineCreateInfo
+{
+
 };
 

@@ -23,10 +23,10 @@ VK_GraphicsPipeline::~VK_GraphicsPipeline()
 {
 }
 
-void VK_GraphicsPipeline::CreateGraphicsPipeline()
+void VK_GraphicsPipeline::CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader)
 {
-		auto vertShaderCode = readFile("shaders/TexturedVert.spv");
-		auto fragShaderCode = readFile("shaders/TexturedFrag.spv");
+		std::vector<char> vertShaderCode = readFile("shaders/" + p_vertexShader + ".spv");
+		std::vector<char> fragShaderCode = readFile("shaders/" + p_fragmentShader + ".spv");
 
 		VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
 		VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -48,8 +48,8 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline()
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		auto bindingDescription = Vertex::getBindingDescription();
-		auto attributeDescriptions = Vertex::getAttributeDescriptions();
+		VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
+		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = Vertex::getAttributeDescriptions();
 
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -123,6 +123,9 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline()
 		pipelineLayoutInfo.setLayoutCount = 1;
 		pipelineLayoutInfo.pSetLayouts = &vk_renderer->descriptorSetLayout;
 
+
+		vk_renderer->CreateDescriptorSetLayouts();
+
 		if (vkCreatePipelineLayout(vk_device->device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create pipeline layout!");
 		}
@@ -149,7 +152,108 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline()
 
 		vkDestroyShaderModule(vk_device->device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(vk_device->device, vertShaderModule, nullptr);
+
+		vk_renderer->CreateCommandPool();
+		vk_swapChain->CreateDepthResources(*vk_renderer);
+		vk_renderer->CreateFramebuffers();
+		vk_renderer->CreateDescriptorPools();
 	
+}
+
+void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader)
+{
+	std::vector<char> vertShaderCode = readFile("shaders/" + p_vertexShader + ".spv");
+	std::vector<char> fragShaderCode = readFile("shaders/" + p_fragmentShader + ".spv");
+
+	VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+	VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	vertShaderStageInfo.module = vertShaderModule;
+	vertShaderStageInfo.pName = "main";
+
+	VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	fragShaderStageInfo.module = fragShaderModule;
+	fragShaderStageInfo.pName = "main";
+
+	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+	VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
+	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = Vertex::getAttributeDescriptions();
+
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+	VkViewport viewport = {};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)vk_swapChain->swapChainExtent.width;
+	viewport.height = (float)vk_swapChain->swapChainExtent.height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+
+	VkRect2D scissor = {};
+	scissor.offset = { 0, 0 };
+	scissor.extent = vk_swapChain->swapChainExtent;
+
+	VkPipelineDepthStencilStateCreateInfo depthStencil = {};
+	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencil.depthTestEnable = VK_TRUE;
+	depthStencil.depthWriteEnable = VK_TRUE;
+	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+	depthStencil.depthBoundsTestEnable = VK_FALSE;
+	depthStencil.stencilTestEnable = VK_FALSE;
+
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &vk_renderer->descriptorSetLayout;
+
+
+	vk_renderer->CreateDescriptorSetLayouts();
+
+	if (vkCreatePipelineLayout(vk_device->device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create pipeline layout!");
+	}
+
+	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = 2;
+	pipelineInfo.pStages = shaderStages;
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pDepthStencilState = &depthStencil;
+	pipelineInfo.layout = pipelineLayout;
+	pipelineInfo.renderPass = vk_renderer->renderPass;
+	pipelineInfo.subpass = 0;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+	if (vkCreateGraphicsPipelines(vk_device->device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create graphics pipeline!");
+	}
+
+	vkDestroyShaderModule(vk_device->device, fragShaderModule, nullptr);
+	vkDestroyShaderModule(vk_device->device, vertShaderModule, nullptr);
+
+	vk_renderer->CreateCommandPool();
+	vk_swapChain->CreateDepthResources(*vk_renderer);
+	vk_renderer->CreateFramebuffers();
+	vk_renderer->CreateDescriptorPools();
+
 }
 
 void VK_GraphicsPipeline::RecreateSwapChain(GLFWwindow * window, VK_GameObjectManager* vk_bufferManager)
@@ -167,7 +271,7 @@ void VK_GraphicsPipeline::RecreateSwapChain(GLFWwindow * window, VK_GameObjectMa
 	vk_swapChain->CreateSwapChain(window);
 	vk_swapChain->CreateImageViews();
 	vk_renderer->CreateRenderPass();
-	CreateGraphicsPipeline();
+	CreateGraphicsPipeline("TexturedVert", "TexturedFrag");
 	vk_swapChain->CreateDepthResources(*vk_renderer);
 	vk_renderer->CreateFramebuffers();
 	vk_bufferManager->CreateCommandBuffers(*this);

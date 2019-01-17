@@ -21,6 +21,7 @@ public:
 	VkSwapchainKHR				swapChain;
 	VkFormat					swapChainImageFormat;
 	VkExtent2D					swapChainExtent;
+
 	VkImage						depthImage;
 	VkDeviceMemory				depthImageMemory;
 	VkImageView					depthImageView;

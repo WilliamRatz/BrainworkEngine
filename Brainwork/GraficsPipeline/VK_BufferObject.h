@@ -45,7 +45,7 @@ public:
 
 	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t& currentImage);
 
-	void CreateBuffer			(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	static void CreateBuffer	(VK_Renderer* renderer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void CopyBuffer				(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 	VkBuffer						GetIndexBuffer		();

@@ -25,10 +25,14 @@ public:
 	static double	CURSOR_POS_X;
 	static double	CURSOR_POS_Y;
 
+	static double	SCROLL_OFFSET_X;
+	static double	SCROLL_OFFSET_Y;
 
-	static void		key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+	static void		Key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void		Mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 	static void		Cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+	static void		Scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 };
 
 #endif // !CONTROLS_H

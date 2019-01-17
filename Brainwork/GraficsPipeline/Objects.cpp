@@ -8,6 +8,7 @@ Object::Object()
 {
 
 }
+
 Object::Object(const Object& p_object)
 {
 	m_vertices = p_object.m_vertices;
@@ -94,15 +95,10 @@ Cube::Cube()
 {
 }
 
-Cube::~Cube()
-{
-}
-
 Cube::operator Object()
 {
 	Object temp;
-	/*temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);*/
+	temp.SetMesh(m_directoryPath);
 
 	return temp;
 }
@@ -116,8 +112,7 @@ Plane::Plane()
 Plane::operator Object()
 {
 	Object temp;
-	/*temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);*/
+	temp.SetMesh(m_directoryPath);
 
 	return temp;
 }
@@ -131,9 +126,8 @@ Sphere::Sphere()
 Sphere::operator Object()
 {
 	Object temp;
-	/*temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);
-*/
+	temp.SetMesh(m_directoryPath);
+
 	return temp;
 }
 #pragma endregion
@@ -146,8 +140,7 @@ Capsule::Capsule()
 Capsule::operator Object()
 {
 	Object temp;
-	/*temp.SetVertices(m_vertices);
-	temp.SetIndices(m_indices);*/
+	temp.SetMesh(m_directoryPath);
 
 	return temp;
 }

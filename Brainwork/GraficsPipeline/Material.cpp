@@ -4,6 +4,11 @@
 Material::Material()
 {
 }
+Material::Material(const Material& p_material)
+{
+	m_color = p_material.m_color;
+	m_texture = p_material.m_texture;
+}
 Material::~Material()
 {
 }

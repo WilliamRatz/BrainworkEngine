@@ -14,10 +14,14 @@ bool Controls::ARROW_DOWN_PRESSING = false;
 
 bool Controls::MOUSE_LEFT_PRESSING = false;
 bool Controls::MOUSE_RIGHT_PRESSING = false;
+
 double Controls::CURSOR_POS_X = 0.0;
 double Controls::CURSOR_POS_Y = 0.0;
 
-void Controls::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+double Controls::SCROLL_OFFSET_X = 1.0;
+double Controls::SCROLL_OFFSET_Y = 1.0;
+
+void Controls::Key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	if (action == GLFW_PRESS)
 	{
@@ -147,4 +151,20 @@ void Controls::Cursor_position_callback(GLFWwindow* window, double xpos, double 
 {
 	CURSOR_POS_X = xpos;
 	CURSOR_POS_Y = ypos;
+}
+
+#include <iostream>
+
+
+void Controls::Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (SCROLL_OFFSET_X + xoffset < 11 && SCROLL_OFFSET_X + xoffset > 0)
+	{
+		SCROLL_OFFSET_X += xoffset;
+	}
+
+	if (SCROLL_OFFSET_Y + yoffset < 11 && SCROLL_OFFSET_Y + yoffset > 0)
+	{
+		SCROLL_OFFSET_Y += yoffset;
+	}
 }

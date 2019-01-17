@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 
 
-
 #include <BW_Inc.h>
 #include <fstream>
 #include <stdexcept>

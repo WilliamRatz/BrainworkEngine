@@ -21,15 +21,18 @@ private:
 	bool			framebufferResized	= false;
 	Camera			cam;
 
-	VK_Device			vk_Device			= VK_Device();
-	VK_SwapChain		vk_swapChain		= VK_SwapChain(vk_Device);
-	VK_Renderer			vk_renderer			= VK_Renderer(vk_swapChain);
-	VK_GameObjectManager	vk_bufferManager	= VK_GameObjectManager(vk_renderer);
-	VK_GraphicsPipeline vk_graphicsPipeline = VK_GraphicsPipeline(vk_renderer);
+	VK_Device				vk_Device				= VK_Device();
+	VK_SwapChain			vk_swapChain			= VK_SwapChain(vk_Device);
+	VK_Renderer				vk_renderer				= VK_Renderer(vk_swapChain);
+	VK_GameObjectManager	vk_gameObjectManager	= VK_GameObjectManager(vk_renderer);
+	
+	std::vector<VK_GraphicsPipeline> vk_graphicsPipelines { VK_GraphicsPipeline(vk_renderer) };
 	
 
 	void			initWindow();
 	void			initVulkan();
+	void			initObjects();
+
 	void			mainLoop();
 	void			drawFrame();
 

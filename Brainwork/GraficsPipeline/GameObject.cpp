@@ -29,18 +29,18 @@ GameObject::~GameObject()
 }
 
 
-void GameObject::updateGameObject(uint32_t currentImage) {
+void GameObject::UpdateGameObject(uint32_t currentImage) {
 	
 	UniformBufferObject ubo = {};
 
-	localMatrix.rotation3DAroundY(0.05f);
+	//localMatrix.rotation3DAroundY(0.05f);
 
 	ubo.model = this->getGlobalMatrix();
 	ubo.view = Camera::ViewCamera.GetCameraMatrix();
 	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	ubo.proj[1][1] *= -1;
-	ubo.lightPos = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-	ubo.lightColor = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+	ubo.lightPos = Vector4(10.0f, 10.0f, 10.0f, 0.0f);
+	ubo.lightColor = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
 	ubo.groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
 
 
@@ -52,12 +52,22 @@ void GameObject::SetObject(const Object p_object)
 	m_object = p_object;
 }
 
-void GameObject::SetMaterial(Material p_material)
+void GameObject::SetMaterial(const Material p_material)
 {
 	m_material = p_material;
 }
 
+void GameObject::SetMaterial()
+{
+	m_material = Material();
+}
+
 VK_BufferObject GameObject::GetBufferObject()
+{
+	return m_BufferObject;
+}
+
+VK_BufferObject & GameObject::GetBufferObjectRef()
 {
 	return m_BufferObject;
 }
@@ -67,13 +77,25 @@ Object GameObject::GetObject()
 	return m_object;
 }
 
+Object & GameObject::GetObjectRef()
+{
+	return m_object;
+}
+
 Material GameObject::GetMaterial()
+{
+	return m_material;
+}
+
+Material & GameObject::GetMaterialRef()
 {
 	return m_material;
 }
 
 void GameObject::CreateBuffer()
 {
+	m_material.GetTextureRef().CreateTexture(m_renderer);
+
 	m_BufferObject.CreateVertexBuffer(m_object.GetVertices());
 	m_BufferObject.CreateIndexBuffer(m_object.GetIndices());
 	m_BufferObject.CreateUniformBuffers();

@@ -10,6 +10,7 @@ public:
 
 public:
 	Material();
+	Material(const Material& material);
 	~Material();
 
 	void		SetTexture		(Texture texture);

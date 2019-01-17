@@ -19,6 +19,9 @@ Camera::~Camera()
 
 void Camera::CameraUpdate(GLFWwindow *window)
 {
+	
+	Camera::ViewCamera.m_moveSpeed = 0.001 * Controls::SCROLL_OFFSET_Y;
+	
 	if (Controls::W_PRESSING || Controls::ARROW_UP_PRESSING)
 	{
 		Camera::ViewCamera.MoveForward();
@@ -68,9 +71,10 @@ Matrix<float, 4, 4> Camera::GetCameraMatrix()
 void Camera::SetCameraToWindow(GLFWwindow* window)
 {
 	Camera::ViewCamera = *this;
-	glfwSetKeyCallback(window, Controls::key_callback);
+	glfwSetKeyCallback(window, Controls::Key_callback);
 	glfwSetCursorPosCallback(window, Controls::Cursor_position_callback);
 	glfwSetMouseButtonCallback(window, Controls::Mouse_button_callback);
+	glfwSetScrollCallback(window, Controls::Scroll_callback);
 }
 
 void Camera::MoveForward()
@@ -91,11 +95,12 @@ void Camera::MoveRight()
 }
 void Camera::MoveUp()
 {
-	m_localMatrix.translate3D(this->GetCameraMatrix().Up().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(0, m_moveSpeed, 0);
 }
 void Camera::MoveDown()
 {
-	m_localMatrix.translate3D(this->GetCameraMatrix().Down().normalize() * m_moveSpeed);
+	m_localMatrix.translate3D(0, -m_moveSpeed, 0);
+
 }
 void Camera::RotateCamera(double p_cursorX, double p_cursorY)
 {
