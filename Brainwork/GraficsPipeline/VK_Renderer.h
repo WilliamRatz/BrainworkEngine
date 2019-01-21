@@ -5,6 +5,7 @@
 
 class VK_Device;
 class VK_SwapChain;
+class LightManager;
 
 class VK_Renderer
 {
@@ -16,6 +17,7 @@ public:
 	VK_Renderer				(VK_SwapChain& vk_swapChain);
 	
 	VkRenderPass			renderPass;
+	VkRenderPass			renderPassLight;
 
 	VkDescriptorPool		descriptorPool;
 	VkDescriptorSetLayout	descriptorSetLayout;
@@ -23,7 +25,9 @@ public:
 
 	
 	void CreateRenderPass				();
+	void CreateRenderPassLight			();
 	void CreateFramebuffers				();
+	void CreateLightFramebuffers		(LightManager* lightmanager);
 
 	void CreateDescriptorSetLayouts		();
 	void CreateDescriptorPools			();

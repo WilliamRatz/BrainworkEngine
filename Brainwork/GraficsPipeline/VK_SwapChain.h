@@ -22,6 +22,8 @@ public:
 	VkFormat					swapChainImageFormat;
 	VkExtent2D					swapChainExtent;
 
+	std::vector<VkFramebuffer>	swapChainLightFramebuffers;
+
 	VkImage						depthImage;
 	VkDeviceMemory				depthImageMemory;
 	VkImageView					depthImageView;

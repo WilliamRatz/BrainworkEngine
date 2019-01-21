@@ -2,6 +2,8 @@
 #include "VK_Device.h"
 #include "VK_GameObjectManager.h"
 #include "VK_SwapChain.h"
+#include "LightManager.h"
+#include "PointLight.h"
 
 VK_Renderer::VK_Renderer(VK_SwapChain& p_vk_swapChain)
 {
@@ -67,6 +69,50 @@ void VK_Renderer::CreateRenderPass(){
 	}
 }
 
+void VK_Renderer::CreateRenderPassLight() {
+	VkAttachmentDescription depthAttachment = {};
+	depthAttachment.format = vk_swapChain->findDepthFormat();
+	depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	VkAttachmentReference depthAttachmentRef = {};
+	depthAttachmentRef.attachment = 0;
+	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	VkSubpassDescription subpass = {};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 0;
+	subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+	VkSubpassDependency dependency = {};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+	VkAttachmentDescription attachments = depthAttachment ;
+	VkRenderPassCreateInfo renderPassInfo = {};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount = 1;
+	renderPassInfo.pAttachments = &depthAttachment;
+	renderPassInfo.subpassCount = 1;
+	renderPassInfo.pSubpasses = &subpass;
+	renderPassInfo.dependencyCount = 1;
+	renderPassInfo.pDependencies = &dependency;
+
+	if (vkCreateRenderPass(vk_swapChain->vk_device->device, &renderPassInfo, nullptr, &renderPassLight) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create render pass!");
+	}
+}
+
+
 void VK_Renderer::CreateFramebuffers()
 {
 	vk_swapChain->swapChainFramebuffers.resize(vk_swapChain->swapChainImageViews.size());
@@ -91,6 +137,29 @@ void VK_Renderer::CreateFramebuffers()
 		}
 	}
 }
+
+void VK_Renderer::CreateLightFramebuffers(LightManager* p_pLightManger)
+{
+	vk_swapChain->swapChainLightFramebuffers.resize(vk_swapChain->swapChainImageViews.size());
+
+	for (size_t i = 0; i < vk_swapChain->swapChainImageViews.size(); ++i) {
+		VkImageView attachment = p_pLightManger->m_pointLights[0].GetImageView();
+
+		VkFramebufferCreateInfo framebufferInfo = {};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPassLight;
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = &attachment;
+		framebufferInfo.width = vk_swapChain->swapChainExtent.width;
+		framebufferInfo.height = vk_swapChain->swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(vk_device->device, &framebufferInfo, nullptr, &vk_swapChain->swapChainLightFramebuffers[i]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create framebuffer!");
+		}
+	}
+}
+
 
 void VK_Renderer::CreateDescriptorSetLayouts() {
 	VkDescriptorSetLayoutBinding uboLayoutBinding = {};

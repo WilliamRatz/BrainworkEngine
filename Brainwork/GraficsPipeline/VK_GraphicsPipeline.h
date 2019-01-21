@@ -6,6 +6,7 @@ class VK_Renderer;
 class VK_SwapChain;
 class VK_Device;
 class VK_GameObjectManager;
+class LightManager;
 
 
 class VK_GraphicsPipeline
@@ -17,12 +18,16 @@ public:
 	VkPipeline				graphicsPipeline;
 	VkPipelineLayout		pipelineLayout;
 
+	VkPipeline				lightGraphicsPipeline;
+	VkPipelineLayout		lightPipelineLayout;
+
 	VK_GraphicsPipeline(VK_Renderer& vk_renderer);
 	VK_GraphicsPipeline(const VK_GraphicsPipeline& vk_graphicsPipeline);
 	~VK_GraphicsPipeline();
 
 	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader);
-	void CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader);
+
+	void CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, LightManager& p_lightManager);
 
 	void RecreateSwapChain(GLFWwindow* window, VK_GameObjectManager* vk_bufferManager);
 	void CleanupSwapChain(VK_GameObjectManager* vk_bufferManager);

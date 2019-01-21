@@ -1,4 +1,5 @@
 #include "VK_Window.h"
+#include "PointLight.h"
 
 VK_Window::VK_Window() 
 {
@@ -33,6 +34,7 @@ void VK_Window::initVulkan() {
 	vk_swapChain.CreateSwapChain(window);
 	vk_swapChain.CreateImageViews();
 	vk_renderer.CreateRenderPass();
+	vk_renderer.CreateRenderPassLight();
 
 	this->initObjects();
 	
@@ -41,15 +43,18 @@ void VK_Window::initVulkan() {
 void VK_Window::initObjects()
 {
 	vk_graphicsPipelines[0].CreateGraphicsPipeline("TexturedVert", "TexturedFrag");
+	vk_lightManager.AddLight(PointLight());
+	vk_graphicsPipelines[1].CreateLightGraphicsPipeline("vert", "frag", vk_lightManager);
 
 	
 	
-
+	
 	vk_gameObjectManager.CreateBufferObjects();
+	vk_lightManager.CreateLightBuffer();
 	vk_gameObjectManager.CreateDescriptorSets();
+	vk_lightManager.CreateDescriptorSets();
 	vk_gameObjectManager.CreateCommandBuffers(vk_graphicsPipelines[0]);
 	vk_swapChain.CreateSyncObjects();
-
 }
 
 void VK_Window::mainLoop() {
@@ -78,6 +83,8 @@ void VK_Window::drawFrame() {
 	}
 
 	vk_gameObjectManager.UpdateUniformBuffers(imageIndex);
+	vk_lightManager.UpdateLightInfos(imageIndex);
+
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 

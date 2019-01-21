@@ -96,6 +96,9 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Vulkan_1.1\SceneObjects\Objects\Lights</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Vulkan_1.1\SceneObjects\Objects\Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VK_Device.h">
@@ -146,6 +149,9 @@
     <ClInclude Include="PointLight.h">
       <Filter>Vulkan_1.1\SceneObjects\Objects\Lights</Filter>
     </ClInclude>
+    <ClInclude Include="LightManager.h">
+      <Filter>Vulkan_1.1\SceneObjects\Objects\Lights</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\TexturedFrag.spv">
@@ -155,6 +161,12 @@
       <Filter>Vulkan_1.1\VK_Shader</Filter>
     </None>
     <None Include="shaders\TexturedVert.spv">
+      <Filter>Vulkan_1.1\VK_Shader</Filter>
+    </None>
+    <None Include="shaders\LightShader.vert">
+      <Filter>Vulkan_1.1\VK_Shader</Filter>
+    </None>
+    <None Include="shaders\LightShader.frag">
       <Filter>Vulkan_1.1\VK_Shader</Filter>
     </None>
   </ItemGroup>

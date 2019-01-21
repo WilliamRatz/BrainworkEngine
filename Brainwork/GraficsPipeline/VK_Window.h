@@ -6,6 +6,7 @@
 #include "VK_SwapChain.h"
 #include "VK_GameObjectManager.h"
 #include "VK_GraphicsPipeline.h"
+#include "LightManager.h"
 #include "Camera.h"
 
 class VK_Window
@@ -25,8 +26,9 @@ private:
 	VK_SwapChain			vk_swapChain			= VK_SwapChain(vk_Device);
 	VK_Renderer				vk_renderer				= VK_Renderer(vk_swapChain);
 	VK_GameObjectManager	vk_gameObjectManager	= VK_GameObjectManager(vk_renderer);
+	LightManager			vk_lightManager			= LightManager(vk_renderer);
 	
-	std::vector<VK_GraphicsPipeline> vk_graphicsPipelines { VK_GraphicsPipeline(vk_renderer) };
+	std::vector<VK_GraphicsPipeline> vk_graphicsPipelines { VK_GraphicsPipeline(vk_renderer), VK_GraphicsPipeline(vk_renderer) };
 	
 
 	void			initWindow();

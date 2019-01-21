@@ -5,6 +5,7 @@
 #include "Objects.h"
 #include "VK_GameObjectManager.h"
 #include "GameObject.h"
+#include "LightManager.h"
 
 
 VK_GraphicsPipeline::VK_GraphicsPipeline(VK_Renderer& p_vk_renderer)
@@ -160,7 +161,7 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline(std::string p_vertexShader, std
 	
 }
 
-void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader)
+void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, LightManager& p_lightManager)
 {
 	std::vector<char> vertShaderCode = readFile("shaders/" + p_vertexShader + ".spv");
 	std::vector<char> fragShaderCode = readFile("shaders/" + p_fragmentShader + ".spv");
@@ -181,7 +182,6 @@ void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader
 	fragShaderStageInfo.pName = "main";
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
-
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
@@ -210,6 +210,28 @@ void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader
 	scissor.offset = { 0, 0 };
 	scissor.extent = vk_swapChain->swapChainExtent;
 
+	VkPipelineViewportStateCreateInfo viewportState = {};
+	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewportState.viewportCount = 1;
+	viewportState.pViewports = &viewport;
+	viewportState.scissorCount = 1;
+	viewportState.pScissors = &scissor;
+
+	VkPipelineRasterizationStateCreateInfo rasterizer = {};
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.depthClampEnable = VK_FALSE;
+	rasterizer.rasterizerDiscardEnable = VK_FALSE;
+	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizer.lineWidth = 1.0f;
+	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.depthBiasEnable = VK_FALSE;
+
+	VkPipelineMultisampleStateCreateInfo multisampling = {};
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sampleShadingEnable = VK_FALSE;
+	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
 	VkPipelineDepthStencilStateCreateInfo depthStencil = {};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	depthStencil.depthTestEnable = VK_TRUE;
@@ -218,15 +240,29 @@ void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.stencilTestEnable = VK_FALSE;
 
+	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	colorBlendAttachment.blendEnable = VK_FALSE;
+
+	VkPipelineColorBlendStateCreateInfo colorBlending = {};
+	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	colorBlending.logicOpEnable = VK_FALSE;
+	colorBlending.logicOp = VK_LOGIC_OP_COPY;
+	colorBlending.attachmentCount = 1;
+	colorBlending.pAttachments = &colorBlendAttachment;
+	colorBlending.blendConstants[0] = 0.0f;
+	colorBlending.blendConstants[1] = 0.0f;
+	colorBlending.blendConstants[2] = 0.0f;
+	colorBlending.blendConstants[3] = 0.0f;
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &vk_renderer->descriptorSetLayout;
+	pipelineLayoutInfo.pSetLayouts = &p_lightManager.m_descriptorSetLayout;
 
+	p_lightManager.CreateDescriptorSetLayout();
 
-	vk_renderer->CreateDescriptorSetLayouts();
-
-	if (vkCreatePipelineLayout(vk_device->device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+	if (vkCreatePipelineLayout(vk_device->device, &pipelineLayoutInfo, nullptr, &lightPipelineLayout) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create pipeline layout!");
 	}
 
@@ -236,23 +272,26 @@ void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader
 	pipelineInfo.pStages = shaderStages;
 	pipelineInfo.pVertexInputState = &vertexInputInfo;
 	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
 	pipelineInfo.pDepthStencilState = &depthStencil;
-	pipelineInfo.layout = pipelineLayout;
-	pipelineInfo.renderPass = vk_renderer->renderPass;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.layout = lightPipelineLayout;
+	pipelineInfo.renderPass = vk_renderer->renderPassLight;
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-	if (vkCreateGraphicsPipelines(vk_device->device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+	if (vkCreateGraphicsPipelines(vk_device->device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &lightGraphicsPipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
 
-	vkDestroyShaderModule(vk_device->device, fragShaderModule, nullptr);
 	vkDestroyShaderModule(vk_device->device, vertShaderModule, nullptr);
 
 	vk_renderer->CreateCommandPool();
-	vk_swapChain->CreateDepthResources(*vk_renderer);
-	vk_renderer->CreateFramebuffers();
-	vk_renderer->CreateDescriptorPools();
+	p_lightManager.CalculateLightMaps();
+	vk_renderer->CreateLightFramebuffers(&p_lightManager);
+	p_lightManager.CreateDescriptorPool();
 
 }
 
