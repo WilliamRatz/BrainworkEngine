@@ -276,7 +276,7 @@ void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader
 	pipelineInfo.pRasterizationState = &rasterizer;
 	pipelineInfo.pMultisampleState = &multisampling;
 	pipelineInfo.pDepthStencilState = &depthStencil;
-	pipelineInfo.pColorBlendState = &colorBlending;
+	//pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.layout = lightPipelineLayout;
 	pipelineInfo.renderPass = vk_renderer->renderPassLight;
 	pipelineInfo.subpass = 0;
@@ -313,7 +313,7 @@ void VK_GraphicsPipeline::RecreateSwapChain(GLFWwindow * window, VK_GameObjectMa
 	CreateGraphicsPipeline("TexturedVert", "TexturedFrag");
 	vk_swapChain->CreateDepthResources(*vk_renderer);
 	vk_renderer->CreateFramebuffers();
-	vk_bufferManager->CreateCommandBuffers(*this);
+	//vk_bufferManager->CreateCommandBuffers(*this);
 }
 void VK_GraphicsPipeline::CleanupSwapChain(VK_GameObjectManager* vk_bufferManager)
 {

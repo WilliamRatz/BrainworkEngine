@@ -104,8 +104,8 @@ void VK_Renderer::CreateRenderPassLight() {
 	renderPassInfo.pAttachments = &depthAttachment;
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
+	//renderPassInfo.dependencyCount = 0;
+	//renderPassInfo.pDependencies = &dependency;
 
 	if (vkCreateRenderPass(vk_swapChain->vk_device->device, &renderPassInfo, nullptr, &renderPassLight) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create render pass!");

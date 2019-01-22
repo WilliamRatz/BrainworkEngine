@@ -3,33 +3,30 @@
 
 class VK_Renderer;
 class LightManager;
-struct LightInfo {
-	Matrix<float, 4, 4> model;
-	Matrix<float, 4, 4> view;
-};
+class GameObject;
 
 class PointLight
 {
-	LightInfo						m_LightInfo;
+	LightInfoObject					m_LightInfo;
 
-	std::vector<VkBuffer>			m_LightInfoBuffer;
-	std::vector<VkDeviceMemory>		m_LightInfoBufferMemory;
+	std::vector <std::vector<VkBuffer>>				m_LightInfoBuffer;
+	std::vector <std::vector<VkDeviceMemory>>		m_LightInfoBufferMemory;
 
-	std::vector<VkDescriptorSet>	m_descriptorSets;
 	
 	VkImage							m_PointLightImage;
 	VkDeviceMemory					m_PointLightImageMemory;
 	VkImageView						m_PointLightImageView;
 
 public:
+	std::vector<std::vector<VkDescriptorSet>>	m_descriptorSets;
 	PointLight();
 	PointLight(const PointLight& pointLight);
 	~PointLight();
 
 	void CreatePointLightImage(VK_Renderer*);
-	void CreateLightInfoBuffer(VK_Renderer*);
-	void UpdateLightInfoToShader(VK_Renderer*, uint32_t&);
-	void CreateDescriptorSets(LightManager*, VkDescriptorPool&, VkDescriptorSetLayout&);
+	void CreateLightInfoBuffer(VK_Renderer*, size_t);
+	void UpdateLightInfo(VK_Renderer*, uint32_t&, GameObject&);
+	void CreateDescriptorSets(LightManager*);
 
 	VkImageView GetImageView();
 };

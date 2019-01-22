@@ -46,14 +46,11 @@ void VK_Window::initObjects()
 	vk_lightManager.AddLight(PointLight());
 	vk_graphicsPipelines[1].CreateLightGraphicsPipeline("vert", "frag", vk_lightManager);
 
-	
-	
-	
 	vk_gameObjectManager.CreateBufferObjects();
-	vk_lightManager.CreateLightBuffer();
+	vk_lightManager.CreateLightBuffer(vk_gameObjectManager.gameObjects.size());
 	vk_gameObjectManager.CreateDescriptorSets();
 	vk_lightManager.CreateDescriptorSets();
-	vk_gameObjectManager.CreateCommandBuffers(vk_graphicsPipelines[0]);
+	vk_gameObjectManager.CreateCommandBuffers(vk_graphicsPipelines[0], vk_graphicsPipelines[1], vk_lightManager);
 	vk_swapChain.CreateSyncObjects();
 }
 
@@ -83,7 +80,7 @@ void VK_Window::drawFrame() {
 	}
 
 	vk_gameObjectManager.UpdateUniformBuffers(imageIndex);
-	vk_lightManager.UpdateLightInfos(imageIndex);
+	vk_lightManager.UpdateLightInfos(imageIndex, vk_gameObjectManager.gameObjects[0]);
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

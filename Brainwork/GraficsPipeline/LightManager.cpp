@@ -3,6 +3,7 @@
 #include "VK_Renderer.h"
 #include "VK_SwapChain.h"
 #include "VK_Device.h"
+#include "GameObject.h"
 
 
 
@@ -70,22 +71,22 @@ void LightManager::CreateDescriptorSets()
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.CreateDescriptorSets(this, m_descriptorPool, m_descriptorSetLayout);
+		p_light.CreateDescriptorSets(this);
 	}
 }
 
-void LightManager::CreateLightBuffer()
+void LightManager::CreateLightBuffer(size_t p_gameObjectCount)
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.CreateLightInfoBuffer(m_pRenderer);
+		p_light.CreateLightInfoBuffer(m_pRenderer, p_gameObjectCount);
 	}
 }
 
-void LightManager::UpdateLightInfos(uint32_t p_currentImage)
+void LightManager::UpdateLightInfos(uint32_t p_currentImage, GameObject& p_gameObject)
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.UpdateLightInfoToShader(m_pRenderer, p_currentImage);
+		p_light.UpdateLightInfo(m_pRenderer, p_currentImage, p_gameObject);
 	}
 }

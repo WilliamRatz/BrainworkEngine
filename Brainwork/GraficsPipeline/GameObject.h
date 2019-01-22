@@ -5,7 +5,11 @@
 #include "Material.h"
 #include "VK_BufferObject.h"
 
+
 class VK_Renderer;
+
+
+
 
 class GameObject
 {
@@ -16,6 +20,7 @@ private:
 	Material					m_material;
 	
 	GameObject*					m_parentObject = NULL;
+	UniformBufferObject			m_ubo;
 	std::vector<GameObject>		m_children;
 
 	Matrix<float, 4, 4>			globalMatrix;
@@ -27,6 +32,8 @@ public:
 
 	void UpdateGameObject		(uint32_t currentImage);
 
+	UniformBufferObject		GetUniformBufferObject		();
+	UniformBufferObject&	GetUniformBufferObjectRef	();
 
 	VK_BufferObject		GetBufferObject		();
 	VK_BufferObject&	GetBufferObjectRef	();

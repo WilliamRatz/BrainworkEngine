@@ -5,6 +5,7 @@
 
 class VK_Renderer;
 class VK_GraphicsPipeline;
+class LightManager;
 
 class VK_GameObjectManager
 {
@@ -21,7 +22,7 @@ public:
 
 	void CreateBufferObjects		();
 	void CreateDescriptorSets		();
-	void CreateCommandBuffers		(VK_GraphicsPipeline& vk_graphicsPipeline);
+	void CreateCommandBuffers		(VK_GraphicsPipeline& vk_graphicsPipeline, VK_GraphicsPipeline& vk_graphicsPipelineLight, LightManager& lg);
 
 	void CleanUpBuffers				();
 };

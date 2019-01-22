@@ -104,6 +104,6 @@ void Camera::MoveDown()
 }
 void Camera::RotateCamera(double p_cursorX, double p_cursorY)
 {
-	m_gloabalMatrix.rotation3DAroundX((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
-	m_gloabalMatrix.rotation3DAroundY((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
+	/*dontworks*/m_gloabalMatrix.rotation3DAroundZ((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
+	/*works*/m_gloabalMatrix.rotation3DAroundY((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
 }

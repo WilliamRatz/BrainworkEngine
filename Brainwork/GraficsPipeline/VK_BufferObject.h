@@ -6,17 +6,7 @@
 class VK_Renderer;
 class Material;
 struct Vertex;
-
-struct UniformBufferObject {
-	Matrix<float, 4, 4> model;
-	Matrix<float, 4, 4> view;
-	Matrix<float, 4, 4> proj;
-
-	Vector4 lightPos;
-	Vector4 lightColor;
-	Vector4 groundColor;
-};
-
+struct UniformBufferObject;
 
 class VK_BufferObject
 {

@@ -31,20 +31,28 @@ GameObject::~GameObject()
 
 void GameObject::UpdateGameObject(uint32_t currentImage) {
 	
-	UniformBufferObject ubo = {};
-
 	//localMatrix.rotation3DAroundY(0.05f);
 
-	ubo.model = this->getGlobalMatrix();
-	ubo.view = Camera::ViewCamera.GetCameraMatrix();
-	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
-	ubo.proj[1][1] *= -1;
-	ubo.lightPos = Vector4(10.0f, 10.0f, 10.0f, 0.0f);
-	ubo.lightColor = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-	ubo.groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
+	m_ubo.model = this->getGlobalMatrix();
+	m_ubo.view = Camera::ViewCamera.GetCameraMatrix();
+	m_ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
+	m_ubo.proj[1][1] *= -1;
+	m_ubo.lightPos = Vector4(10.0f, 10.0f, 10.0f, 0.0f);
+	m_ubo.lightColor = Vector4(1.0f, 1.0f, 1.0f, 0.0f);
+	m_ubo.groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
 
 
-	m_BufferObject.UpdateUniformBuffer(ubo, currentImage);
+	m_BufferObject.UpdateUniformBuffer(m_ubo, currentImage);
+}
+
+UniformBufferObject GameObject::GetUniformBufferObject()
+{
+	return m_ubo;
+}
+
+UniformBufferObject& GameObject::GetUniformBufferObjectRef()
+{
+	return m_ubo;
 }
 
 void GameObject::SetObject(const Object p_object)

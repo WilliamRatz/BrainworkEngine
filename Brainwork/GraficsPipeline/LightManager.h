@@ -1,10 +1,9 @@
 #pragma once
 #include "VK_inc.h"
+
 class PointLight;
-
-
-
 class VK_Renderer;
+class GameObject;
 
 class LightManager
 {
@@ -26,7 +25,7 @@ public:
 	void CreateDescriptorPool();
 	void CreateDescriptorSetLayout();
 	void CreateDescriptorSets();
-	void CreateLightBuffer();
-	void UpdateLightInfos(uint32_t currentImage);
+	void CreateLightBuffer(size_t gameObjectCount);
+	void UpdateLightInfos(uint32_t currentImage, GameObject& onlyOnePossibleForNow);
 };
 
