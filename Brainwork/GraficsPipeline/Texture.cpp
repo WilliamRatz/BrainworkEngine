@@ -118,7 +118,7 @@ void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, 
 	m_renderer->endSingleTimeCommands(commandBuffer);
 }
 
-void Texture::cleanup() {
+void Texture::CleanUpTexture() {
 	//after cleanup swapchain
 
 	vkDestroySampler(m_renderer->vk_device->device, textureSampler, nullptr);

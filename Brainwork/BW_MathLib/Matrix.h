@@ -298,27 +298,9 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundXlocal(float
 	if (R < 3 && C < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"X\" check your dimensions");
 	}
-	Matrix<T, R, C> rotat3DXlocal;
-	Matrix<T, R, C> additionalTransform;
-	double degress = (double)angle * MathLib::PI / 180; // change from Rad to degrees
-	
-	additionalTransform[0][3] = -columns[0][3];
-	additionalTransform[1][3] = -columns[1][3];
-	additionalTransform[2][3] = -columns[2][3];
-
-	this->operator*=(additionalTransform);
-
-	additionalTransform[0][3] = -additionalTransform[0][3];
-	additionalTransform[1][3] = -additionalTransform[1][3];
-	additionalTransform[2][3] = -additionalTransform[2][3];
-
-	rotat3DXlocal[1][1] = (T)std::cos(degress);
-	rotat3DXlocal[1][2] = (T)-std::sin(degress);
-	rotat3DXlocal[2][1] = (T)std::sin(degress);
-	rotat3DXlocal[2][2] = (T)std::cos(degress);
-
-	this->operator*=(rotat3DXlocal);
-	this->operator*=(additionalTransform);
+	this->transpose();
+	this->rotation3DAroundX(angle);
+	this->transpose();
 	return *this;
 }
 typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundYlocal(float angle)
@@ -327,28 +309,9 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundYlocal(float
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Y\" check your dimensions");
 	}
 
-	Matrix<T, R, C> rotat3DYlocal;
-	Matrix<T, R, C> additionalTransform;
-	double degress = (double)angle * MathLib::PI / 180; // change from Rad to degrees
-	
-
-	additionalTransform[0][3] = -columns[0][3];
-	additionalTransform[1][3] = -columns[1][3];
-	additionalTransform[2][3] = -columns[2][3];
-
-	this->operator*=(additionalTransform);
-
-	additionalTransform[0][3] = -additionalTransform[0][3];
-	additionalTransform[1][3] = -additionalTransform[1][3];
-	additionalTransform[2][3] = -additionalTransform[2][3];
-
-	rotat3DYlocal[0][0] = (T)std::cos(degress);
-	rotat3DYlocal[0][2] = (T)std::sin(degress);
-	rotat3DYlocal[2][0] = (T)-std::sin(degress);
-	rotat3DYlocal[2][2] = (T)std::cos(degress);
-
-	this->operator*=(rotat3DYlocal);
-	this->operator*=(additionalTransform);
+	this->transpose();
+	this->rotation3DAroundY(angle);
+	this->transpose();
 	return *this;
 }
 typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundZlocal(float angle)
@@ -357,28 +320,9 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundZlocal(float
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Z\" check your dimensions");
 	}
 
-	Matrix<T, R, C> rotat3DZlocal;
-	Matrix<T, R, C> additionalTransform;
-	double degress = (double)angle * MathLib::PI / 180; // change from Rad to degrees
-	
-
-	additionalTransform[0][3] = -columns[0][3];
-	additionalTransform[1][3] = -columns[1][3];
-	additionalTransform[2][3] = -columns[2][3];
-
-	this->operator*=(additionalTransform);
-
-	additionalTransform[0][3] = -additionalTransform[0][3];
-	additionalTransform[1][3] = -additionalTransform[1][3];
-	additionalTransform[2][3] = -additionalTransform[2][3];
-
-	rotat3DZlocal[0][0] = (T)std::cos(degress);
-	rotat3DZlocal[0][1] = (T)std::sin(degress);
-	rotat3DZlocal[1][0] = (T)-std::sin(degress);
-	rotat3DZlocal[1][1] = (T)std::cos(degress);
-
-	this->operator*=(rotat3DZlocal);
-	this->operator*=(additionalTransform);
+	this->transpose();
+	this->rotation3DAroundZ(angle);
+	this->transpose();
 	return *this;
 }
 			

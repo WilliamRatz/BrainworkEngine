@@ -28,7 +28,7 @@ public:
 
 	void CreateTexture		(VK_Renderer* renderer);
 
-	void cleanup			();
+	void CleanUpTexture		();
 
 	void operator=(const Texture&);
 };

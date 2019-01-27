@@ -26,7 +26,8 @@ void LightManager::CalculateLightMaps()
 {
 	for (PointLight& p_light : m_pointLights) 
 	{
-		p_light.CreatePointLightImage(m_pRenderer);
+		p_light.CreatePointLightImage();
+		p_light.CreateLightSampler();
 	}
 }
 
@@ -79,7 +80,7 @@ void LightManager::CreateLightBuffer(size_t p_gameObjectCount)
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.CreateLightInfoBuffer(m_pRenderer, p_gameObjectCount);
+		p_light.CreateLightInfoBuffer(p_gameObjectCount);
 	}
 }
 
@@ -87,6 +88,6 @@ void LightManager::UpdateLightInfos(uint32_t p_currentImage, GameObject& p_gameO
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.UpdateLightInfo(m_pRenderer, p_currentImage, p_gameObject);
+		p_light.UpdateLightInfo(p_currentImage, p_gameObject);
 	}
 }

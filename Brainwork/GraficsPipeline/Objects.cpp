@@ -1,16 +1,19 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include "Objects.h"
-
+#include "Material.h"
+#include "VK_Renderer.h"
 
 #pragma region Object
 Object::Object()
 {
 
 }
-
 Object::Object(const Object& p_object)
 {
+	m_ubo = p_object.m_ubo;
+	m_bufferObject = p_object.m_bufferObject;
+
 	m_vertices = p_object.m_vertices;
 	m_indices = p_object.m_indices;
 }
@@ -38,7 +41,7 @@ void Object::SetMesh(std::string directoryPath)
 				Vertex vertex(
 					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
 					Vector2(attrib.texcoords[2 * index.texcoord_index + 0], 2 * attrib.texcoords[index.texcoord_index + 1]),
-					Vector3(-attrib.normals[3 * index.normal_index +0], -attrib.normals[3 * index.normal_index + 1], -attrib.normals[3 * index.normal_index + 2])
+					Vector3(-attrib.normals[3 * index.normal_index + 0], -attrib.normals[3 * index.normal_index + 1], -attrib.normals[3 * index.normal_index + 2])
 				);
 
 				m_vertices.push_back(vertex);
@@ -61,31 +64,53 @@ void Object::SetMesh(std::string directoryPath)
 		}
 	}
 }
-
-void Object::SetVertices(std::vector<Vertex>& p_vertices)
+void Object::CreateBuffer(VK_Renderer* p_renderer)
 {
-	m_vertices = p_vertices;
+	m_bufferObject.SetRenderer(p_renderer);
+	m_bufferObject.CreateVertexBuffer(m_vertices);
+	m_bufferObject.CreateIndexBuffer(m_indices);
+	m_bufferObject.CreateUniformBuffers();
 }
-void Object::SetIndices(std::vector<uint32_t>& p_indices)
+
+UniformBufferObject	Object::GetUniformBufferObject()
 {
-	m_indices = p_indices;
+	return m_ubo;
+}
+UniformBufferObject& Object::GetUniformBufferObjectRef()
+{
+	return m_ubo;
+}
+
+VK_BufferObject	Object::GetVK_BufferObject()
+{
+	return m_bufferObject;
+}
+VK_BufferObject& Object::GetVK_BufferObjectRef()
+{
+	return m_bufferObject;
 }
 
 std::vector<Vertex>	 Object::GetVertices()
 {
 	return m_vertices;
 }
-std::vector<uint32_t> Object::GetIndices()
-{
-	return m_indices;
-}
 std::vector<Vertex>& Object::GetVerticesRef()
 {
 	return m_vertices;
 }
+
+std::vector<uint32_t> Object::GetIndices()
+{
+	return m_indices;
+}
 std::vector<uint32_t>& Object::GetIndicesRef()
 {
 	return m_indices;
+}
+
+void Object::CleanUpObject()
+{
+	m_bufferObject.CleanUpBufferObject();
 }
 #pragma endregion
 

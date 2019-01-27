@@ -89,14 +89,6 @@ void VK_Renderer::CreateRenderPassLight() {
 	subpass.colorAttachmentCount = 0;
 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
-	VkSubpassDependency dependency = {};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
 	VkAttachmentDescription attachments = depthAttachment ;
 	VkRenderPassCreateInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -104,8 +96,6 @@ void VK_Renderer::CreateRenderPassLight() {
 	renderPassInfo.pAttachments = &depthAttachment;
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
-	//renderPassInfo.dependencyCount = 0;
-	//renderPassInfo.pDependencies = &dependency;
 
 	if (vkCreateRenderPass(vk_swapChain->vk_device->device, &renderPassInfo, nullptr, &renderPassLight) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create render pass!");
@@ -176,7 +166,14 @@ void VK_Renderer::CreateDescriptorSetLayouts() {
 	samplerLayoutBinding.pImmutableSamplers = nullptr;
 	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+	VkDescriptorSetLayoutBinding lightDepthSampler = {};
+	samplerLayoutBinding.binding = 2;
+	samplerLayoutBinding.descriptorCount = 1;
+	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	samplerLayoutBinding.pImmutableSamplers = nullptr;
+	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+	std::array<VkDescriptorSetLayoutBinding, 3> bindings = { uboLayoutBinding, samplerLayoutBinding, lightDepthSampler };
 
 	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -189,17 +186,19 @@ void VK_Renderer::CreateDescriptorSetLayouts() {
 }
 
 void VK_Renderer::CreateDescriptorPools() {
-	std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+	std::array<VkDescriptorPoolSize, 3> poolSizes = {};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = static_cast<uint32_t>(vk_swapChain->swapChainImages.size());
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	poolSizes[1].descriptorCount = static_cast<uint32_t>(vk_swapChain->swapChainImages.size());
+	poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	poolSizes[2].descriptorCount = static_cast<uint32_t>(vk_swapChain->swapChainImages.size());
 
 	VkDescriptorPoolCreateInfo poolTextureInfo = {};
 	poolTextureInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolTextureInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolTextureInfo.pPoolSizes = poolSizes.data();
-	poolTextureInfo.maxSets = static_cast<uint32_t>(vk_swapChain->swapChainImages.size()*60);
+	poolTextureInfo.maxSets = static_cast<uint32_t>(vk_swapChain->swapChainImages.size());
 
 	if (vkCreateDescriptorPool(vk_device->device, &poolTextureInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor pool!");

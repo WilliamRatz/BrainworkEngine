@@ -3,64 +3,47 @@
 
 #include "Objects.h"
 #include "Material.h"
-#include "VK_BufferObject.h"
 
+
+#include "Lighting.h"
+#include "Transform.h"
 
 class VK_Renderer;
-
-
-
+class PointLight;
 
 class GameObject
 {
 private:
-	VK_Renderer*				m_renderer;
-	VK_BufferObject				m_BufferObject;
-	Object						m_object;
-	Material					m_material;
-	
-	GameObject*					m_parentObject = NULL;
-	UniformBufferObject			m_ubo;
-	std::vector<GameObject>		m_children;
+	VK_Renderer*		m_pRenderer;
+	Object				m_object;
+	Transform			m_transform;
+	Material			m_material;
+	Lighting			m_lighting;
 
-	Matrix<float, 4, 4>			globalMatrix;
-	Matrix<float, 4, 4>			recalculateMatrix();
 public:
 	GameObject					(VK_Renderer& renderer);
 	GameObject					(const GameObject& gameObject);
 	~GameObject					();
 
 	void UpdateGameObject		(uint32_t currentImage);
+	void CreateBuffer			();
+	void CreateDescriptorSets	();
 
-	UniformBufferObject		GetUniformBufferObject		();
-	UniformBufferObject&	GetUniformBufferObjectRef	();
-
-	VK_BufferObject		GetBufferObject		();
-	VK_BufferObject&	GetBufferObjectRef	();
-	
 	void				SetObject			(const Object object);
 	Object				GetObject			();
 	Object&				GetObjectRef		();
 	
-	void				SetMaterial			();
+	void				SetTransform		(const Transform material);
+	Transform			GetTransform		();
+	Transform&			GetTransformRef		();
+	
 	void				SetMaterial			(const Material material);
 	Material			GetMaterial			();
 	Material&			GetMaterialRef		();
 
-	void CreateBuffer			();
-	void CreateDescriptorSets	();
-
-
-	Matrix<float, 4, 4>			localMatrix;
-	Matrix<float, 4, 4>			getGlobalMatrix();
-
-	void setParent				(GameObject* parentObject);
-	void addChild				(GameObject& childObject);
-	void addChildren			(std::vector<GameObject>& childrenObject);
-
-	GameObject*					getParent();
-	GameObject&					getChild(uint16_t index);
-	std::vector<GameObject>&	getChildren();
+	void				SetLighting			(const Lighting material);
+	Lighting			GetLighting			();
+	Lighting&			GetLightingRef		();
 
 	void CleanupGameObject();
 };

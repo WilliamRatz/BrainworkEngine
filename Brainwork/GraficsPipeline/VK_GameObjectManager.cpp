@@ -31,11 +31,17 @@ void VK_GameObjectManager::CreateBufferObjects()
 		for (int ii = 0; ii < 1; ++ii)
 		{
 			gameObjects.push_back(GameObject(*renderer));
-			gameObjects[u].GetObjectRef().SetMesh("models/Cube.obj");
+			if (u % 2 == 0) {
+				gameObjects[u].SetObject(Sphere());
+			}
+			else {
 
-			gameObjects[u].GetMaterialRef().SetTexture(Texture("textures/emptyTexture.png"));
-			gameObjects[u].localMatrix.translate3D(1.2*i, 1.2*ii, 0);
-			gameObjects[u].localMatrix.scale3D(0.1f, 0.1f, 0.1f);
+				gameObjects[u].SetObject(Capsule());
+			}
+
+			gameObjects[u].GetMaterialRef().SetTexture(Texture("textures/brain.png"));
+			gameObjects[u].GetTransform().getLocalMatrixRef().translate3D(1.2*i, 1.2*ii, 0);
+			//gameObjects[u].localMatrix.scale3D(10.0f, 10.0f, 10.0f);
 			gameObjects[u].CreateBuffer();
 			++u;
 		}
@@ -96,11 +102,11 @@ void VK_GameObjectManager::CreateCommandBuffers(VK_GraphicsPipeline& vk_graphics
 		for (size_t ii = 0; ii < gameObjects.size(); ++ii)
 		{
 
-			VkBuffer vertexBuffers[] = { gameObjects[ii].GetBufferObject().GetVertexBuffer() };
+			VkBuffer vertexBuffers[] = { gameObjects[ii].GetObjectRef().GetVK_BufferObjectRef().GetVertexBuffer()};
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(commandBuffers[i], gameObjects[ii].GetBufferObject().GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipeline.pipelineLayout, 0, 1, &gameObjects[ii].GetBufferObject().GetDescriptorSets()[i], 0, nullptr);
+			vkCmdBindIndexBuffer(commandBuffers[i], gameObjects[ii].GetObjectRef().GetVK_BufferObjectRef().GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipeline.pipelineLayout, 0, 1, &gameObjects[ii].GetObjectRef().GetVK_BufferObjectRef().GetDescriptorSets()[i], 0, nullptr);
 
 			vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(gameObjects[ii].GetObject().GetIndices().size()), 1, 0, 0, 0);
 		}
@@ -134,10 +140,10 @@ void VK_GameObjectManager::CreateCommandBuffers(VK_GraphicsPipeline& vk_graphics
 			for (size_t iii = 0; iii < gameObjects.size(); ++iii)
 			{
 
-				VkBuffer vertexBuffers[] = { gameObjects[iii].GetBufferObject().GetVertexBuffer() };
+				VkBuffer vertexBuffers[] = { gameObjects[iii].GetObjectRef().GetVK_BufferObjectRef().GetVertexBuffer() };
 				VkDeviceSize offsets[] = { 0 };
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-				vkCmdBindIndexBuffer(commandBuffers[i], gameObjects[iii].GetBufferObject().GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+				vkCmdBindIndexBuffer(commandBuffers[i], gameObjects[iii].GetObjectRef().GetVK_BufferObjectRef().GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipelineLight.lightPipelineLayout, 0, 1, &lg.m_pointLights[0].m_descriptorSets[ii][i], 0, nullptr);
 
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(gameObjects[iii].GetObject().GetIndices().size()), 1, 0, 0, 0);

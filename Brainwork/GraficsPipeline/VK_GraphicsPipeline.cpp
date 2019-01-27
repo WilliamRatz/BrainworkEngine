@@ -49,8 +49,8 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline(std::string p_vertexShader, std
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
-		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = Vertex::getAttributeDescriptions();
+		VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescriptionVertexAll();
+		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = Vertex::getAttributeDescriptionsVertexAll();
 
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -185,13 +185,13 @@ void VK_GraphicsPipeline::CreateLightGraphicsPipeline(std::string p_vertexShader
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-	VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
-	std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = Vertex::getAttributeDescriptions();
+	VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescriptionVertexPos();
+	VkVertexInputAttributeDescription attributeDescription = Vertex::getAttributeDescriptionsVertexPos();
 
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
-	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.vertexAttributeDescriptionCount = 1;
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+	vertexInputInfo.pVertexAttributeDescriptions = &attributeDescription;
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -341,7 +341,7 @@ void VK_GraphicsPipeline::CleanupSwapChain(VK_GameObjectManager* vk_bufferManage
 	for (int i = 0; i < vk_bufferManager->gameObjects.size(); ++i) 
 	{
 
-		vk_bufferManager->gameObjects[i].GetMaterial().GetTextureRef().cleanup();
+		vk_bufferManager->gameObjects[i].GetMaterial().GetTextureRef().CleanUpTexture();
 	}
 }
 

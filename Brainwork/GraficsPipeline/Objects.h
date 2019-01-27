@@ -1,8 +1,11 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
+#include "VK_BufferObject.h"
 #include "VK_inc.h"
 
+class VK_Renderer;
+class Material;
 
 struct Vertex {
 	Vector3 pos;
@@ -16,7 +19,7 @@ struct Vertex {
 		normal = p_normal;
 	}
 
-	static VkVertexInputBindingDescription getBindingDescription() {
+	static VkVertexInputBindingDescription getBindingDescriptionVertexAll() {
 		VkVertexInputBindingDescription bindingDescription = {};
 		bindingDescription.binding = 0;
 		bindingDescription.stride = sizeof(Vertex);
@@ -25,7 +28,16 @@ struct Vertex {
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+	static VkVertexInputBindingDescription getBindingDescriptionVertexPos() {
+		VkVertexInputBindingDescription bindingDescription = {};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = sizeof(pos);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return bindingDescription;
+	}
+
+	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptionsVertexAll() {
 		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
 
 		attributeDescriptions[0].binding = 0;
@@ -45,11 +57,25 @@ struct Vertex {
 
 		return attributeDescriptions;
 	}
+
+	static VkVertexInputAttributeDescription getAttributeDescriptionsVertexPos() {
+		VkVertexInputAttributeDescription attributeDescription = {};
+
+		attributeDescription.binding = 0;
+		attributeDescription.location = 0;
+		attributeDescription.format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescription.offset = offsetof(Vertex, pos);
+
+		return attributeDescription;
+	}
 };
 
 class Object 
 {
 private:
+	UniformBufferObject			m_ubo;
+	VK_BufferObject				m_bufferObject;
+
 	std::vector<Vertex>			m_vertices;
 	std::vector<uint32_t>		m_indices;
 
@@ -59,14 +85,19 @@ public:
 	~Object						();
 
 	void SetMesh				(std::string directoryPath);
+	void CreateBuffer			(VK_Renderer* renderer);
+	
 
-	void SetVertices			(std::vector<Vertex>& vertices);
-	void SetIndices				(std::vector<uint32_t>& indices);
-
+	UniformBufferObject			GetUniformBufferObject();
+	UniformBufferObject&		GetUniformBufferObjectRef();
+	VK_BufferObject				GetVK_BufferObject();
+	VK_BufferObject&			GetVK_BufferObjectRef();
 	std::vector<Vertex>			GetVertices();
 	std::vector<Vertex>&		GetVerticesRef();
 	std::vector<uint32_t>		GetIndices();
 	std::vector<uint32_t>&		GetIndicesRef();
+
+	void CleanUpObject();
 };
 
 class Cube

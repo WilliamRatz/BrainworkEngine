@@ -10,7 +10,7 @@ Camera::Camera()
 Camera::Camera(const Camera& cam)
 {
 	m_localMatrix = cam.m_localMatrix;
-	m_gloabalMatrix = cam.m_gloabalMatrix;
+	m_globalMatrix = cam.m_globalMatrix;
 }
 
 Camera::~Camera()
@@ -65,7 +65,7 @@ void Camera::CameraUpdate(GLFWwindow *window)
 
 Matrix<float, 4, 4> Camera::GetCameraMatrix()
 {
-	return (m_gloabalMatrix * m_localMatrix).transpose();
+	return (m_globalMatrix * m_localMatrix).transpose();
 }
 
 void Camera::SetCameraToWindow(GLFWwindow* window)
@@ -104,6 +104,6 @@ void Camera::MoveDown()
 }
 void Camera::RotateCamera(double p_cursorX, double p_cursorY)
 {
-	/*dontworks*/m_gloabalMatrix.rotation3DAroundZ((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
-	/*works*/m_gloabalMatrix.rotation3DAroundY((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
+	/*dontworks*/m_globalMatrix.rotation3DAroundXlocal((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
+	/*works*/m_globalMatrix.rotation3DAroundYlocal((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
 }

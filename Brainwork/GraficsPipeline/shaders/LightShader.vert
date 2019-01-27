@@ -5,6 +5,8 @@ layout(binding = 0) uniform LightInfoObject {
     mat4 model;
     mat4 lightView;
     mat4 proj;
+
+	vec4 groundColor;
 }lio;
 
 layout(location = 0) in vec3 inPosition;

@@ -4,7 +4,8 @@
 #include "VK_SwapChain.h"
 #include "Objects.h"
 #include "Material.h"
-
+#include "Lighting.h"
+#include "PointLight.h"
 
 VK_BufferObject::VK_BufferObject()
 {
@@ -19,7 +20,7 @@ void VK_BufferObject::SetRenderer(VK_Renderer* p_renderer)
 	m_renderer = p_renderer;
 }
 
-void VK_BufferObject::CleanupBufferObject()
+void VK_BufferObject::CleanUpBufferObject()
 {
 
 	for (size_t i = 0; i < m_uniformBuffers.size(); ++i) {
@@ -35,7 +36,7 @@ void VK_BufferObject::CleanupBufferObject()
 }
 
 
-void VK_BufferObject::CreateVertexBuffer(std::vector<Vertex> vertices) {
+void VK_BufferObject::CreateVertexBuffer(std::vector<Vertex>& vertices) {
 	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
 	VkBuffer stagingBuffer;
@@ -54,7 +55,7 @@ void VK_BufferObject::CreateVertexBuffer(std::vector<Vertex> vertices) {
 	vkDestroyBuffer(m_renderer->vk_device->device, stagingBuffer, nullptr);
 	vkFreeMemory(m_renderer->vk_device->device, stagingBufferMemory, nullptr);
 }
-void VK_BufferObject::CreateIndexBuffer(std::vector<uint32_t> indices) {
+void VK_BufferObject::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 	VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
 	VkBuffer stagingBuffer;
@@ -83,7 +84,7 @@ void VK_BufferObject::CreateUniformBuffers() {
 		CreateBuffer(m_renderer, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_uniformBuffers[i], m_uniformBuffersMemory[i]);
 	}
 }
-void VK_BufferObject::CreateDescriptorSet(Material& material) {
+void VK_BufferObject::CreateDescriptorSet(Material& p_material, Lighting& p_lighting) {
 
 	std::vector<VkDescriptorSetLayout> layouts(m_renderer->vk_swapChain->swapChainImages.size(), m_renderer->descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
@@ -103,12 +104,17 @@ void VK_BufferObject::CreateDescriptorSet(Material& material) {
 		bufferInfo.offset = 0;
 		bufferInfo.range = sizeof(UniformBufferObject);
 
-		VkDescriptorImageInfo imageInfo = {};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = material.GetTextureRef().textureImageView;
-		imageInfo.sampler = material.GetTextureRef().textureSampler;
+		VkDescriptorImageInfo diffuseMap = {};
+		diffuseMap.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		diffuseMap.imageView = p_material.GetTextureRef().textureImageView;
+		diffuseMap.sampler = p_material.GetTextureRef().textureSampler;
 
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+		VkDescriptorImageInfo lightInfo = {};
+		lightInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lightInfo.imageView = p_lighting.GetPointLightRef()[0]->GetImageViewRef();
+		lightInfo.sampler = p_lighting.GetPointLightRef()[0]->GetVkSamplerRef();
+
+		std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_descriptorSets[i];
@@ -124,7 +130,15 @@ void VK_BufferObject::CreateDescriptorSet(Material& material) {
 		descriptorWrites[1].dstArrayElement = 0;
 		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pImageInfo = &imageInfo;
+		descriptorWrites[1].pImageInfo = &diffuseMap;
+
+		descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[2].dstSet = m_descriptorSets[i];
+		descriptorWrites[2].dstBinding = 2;
+		descriptorWrites[2].dstArrayElement = 0;
+		descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[2].descriptorCount = 1;
+		descriptorWrites[2].pImageInfo = &lightInfo;
 
 		vkUpdateDescriptorSets(m_renderer->vk_device->device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}

@@ -5,8 +5,8 @@
 
 class VK_Renderer;
 class Material;
+class Lighting;
 struct Vertex;
-struct UniformBufferObject;
 
 class VK_BufferObject
 {
@@ -28,10 +28,10 @@ public:
 
 	void SetRenderer			(VK_Renderer* renderer);
 
-	void CreateVertexBuffer		(std::vector<Vertex> vertices);
-	void CreateIndexBuffer		(std::vector<uint32_t> indices);
+	void CreateVertexBuffer		(std::vector<Vertex>& vertices);
+	void CreateIndexBuffer		(std::vector<uint32_t>& indices);
 	void CreateUniformBuffers	();
-	void CreateDescriptorSet	(Material& texture);
+	void CreateDescriptorSet	(Material& texture, Lighting& lighting);
 
 	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t& currentImage);
 
@@ -43,7 +43,7 @@ public:
 	std::vector<VkBuffer>			GetUniformBuffers	();
 	std::vector<VkDescriptorSet>	GetDescriptorSets	();
 
-	void CleanupBufferObject();
+	void CleanUpBufferObject();
 };
 
 
