@@ -83,30 +83,37 @@ void PointLight::CreateLightInfoBuffer(size_t p_gameObjectCount)
 
 void PointLight::UpdateLightInfo(uint32_t& p_currentImage, GameObject& p_GameObject)
 {
-
 	void* data;
+
+	m_lightInfo.model = p_GameObject.GetObjectRef().GetUniformBufferObjectRef().model;
+	m_lightInfo.proj = p_GameObject.GetObjectRef().GetUniformBufferObjectRef().proj;
+
+
+	vkMapMemory(m_pRenderer->vk_device->device, m_lightInfoBufferMemory[0][p_currentImage], 0, sizeof(LightInfoObject), 0, &data);
+	memcpy(data, &m_lightInfo, sizeof(LightInfoObject));
+	vkUnmapMemory(m_pRenderer->vk_device->device, m_lightInfoBufferMemory[0][p_currentImage]);
+
+}
+
+void PointLight::CheckForObjectsInFurustum(std::vector<GameObject>& p_gameObject)
+{
+	m_gameObjectsInFrustum.push_back(&p_gameObject[0]);
+
 	
-		m_lightInfo.model = p_GameObject.GetObjectRef().GetUniformBufferObjectRef().model;
-		m_lightInfo.proj = p_GameObject.GetObjectRef().GetUniformBufferObjectRef().proj;
-
-		p_GameObject.GetLightingRef().AddPointLight(this);
-
-		vkMapMemory(m_pRenderer->vk_device->device, m_lightInfoBufferMemory[0][p_currentImage], 0, sizeof(LightInfoObject), 0, &data);
-		memcpy(data, &m_lightInfo, sizeof(LightInfoObject));
-		vkUnmapMemory(m_pRenderer->vk_device->device, m_lightInfoBufferMemory[0][p_currentImage]);
+	p_gameObject[0].GetLightingRef().GetPointLightRef().push_back(this);
 	
 }
 
 void PointLight::CreateDescriptorSets(LightManager* p_LightManager)
 {
-	std::vector<VkDescriptorSetLayout> layouts(p_LightManager->m_pRenderer->vk_swapChain->swapChainImages.size(), p_LightManager->m_descriptorSetLayout);
+	std::vector<VkDescriptorSetLayout> layouts(p_LightManager->m_pRenderer->vk_swapChain->swapChainImages.size(), p_LightManager->m_pRenderer->m_descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = p_LightManager->m_descriptorPool;
+	allocInfo.descriptorPool = p_LightManager->m_pRenderer->m_descriptorPool;
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(p_LightManager->m_pRenderer->vk_swapChain->swapChainImages.size());
 	allocInfo.pSetLayouts = layouts.data();
 
-		m_descriptorSets.resize(m_lightInfoBuffer.size());
+	m_descriptorSets.resize(m_lightInfoBuffer.size());
 
 	for (size_t i = 0; i < m_lightInfoBuffer.size(); ++i) {
 		m_descriptorSets[i].resize(p_LightManager->m_pRenderer->vk_swapChain->swapChainImages.size());
@@ -152,7 +159,15 @@ VkSampler& PointLight::GetVkSamplerRef()
 	return m_pointLightSampler;
 }
 
-void CleanUpPointLight()
+std::vector<std::vector<VkDescriptorSet>> PointLight::GetVkDescriptorSet()
 {
+	return m_descriptorSets;
+}
+std::vector<std::vector<VkDescriptorSet>>& PointLight::GetVkDescriptorSetRef()
+{
+	return m_descriptorSets;
+}
 
+void PointLight::CleanUpPointLight()
+{
 }

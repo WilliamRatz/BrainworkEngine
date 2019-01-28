@@ -10,19 +10,22 @@ class LightManager;
 class VK_GameObjectManager
 {
 private:
-	VK_Renderer*					renderer;
+	VK_Renderer*					m_pRenderer;
 
+	std::vector<GameObject>			m_gameObjects;
 public:
-	std::vector<VkCommandBuffer>	commandBuffers;
-	std::vector<GameObject>			gameObjects;
 
 	VK_GameObjectManager			(VK_Renderer& p_renderer);
 
-	void UpdateUniformBuffers		(uint32_t currentImage);
+	void UpdateGameObjects			(uint32_t currentImage);
 
+	void AddGameObject				(GameObject& gameObject);
 	void CreateBufferObjects		();
 	void CreateDescriptorSets		();
-	void CreateCommandBuffers		(VK_GraphicsPipeline& vk_graphicsPipeline, VK_GraphicsPipeline& vk_graphicsPipelineLight, LightManager& lg);
+
+	std::vector<GameObject>		GetGameObjects		();
+	std::vector<GameObject>&	GetGameObjectsRef	();
+
 
 	void CleanUpBuffers				();
 };

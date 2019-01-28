@@ -1,5 +1,4 @@
 #pragma once
-
 #include "VK_inc.h"
 
 class VK_Renderer;
@@ -18,26 +17,15 @@ public:
 	VkPipeline				graphicsPipeline;
 	VkPipelineLayout		pipelineLayout;
 
-	VkPipeline				lightGraphicsPipeline;
-	VkPipelineLayout		lightPipelineLayout;
-
 	VK_GraphicsPipeline(VK_Renderer& vk_renderer);
 	VK_GraphicsPipeline(const VK_GraphicsPipeline& vk_graphicsPipeline);
 	~VK_GraphicsPipeline();
 
-	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader);
-
-	void CreateLightGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, LightManager& p_lightManager);
+	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
 
 	void RecreateSwapChain(GLFWwindow* window, VK_GameObjectManager* vk_bufferManager);
 	void CleanupSwapChain(VK_GameObjectManager* vk_bufferManager);
 
-	static std::vector<char> readFile(const std::string& filename);
-	VkShaderModule createShaderModule(const std::vector<char>& code);
+	static std::vector<char> ReadFile(const std::string& filename);
+	VkShaderModule CreateShaderModule(const std::vector<char>& code);
 };
-
-struct BW_PiplineCreateInfo
-{
-
-};
-

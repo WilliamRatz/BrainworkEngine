@@ -4,10 +4,9 @@
 #include "Camera.h"
 
 
-GameObject::GameObject(VK_Renderer& p_renderer)
+GameObject::GameObject(VK_Renderer* p_renderer)
 {
-	m_pRenderer = &p_renderer;
-
+	m_pRenderer = p_renderer;
 	m_object.GetVK_BufferObjectRef().SetRenderer(m_pRenderer);
 }
 GameObject::GameObject(const GameObject& p_gameObject)
@@ -26,14 +25,11 @@ void GameObject::UpdateGameObject(uint32_t currentImage) {
 
 	m_transform.getLocalMatrixRef().rotation3DAroundY(0.05f);
 
-	
-
 	m_object.GetUniformBufferObjectRef().model = m_transform.getGlobalMatrix();
 	m_object.GetUniformBufferObjectRef().view = Camera::ViewCamera.GetCameraMatrix();
 	m_object.GetUniformBufferObjectRef().proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	m_object.GetUniformBufferObjectRef().proj[1][1] *= -1;
 	m_object.GetUniformBufferObjectRef().groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
-
 
 	m_object.GetVK_BufferObjectRef().UpdateUniformBuffer(m_object.GetUniformBufferObjectRef(), currentImage);
 }

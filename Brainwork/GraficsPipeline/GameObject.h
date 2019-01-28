@@ -21,7 +21,7 @@ private:
 	Lighting			m_lighting;
 
 public:
-	GameObject					(VK_Renderer& renderer);
+	GameObject					(VK_Renderer* renderer);
 	GameObject					(const GameObject& gameObject);
 	~GameObject					();
 

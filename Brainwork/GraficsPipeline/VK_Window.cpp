@@ -1,4 +1,5 @@
 #include "VK_Window.h"
+#include "LightManager.h"
 #include "PointLight.h"
 
 VK_Window::VK_Window() 
@@ -26,15 +27,21 @@ void VK_Window::initWindow() {
 }
 
 void VK_Window::initVulkan() {
-	vk_Device.CreateInstance();
-	vk_Device.SetupDebugCallback();
-	vk_Device.CreateSurface(window);
-	vk_Device.PickPhysicalDevice(vk_swapChain);
-	vk_Device.CreateLogicalDevice();
+	vk_device.CreateInstance();
+	vk_device.SetupDebugCallback();
+	vk_device.CreateSurface(window);
+	vk_device.PickPhysicalDevice(vk_swapChain);
+	vk_device.CreateLogicalDevice();
+	
 	vk_swapChain.CreateSwapChain(window);
 	vk_swapChain.CreateImageViews();
-	vk_renderer.CreateRenderPass();
-	vk_renderer.CreateRenderPassLight();
+	
+	vk_renderers[0].CreateRenderPass();
+	vk_renderers[1].CreateRenderPass();
+
+	vk_graphicsPipelines[0].CreateGraphicsPipeline("vert", "frag", 1, 2);
+	vk_graphicsPipelines[1].CreateGraphicsPipeline("LightVert", "LightFrag", 1, 0);
+
 
 	this->initObjects();
 	
@@ -42,17 +49,22 @@ void VK_Window::initVulkan() {
 
 void VK_Window::initObjects()
 {
-	vk_graphicsPipelines[0].CreateGraphicsPipeline("vert", "frag");
-	vk_lightManager.AddLight(PointLight(vk_renderer));
-	vk_graphicsPipelines[1].CreateLightGraphicsPipeline("LightVert", "LightFrag", vk_lightManager);
+	vk_lightManager.AddLight(PointLight(vk_renderers[1]));
+	vk_lightManager.CalculateLightMaps();
 
-	vk_lightManager.CreateLightBuffer(vk_gameObjectManager.gameObjects.size());
-	vk_lightManager.CreateDescriptorSets();
+	vk_swapChain.CreateDepthResources(vk_renderers[0]);
+	vk_renderers[0].CreateFramebuffers(vk_swapChain.swapChainFramebuffers, vk_swapChain.swapChainImageViews, vk_swapChain.depthImageView);
+	vk_lightManager.CreateFrameBuffer();
 	vk_gameObjectManager.CreateBufferObjects();
-	vk_gameObjectManager.gameObjects[0].GetLightingRef().AddPointLight(&vk_lightManager.m_pointLights[0]);
+	vk_lightManager.CheckForObjectsInFurustum(vk_gameObjectManager.GetGameObjectsRef());
+	vk_lightManager.CreateLightBuffer(vk_gameObjectManager.GetGameObjectsRef().size());
+	vk_lightManager.CreateDescriptorSets();
+	vk_renderers[1].CreateCommandBuffers(vk_graphicsPipelines[1], vk_lightManager);
+
 
 	vk_gameObjectManager.CreateDescriptorSets();
-	vk_gameObjectManager.CreateCommandBuffers(vk_graphicsPipelines[0], vk_graphicsPipelines[1], vk_lightManager);
+	vk_renderers[0].CreateCommandBuffers(vk_graphicsPipelines[0], vk_gameObjectManager);
+
 	vk_swapChain.CreateSyncObjects();
 }
 
@@ -64,14 +76,14 @@ void VK_Window::mainLoop() {
 		Camera::CameraUpdate(window);
 	}
 
-	vkDeviceWaitIdle(vk_Device.device);
+	vkDeviceWaitIdle(vk_device.device);
 }
 
 void VK_Window::drawFrame() {
-	vkWaitForFences(vk_Device.device, 1, &vk_swapChain.inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
+	vkWaitForFences(vk_device.device, 1, &vk_swapChain.inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
 	uint32_t imageIndex;
-	VkResult result = vkAcquireNextImageKHR(vk_Device.device, vk_swapChain.swapChain, std::numeric_limits<uint64_t>::max(), vk_swapChain.imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(vk_device.device, vk_swapChain.swapChain, std::numeric_limits<uint64_t>::max(), vk_swapChain.imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 		vk_graphicsPipelines[0].RecreateSwapChain(window, &vk_gameObjectManager);
@@ -81,8 +93,8 @@ void VK_Window::drawFrame() {
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	vk_lightManager.UpdateLightInfos(imageIndex, vk_gameObjectManager.gameObjects[0]);
-	vk_gameObjectManager.UpdateUniformBuffers(imageIndex);
+	vk_lightManager.UpdateLightInfos(imageIndex, &vk_gameObjectManager.GetGameObjectsRef()[0]);
+	vk_gameObjectManager.UpdateGameObjects(imageIndex);
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -93,16 +105,17 @@ void VK_Window::drawFrame() {
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &vk_gameObjectManager.commandBuffers[imageIndex];
+	submitInfo.commandBufferCount = 2;
+	submitInfo.pCommandBuffers = &vk_renderers[0].commandBuffers[imageIndex];
+	submitInfo.pCommandBuffers = &vk_renderers[1].commandBuffers[imageIndex];
 
 	VkSemaphore signalSemaphores[] = { vk_swapChain.renderFinishedSemaphores[currentFrame] };
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	vkResetFences(vk_Device.device, 1, &vk_swapChain.inFlightFences[currentFrame]);
+	vkResetFences(vk_device.device, 1, &vk_swapChain.inFlightFences[currentFrame]);
 
-	if (vkQueueSubmit(vk_Device.graphicsQueue, 1, &submitInfo, vk_swapChain.inFlightFences[currentFrame]) != VK_SUCCESS) {
+	if (vkQueueSubmit(vk_device.graphicsQueue, 1, &submitInfo, vk_swapChain.inFlightFences[currentFrame]) != VK_SUCCESS) {
 		throw std::runtime_error("failed to submit draw command buffer!");
 	}
 
@@ -118,7 +131,7 @@ void VK_Window::drawFrame() {
 
 	presentInfo.pImageIndices = &imageIndex;
 
-	result = vkQueuePresentKHR(vk_Device.presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(vk_device.presentQueue, &presentInfo);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
 		framebufferResized = false;
@@ -133,25 +146,33 @@ void VK_Window::drawFrame() {
 
 void VK_Window::cleanup() {
 	vk_graphicsPipelines[0].CleanupSwapChain(&vk_gameObjectManager);
-	vkDestroyDescriptorPool(vk_Device.device, vk_renderer.descriptorPool, nullptr);
-	vkDestroyDescriptorSetLayout(vk_Device.device, vk_renderer.descriptorSetLayout, nullptr);
+	vkDestroyDescriptorPool(vk_device.device, vk_renderers[0].m_descriptorPool, nullptr);
+	vkDestroyDescriptorPool(vk_device.device, vk_renderers[1].m_descriptorPool, nullptr);
+	vkDestroyDescriptorSetLayout(vk_device.device, vk_renderers[0].m_descriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(vk_device.device, vk_renderers[1].m_descriptorSetLayout, nullptr);
 
 	for (size_t i = 0; i < vk_swapChain.MAX_FRAMES_IN_FLIGHT; ++i) {
-		vkDestroySemaphore(vk_Device.device, vk_swapChain.renderFinishedSemaphores[i], nullptr);
-		vkDestroySemaphore(vk_Device.device, vk_swapChain.imageAvailableSemaphores[i], nullptr);
-		vkDestroyFence(vk_Device.device, vk_swapChain.inFlightFences[i], nullptr);
+		vkDestroySemaphore(vk_device.device, vk_swapChain.renderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(vk_device.device, vk_swapChain.imageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(vk_device.device, vk_swapChain.inFlightFences[i], nullptr);
 	}
 
-	vkDestroyCommandPool(vk_Device.device, vk_renderer.commandPool, nullptr);
+	vkFreeCommandBuffers(vk_device.device, vk_renderers[0].commandPool, static_cast<uint32_t>(vk_renderers[0].commandBuffers.size()), vk_renderers[0].commandBuffers.data());
+	vkFreeCommandBuffers(vk_device.device, vk_renderers[1].commandPool, static_cast<uint32_t>(vk_renderers[0].commandBuffers.size()), vk_renderers[0].commandBuffers.data());
 
-	vkDestroyDevice(vk_Device.device, nullptr);
+
+	vkDestroyCommandPool(vk_device.device, vk_renderers[0].commandPool, nullptr);
+	vkDestroyCommandPool(vk_device.device, vk_renderers[1].commandPool, nullptr);
+
+
+	vkDestroyDevice(vk_device.device, nullptr);
 
 	if (enableValidationLayers) {
-		vk_Device.DestroyDebugUtilsMessengerEXT(vk_Device.instance, vk_Device.callback, nullptr);
+		vk_device.DestroyDebugUtilsMessengerEXT(vk_device.instance, vk_device.callback, nullptr);
 	}
 
-	vkDestroySurfaceKHR(vk_Device.instance, vk_Device.surface, nullptr);
-	vkDestroyInstance(vk_Device.instance, nullptr);
+	vkDestroySurfaceKHR(vk_device.instance, vk_device.surface, nullptr);
+	vkDestroyInstance(vk_device.instance, nullptr);
 
 	glfwDestroyWindow(window);
 

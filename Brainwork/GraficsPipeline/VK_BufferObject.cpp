@@ -86,10 +86,10 @@ void VK_BufferObject::CreateUniformBuffers() {
 }
 void VK_BufferObject::CreateDescriptorSet(Material& p_material, Lighting& p_lighting) {
 
-	std::vector<VkDescriptorSetLayout> layouts(m_renderer->vk_swapChain->swapChainImages.size(), m_renderer->descriptorSetLayout);
+	std::vector<VkDescriptorSetLayout> layouts(m_renderer->vk_swapChain->swapChainImages.size(), m_renderer->m_descriptorSetLayout);
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = m_renderer->descriptorPool;
+	allocInfo.descriptorPool = m_renderer->m_descriptorPool;
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(m_renderer->vk_swapChain->swapChainImages.size());
 	allocInfo.pSetLayouts = layouts.data();
 
@@ -111,8 +111,8 @@ void VK_BufferObject::CreateDescriptorSet(Material& p_material, Lighting& p_ligh
 
 		VkDescriptorImageInfo lightInfo = {};
 		lightInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		lightInfo.imageView = p_lighting.GetPointLightRef()[0]->GetImageViewRef();
-		lightInfo.sampler = p_lighting.GetPointLightRef()[0]->GetVkSamplerRef();
+		lightInfo.imageView = p_lighting.GetPointLightRef()[0]->GetImageView();
+		lightInfo.sampler = p_lighting.GetPointLightRef()[0]->GetVkSampler();
 
 		std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
