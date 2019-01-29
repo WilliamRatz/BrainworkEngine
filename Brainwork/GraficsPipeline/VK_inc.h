@@ -30,6 +30,7 @@ struct UniformBufferObject {
 	Matrix<float, 4, 4> model;
 	Matrix<float, 4, 4> view;
 	Matrix<float, 4, 4> proj;
+	Matrix<float, 4, 4> lightView;
 
 	Vector4 groundColor;
 };

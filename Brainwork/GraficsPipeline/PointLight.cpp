@@ -10,7 +10,12 @@
 
 PointLight::PointLight(VK_Renderer& p_renderer)
 {
+	m_pointLightImageView;
+		m_pointLightImage;
 	m_pRenderer = &p_renderer;
+
+	m_lightInfo.lightView.translate3D(0, 0, 2);
+	m_lightInfo.lightView = m_lightInfo.lightView.transpose();
 }
 
 PointLight::PointLight(const PointLight& p_pointLight)
@@ -36,7 +41,7 @@ void PointLight::CreatePointLightImage()
 {
 	VkFormat depthFormat = m_pRenderer->vk_swapChain->findDepthFormat();
 
-	m_pRenderer->vk_swapChain->CreateImage(m_pRenderer->vk_swapChain->swapChainExtent.width, m_pRenderer->vk_swapChain->swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_pointLightImage, m_pointLightImageMemory);
+	m_pRenderer->vk_swapChain->CreateImage(m_pRenderer->vk_swapChain->swapChainExtent.width, m_pRenderer->vk_swapChain->swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_pointLightImage, m_pointLightImageMemory);
 	m_pointLightImageView = m_pRenderer->vk_swapChain->CreateImageView(m_pointLightImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
 	m_pRenderer->vk_swapChain->TransitionImageLayout(*m_pRenderer, m_pointLightImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -139,6 +144,16 @@ void PointLight::CreateDescriptorSets(LightManager* p_LightManager)
 			vkUpdateDescriptorSets(p_LightManager->m_pRenderer->vk_device->device, 1, &descriptorWrite, 0, nullptr);
 		}
 	}
+}
+
+LightInfoObject PointLight::GetLightInfoObject()
+{
+	return m_lightInfo;
+}
+
+LightInfoObject& PointLight::GetLightInfoObjectRef()
+{
+	return m_lightInfo;
 }
 
 VkImageView PointLight::GetImageView()

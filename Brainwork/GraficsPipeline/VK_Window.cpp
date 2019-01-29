@@ -105,9 +105,13 @@ void VK_Window::drawFrame() {
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
 
-	submitInfo.commandBufferCount = 2;
-	submitInfo.pCommandBuffers = &vk_renderers[0].commandBuffers[imageIndex];
-	submitInfo.pCommandBuffers = &vk_renderers[1].commandBuffers[imageIndex];
+	VkCommandBuffer cmdBuffers[] = { 
+		vk_renderers[1].commandBuffers[imageIndex], 
+		vk_renderers[0].commandBuffers[imageIndex]
+	};
+
+	submitInfo.commandBufferCount = sizeof(cmdBuffers)/sizeof(cmdBuffers[0]);
+	submitInfo.pCommandBuffers = cmdBuffers;
 
 	VkSemaphore signalSemaphores[] = { vk_swapChain.renderFinishedSemaphores[currentFrame] };
 	submitInfo.signalSemaphoreCount = 1;
@@ -158,7 +162,7 @@ void VK_Window::cleanup() {
 	}
 
 	vkFreeCommandBuffers(vk_device.device, vk_renderers[0].commandPool, static_cast<uint32_t>(vk_renderers[0].commandBuffers.size()), vk_renderers[0].commandBuffers.data());
-	vkFreeCommandBuffers(vk_device.device, vk_renderers[1].commandPool, static_cast<uint32_t>(vk_renderers[0].commandBuffers.size()), vk_renderers[0].commandBuffers.data());
+	vkFreeCommandBuffers(vk_device.device, vk_renderers[1].commandPool, static_cast<uint32_t>(vk_renderers[1].commandBuffers.size()), vk_renderers[1].commandBuffers.data());
 
 
 	vkDestroyCommandPool(vk_device.device, vk_renderers[0].commandPool, nullptr);

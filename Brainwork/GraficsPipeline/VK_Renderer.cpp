@@ -23,7 +23,6 @@ void VK_Renderer::CreateRenderPass() {
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 	VkAttachmentReference colorAttachmentRef = {};
 	colorAttachmentRef.attachment = 0;
@@ -34,11 +33,9 @@ void VK_Renderer::CreateRenderPass() {
 	depthAttachment.format = vk_swapChain->findDepthFormat();
 	depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentReference depthAttachmentRef = {};
 	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -46,6 +43,25 @@ void VK_Renderer::CreateRenderPass() {
 
 	VkSubpassDescription subpass = {};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
+	std::array<VkSubpassDependency, 2> dependenciesDepth;
+
+	dependenciesDepth[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependenciesDepth[0].dstSubpass = 0;
+	dependenciesDepth[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	dependenciesDepth[0].dstStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+	dependenciesDepth[0].srcAccessMask = 0;
+	dependenciesDepth[0].dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	dependenciesDepth[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	dependenciesDepth[1].srcSubpass = 0;
+	dependenciesDepth[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+	dependenciesDepth[1].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+	dependenciesDepth[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	dependenciesDepth[1].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	dependenciesDepth[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	dependenciesDepth[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
 
 	VkSubpassDependency dependency = {};
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -55,7 +71,7 @@ void VK_Renderer::CreateRenderPass() {
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-	std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+	std::vector<VkAttachmentDescription> attachments;
 
 	VkRenderPassCreateInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -64,11 +80,20 @@ void VK_Renderer::CreateRenderPass() {
 
 	if (m_rendererCreatInfo.colorAttachment && m_rendererCreatInfo.depthAttachment)
 	{
-		depthAttachmentRef.attachment = 1;
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
+
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		depthAttachmentRef.attachment = 1;
+		
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorAttachmentRef;
 		subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+		attachments.push_back(colorAttachment);
+		attachments.push_back(depthAttachment);
 
 		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		renderPassInfo.pAttachments = attachments.data();
@@ -78,6 +103,9 @@ void VK_Renderer::CreateRenderPass() {
 	}
 	else if (m_rendererCreatInfo.depthAttachment)
 	{
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		
 		depthAttachmentRef.attachment = 0;
 
 		subpass.colorAttachmentCount = 0;
@@ -85,6 +113,9 @@ void VK_Renderer::CreateRenderPass() {
 
 		renderPassInfo.attachmentCount = 1;
 		renderPassInfo.pAttachments = &depthAttachment;
+
+		renderPassInfo.dependencyCount = 2;
+		renderPassInfo.pDependencies = dependenciesDepth.data();
 
 	}
 
@@ -152,7 +183,7 @@ void VK_Renderer::CreateDescriptorSetLayouts(unsigned int p_uboBindings, unsigne
 		uboLayoutBinding.descriptorCount = 1;
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		bindings.push_back(uboLayoutBinding);
 		++u;

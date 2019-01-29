@@ -2,6 +2,7 @@
 #include "VK_Renderer.h"
 #include "VK_Device.h"
 #include "Camera.h"
+#include "PointLight.h"
 
 
 GameObject::GameObject(VK_Renderer* p_renderer)
@@ -23,10 +24,11 @@ GameObject::~GameObject()
 
 void GameObject::UpdateGameObject(uint32_t currentImage) {
 
-	m_transform.getLocalMatrixRef().rotation3DAroundY(0.05f);
+	//m_transform.getLocalMatrixRef().rotation3DAroundY(0.05f);
 
 	m_object.GetUniformBufferObjectRef().model = m_transform.getGlobalMatrix();
 	m_object.GetUniformBufferObjectRef().view = Camera::ViewCamera.GetCameraMatrix();
+	m_object.GetUniformBufferObjectRef().lightView = m_lighting.GetPointLightRef()[0]->GetLightInfoObjectRef().lightView;
 	m_object.GetUniformBufferObjectRef().proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	m_object.GetUniformBufferObjectRef().proj[1][1] *= -1;
 	m_object.GetUniformBufferObjectRef().groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);

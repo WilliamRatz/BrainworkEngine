@@ -37,6 +37,9 @@ public:
 	void CreateLightInfoBuffer(size_t);
 	void CreateDescriptorSets(LightManager*);
 
+	LightInfoObject		GetLightInfoObject();
+	LightInfoObject&	GetLightInfoObjectRef();
+
 	VkImageView		GetImageView();
 	VkImageView&	GetImageViewRef();
 
