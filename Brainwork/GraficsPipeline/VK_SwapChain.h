@@ -16,11 +16,12 @@ class VK_SwapChain
 {
 public:
 	VK_Device*					vk_device;
-	VK_SwapChain				(VK_Device& p_vk_device);
 
 	VkSwapchainKHR				swapChain;
 	VkFormat					swapChainImageFormat;
 	VkExtent2D					swapChainExtent;
+
+
 	VkImage						depthImage;
 	VkDeviceMemory				depthImageMemory;
 	VkImageView					depthImageView;
@@ -31,6 +32,8 @@ public:
 	std::vector<VkSemaphore>	renderFinishedSemaphores;
 	std::vector<VkFence>		inFlightFences;
 	const int					MAX_FRAMES_IN_FLIGHT = 2;
+
+	VK_SwapChain				(VK_Device& p_vk_device);
 
 	void CreateImage			(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	void CreateImageViews		();

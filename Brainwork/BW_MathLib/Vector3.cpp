@@ -6,7 +6,8 @@
 //  Copyright © 2018 William Ratz. All rights reserved.
 //
 #include "Vector3.h"
-#include "BW_Math.h"
+#include "Matrix.h"
+#include "MathBW.h"
 
 
 
@@ -31,11 +32,13 @@ Vector3::Vector3(const Vector3& vec)
 
 #pragma region Methods
 
-void Vector3::normalize()
+Vector3 Vector3::normalize()
 {
 	vec3[0] /= Vector3::length(*this);
 	vec3[1] /= Vector3::length(*this);
 	vec3[2] /= Vector3::length(*this);
+
+	return *this;
 }
 
 std::size_t Vector3::getHashCode() {

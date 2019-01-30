@@ -5,7 +5,7 @@
 int main() {
 
 	VK_Window vk_Window;
-	
+
 	try {
 		vk_Window.run();
 	}
@@ -13,6 +13,9 @@ int main() {
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	
+	
 
 	return EXIT_SUCCESS;
 }

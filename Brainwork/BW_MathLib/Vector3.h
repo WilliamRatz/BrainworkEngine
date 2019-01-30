@@ -9,7 +9,8 @@
 #ifndef Vector3_H
 #define Vector3_H
 #include "Vector.h"
-#include "Matrix.h"
+
+template<typename T, std::size_t R, std::size_t C> class Matrix;
 
 class Vector3 {
 
@@ -36,7 +37,7 @@ public:
 
 #pragma region Methods
 	
-	void normalize();
+	Vector3 normalize();
 	std::size_t getHashCode();
 
 	static Vector3 normalized(const Vector3&);

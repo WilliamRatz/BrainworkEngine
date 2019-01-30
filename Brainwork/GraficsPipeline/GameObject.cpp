@@ -2,163 +2,108 @@
 #include "VK_Renderer.h"
 #include "VK_Device.h"
 #include "Camera.h"
+#include "PointLight.h"
 
 
-GameObject::GameObject(VK_Renderer& p_renderer)
+GameObject::GameObject(VK_Renderer* p_renderer)
 {
-	m_renderer = &p_renderer;
-
-	m_BufferObject.SetRenderer(m_renderer);
-
-
+	m_pRenderer = p_renderer;
+	m_object.GetVK_BufferObjectRef().SetRenderer(m_pRenderer);
 }
-
 GameObject::GameObject(const GameObject& p_gameObject)
 {
-	globalMatrix = p_gameObject.globalMatrix;
-	localMatrix = p_gameObject.localMatrix;
-	m_parentObject = p_gameObject.m_parentObject;
-	m_children = p_gameObject.m_children;
+	m_pRenderer = p_gameObject.m_pRenderer;
 
-	m_renderer = p_gameObject.m_renderer;
-	m_object = p_gameObject.m_object;
-	m_BufferObject = p_gameObject.m_BufferObject;
-	m_material = p_gameObject.m_material;
+	SetObject(p_gameObject.m_object);
+	SetMaterial(p_gameObject.m_material);
+	SetTransform(p_gameObject.m_transform);
 }
-
 GameObject::~GameObject()
 {
 }
 
+void GameObject::UpdateGameObject(uint32_t currentImage) {
 
-void GameObject::updateGameObject(uint32_t currentImage) {
-	static auto startTime = std::chrono::high_resolution_clock::now();
+	//m_transform.getLocalMatrixRef().rotation3DAroundY(0.05f);
 
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+	m_object.GetUniformBufferObjectRef().model = m_transform.getGlobalMatrix();
+	m_object.GetUniformBufferObjectRef().view = Camera::ViewCamera.GetCameraMatrix();
+	m_object.GetUniformBufferObjectRef().lightView = m_lighting.GetPointLightRef()[0]->GetLightInfoObjectRef().lightView;
+	m_object.GetUniformBufferObjectRef().proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
+	m_object.GetUniformBufferObjectRef().proj[1][1] *= -1;
+	m_object.GetUniformBufferObjectRef().groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
 
-	UniformBufferObject ubo = {};
-
-
-	//gameObject.localMatrix.rotation3DAroundZlocal(0.1f)/*.rotation3DAroundYlocal(0.15f).rotation3DAroundXlocal(0.05f)*/;
-
-
-	ubo.model = this->getGlobalMatrix();
-	ubo.view = Camera::getViewCamera.mat;
-	ubo.proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
-	ubo.proj[1][1] *= -1;
-
-	m_BufferObject.UpdateUniformBuffer(ubo, currentImage);
+	m_object.GetVK_BufferObjectRef().UpdateUniformBuffer(m_object.GetUniformBufferObjectRef(), currentImage);
 }
+void GameObject::CreateBuffer()
+{
+	m_material.GetTextureRef().CreateTexture(m_pRenderer);
+
+	m_object.CreateBuffer(m_pRenderer);
+}
+void GameObject::CreateDescriptorSets()
+{
+	m_object.GetVK_BufferObjectRef().CreateDescriptorSet(m_material, m_lighting);
+}
+
 
 void GameObject::SetObject(const Object p_object)
 {
 	m_object = p_object;
 }
-
-void GameObject::SetMaterial(Material p_material)
-{
-	m_material = p_material;
-
-	for (int i = 0; i < m_object.GetVertices().size(); ++i) 
-	{
-		m_object.GetVerticesRef()[i].ColorChange(m_material.GetColorRef());
-	}
-}
-
-VK_BufferObject GameObject::GetBufferObject()
-{
-	return m_BufferObject;
-}
-
 Object GameObject::GetObject()
 {
 	return m_object;
 }
+Object& GameObject::GetObjectRef()
+{
+	return m_object;
+}
 
+void GameObject::SetTransform(const Transform p_transform)
+{
+	m_transform = p_transform;
+}
+Transform GameObject::GetTransform()
+{
+	return m_transform;
+}
+Transform& GameObject::GetTransformRef()
+{
+	return m_transform;
+}
+
+void GameObject::SetMaterial(const Material p_material)
+{
+	m_material = p_material;
+}
 Material GameObject::GetMaterial()
 {
 	return m_material;
 }
-
-void GameObject::CreateBuffer()
+Material& GameObject::GetMaterialRef()
 {
-	m_BufferObject.CreateVertexBuffer(m_object.GetVertices());
-	m_BufferObject.CreateIndexBuffer(m_object.GetIndices());
-	m_BufferObject.CreateUniformBuffers();
+	return m_material;
 }
 
-void GameObject::CreateDescriptorSets()
+void GameObject::SetLighting(const Lighting p_lighting)
 {
-	m_BufferObject.CreateDescriptorSet(m_material);
+	m_lighting = p_lighting;
+}
+Lighting GameObject::GetLighting()
+{
+	return m_lighting;
+}
+Lighting& GameObject::GetLightingRef()
+{
+	return m_lighting;
 }
 
-
-Matrix<float, 4, 4> GameObject::recalculateMatrix()
-{
-	GameObject* parent = m_parentObject;
-
-	while (parent != NULL)
-	{
-		globalMatrix *= parent->globalMatrix;
-		parent = parent->m_parentObject;
-	}
-
-	for (GameObject& child : m_children)
-	{
-		child.recalculateMatrix();
-	}
-
-	return globalMatrix;
-}
-
-Matrix<float, 4, 4> GameObject::getGlobalMatrix()
-{
-	return (localMatrix * globalMatrix).transpose();
-}
-
-void GameObject::setParent(GameObject* p_parentObject)
-{
-	m_parentObject = p_parentObject;
-	p_parentObject->addChild(*this);
-	this->recalculateMatrix();
-}
-
-void GameObject::addChild(GameObject& p_childObject)
-{
-	p_childObject.setParent(this);
-	p_childObject.recalculateMatrix();
-	m_children.push_back(p_childObject);
-}
-
-void GameObject::addChildren(std::vector<GameObject>& p_childrenObject)
-{
-	for (GameObject& child : p_childrenObject)
-	{
-		child.setParent(this);
-		child.recalculateMatrix();
-		m_children.push_back(child);
-	}
-}
-
-
-GameObject* GameObject::getParent()
-{
-	return m_parentObject;
-}
-
-GameObject& GameObject::getChild(uint16_t p_index)
-{
-	return  m_children[p_index];
-}
-
-std::vector<GameObject>& GameObject::getChildren()
-{
-	return  m_children;
-}
 
 void GameObject::CleanupGameObject()
 {
-	this->GetBufferObject().CleanupBufferObject();
+	m_object.CleanUpObject();
+	m_material.CleanUpMaterial();
+	m_transform.CleanUpTransform();
+	m_lighting.CleanUpLighting();
 }
-

@@ -1,15 +1,16 @@
 #include "Camera.h"
 
-Camera Camera::getViewCamera = Camera();
+Camera Camera::ViewCamera = Camera();
 
 Camera::Camera()
 {
-	mat[3][2] = 5.0;
+	m_localMatrix.translate3D(0, 0, 5);
 }
 
 Camera::Camera(const Camera& cam)
 {
-	mat = cam.mat;
+	m_localMatrix = cam.m_localMatrix;
+	m_globalMatrix = cam.m_globalMatrix;
 }
 
 Camera::~Camera()
@@ -18,34 +19,37 @@ Camera::~Camera()
 
 void Camera::CameraUpdate(GLFWwindow *window)
 {
+	
+	Camera::ViewCamera.m_moveSpeed = 0.001 * Controls::SCROLL_OFFSET_Y;
+	
 	if (Controls::W_PRESSING || Controls::ARROW_UP_PRESSING)
 	{
-		Camera::getViewCamera.MoveForward();
+		Camera::ViewCamera.MoveForward();
 	}
 
 	if (Controls::A_PRESSING || Controls::ARROW_LEFT_PRESSING)
 	{
-		Camera::getViewCamera.MoveLeft();
+		Camera::ViewCamera.MoveLeft();
 	}
 
 	if (Controls::D_PRESSING || Controls::ARROW_RIGHT_PRESSING)
 	{
-		Camera::getViewCamera.MoveRight();
+		Camera::ViewCamera.MoveRight();
 	}
 
 	if (Controls::S_PRESSING || Controls::ARROW_DOWN_PRESSING)
 	{
-		Camera::getViewCamera.MoveBackward();
+		Camera::ViewCamera.MoveBackward();
 	}
 
 	if (Controls::Q_PRESSING)
 	{
-		Camera::getViewCamera.MoveUp();
+		Camera::ViewCamera.MoveUp();
 	}
 
 	if (Controls::E_PRESSING)
 	{
-		Camera::getViewCamera.MoveDown();
+		Camera::ViewCamera.MoveDown();
 
 	}
 
@@ -54,64 +58,52 @@ void Camera::CameraUpdate(GLFWwindow *window)
 		double tempX = Controls::CURSOR_POS_X;
 		double tempY = Controls::CURSOR_POS_Y;
 		glfwGetCursorPos(window, &Controls::CURSOR_POS_X, &Controls::CURSOR_POS_Y);
-		Camera::getViewCamera.mat.rotation3DAroundY(tempX - Controls::CURSOR_POS_X);
-		Camera::getViewCamera.mat.rotation3DAroundX(tempY - Controls::CURSOR_POS_Y);
+		
+		Camera::ViewCamera.RotateCamera(tempX, tempY);
 	}
+}
+
+Matrix<float, 4, 4> Camera::GetCameraMatrix()
+{
+	return (m_globalMatrix * m_localMatrix).transpose();
 }
 
 void Camera::SetCameraToWindow(GLFWwindow* window)
 {
-	Camera::getViewCamera = *this;
-	glfwSetKeyCallback(window, Controls::key_callback);
+	Camera::ViewCamera = *this;
+	glfwSetKeyCallback(window, Controls::Key_callback);
 	glfwSetCursorPosCallback(window, Controls::Cursor_position_callback);
 	glfwSetMouseButtonCallback(window, Controls::Mouse_button_callback);
+	glfwSetScrollCallback(window, Controls::Scroll_callback);
 }
 
-Matrix<float, 4, 4> Camera::MoveForward()
+void Camera::MoveForward()
 {
-	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, 0, -moveSpeed);
-	tempMat = tempMat.transpose();
-	mat *= tempMat;
-	return mat;
+	m_localMatrix.translate3D(this->GetCameraMatrix().Backwards().normalize() * m_moveSpeed);
 }
-Matrix<float, 4, 4> Camera::MoveBackward()
+void Camera::MoveBackward()
 {
-	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, 0, moveSpeed);
-	tempMat = tempMat.transpose();
-	mat *= tempMat;
-	return mat;
+	m_localMatrix.translate3D(this->GetCameraMatrix().Forward().normalize() * m_moveSpeed);
 }
-Matrix<float, 4, 4> Camera::MoveLeft()
+void Camera::MoveLeft()
 {
-	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(moveSpeed, 0, 0);
-	tempMat = tempMat.transpose();
-	mat *= tempMat;
-	return mat;
+	m_localMatrix.translate3D(this->GetCameraMatrix().Right().normalize() * m_moveSpeed);
 }
-Matrix<float, 4, 4> Camera::MoveRight()
+void Camera::MoveRight()
 {
-	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(-moveSpeed, 0, 0);
-	tempMat = tempMat.transpose();
-	mat *= tempMat;
-	return mat;
+	m_localMatrix.translate3D(this->GetCameraMatrix().Left().normalize() * m_moveSpeed);
 }
-Matrix<float, 4, 4> Camera::MoveUp()
+void Camera::MoveUp()
 {
-	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, moveSpeed, 0);
-	tempMat = tempMat.transpose();
-	mat *= tempMat;
-	return mat;
+	m_localMatrix.translate3D(0, m_moveSpeed, 0);
 }
-Matrix<float, 4, 4> Camera::MoveDown()
+void Camera::MoveDown()
 {
-	Matrix<float, 4, 4> tempMat;
-	tempMat.translate3D(0, -moveSpeed, 0);
-	tempMat = tempMat.transpose();
-	mat *= tempMat;
-	return mat;
+	m_localMatrix.translate3D(0, -m_moveSpeed, 0);
+
+}
+void Camera::RotateCamera(double p_cursorX, double p_cursorY)
+{
+	/*dontworks*/m_globalMatrix.rotation3DAroundXlocal((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
+	/*works*/m_globalMatrix.rotation3DAroundYlocal((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
 }

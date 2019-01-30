@@ -5,14 +5,8 @@
 
 class VK_Renderer;
 class Material;
+class Lighting;
 struct Vertex;
-
-struct UniformBufferObject {
-	Matrix<float, 4, 4> model;
-	Matrix<float, 4, 4> view;
-	Matrix<float, 4, 4> proj;
-};
-
 
 class VK_BufferObject
 {
@@ -34,14 +28,14 @@ public:
 
 	void SetRenderer			(VK_Renderer* renderer);
 
-	void CreateVertexBuffer		(std::vector<Vertex> vertices);
-	void CreateIndexBuffer		(std::vector<uint32_t> indices);
+	void CreateVertexBuffer		(std::vector<Vertex>& vertices);
+	void CreateIndexBuffer		(std::vector<uint32_t>& indices);
 	void CreateUniformBuffers	();
-	void CreateDescriptorSet	(Material& texture);
+	void CreateDescriptorSet	(Material& texture, Lighting& lighting);
 
-	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t currentImage);
+	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t& currentImage);
 
-	void CreateBuffer			(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	static void CreateBuffer	(VK_Renderer* renderer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void CopyBuffer				(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 	VkBuffer						GetIndexBuffer		();
@@ -49,7 +43,7 @@ public:
 	std::vector<VkBuffer>			GetUniformBuffers	();
 	std::vector<VkDescriptorSet>	GetDescriptorSets	();
 
-	void CleanupBufferObject();
+	void CleanUpBufferObject();
 };
 
 

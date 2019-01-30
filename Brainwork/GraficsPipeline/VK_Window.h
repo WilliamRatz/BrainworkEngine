@@ -6,6 +6,7 @@
 #include "VK_SwapChain.h"
 #include "VK_GameObjectManager.h"
 #include "VK_GraphicsPipeline.h"
+#include "LightManager.h"
 #include "Camera.h"
 
 class VK_Window
@@ -17,19 +18,22 @@ public:
 	void			run();
 
 private:
-	size_t			currentFrame		= 0;
 	bool			framebufferResized	= false;
+	size_t			currentFrame		= 0;
 	Camera			cam;
 
-	VK_Device			vk_Device			= VK_Device();
-	VK_SwapChain		vk_swapChain		= VK_SwapChain(vk_Device);
-	VK_Renderer			vk_renderer			= VK_Renderer(vk_swapChain);
-	VK_GameObjectManager	vk_bufferManager	= VK_GameObjectManager(vk_renderer);
-	VK_GraphicsPipeline vk_graphicsPipeline = VK_GraphicsPipeline(vk_renderer);
+	VK_Device							vk_device				= VK_Device();
+	VK_SwapChain						vk_swapChain			= VK_SwapChain(vk_device);
+	std::vector<VK_Renderer>			vk_renderers			= { VK_Renderer(vk_swapChain, RendererCreatInfo(true, true)), VK_Renderer(vk_swapChain, RendererCreatInfo(false, true)) };
+	std::vector<VK_GraphicsPipeline>	vk_graphicsPipelines	= { VK_GraphicsPipeline(vk_renderers[0]), VK_GraphicsPipeline(vk_renderers[1]) };
+	VK_GameObjectManager				vk_gameObjectManager	= VK_GameObjectManager(vk_renderers[0]); //renderer 0 color and depth Image
+	LightManager						vk_lightManager			= LightManager(vk_renderers[1]); //renderer 1 only depth Image
 	
 
 	void			initWindow();
 	void			initVulkan();
+	void			initObjects();
+
 	void			mainLoop();
 	void			drawFrame();
 

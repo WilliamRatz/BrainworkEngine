@@ -11,14 +11,13 @@ Texture::Texture()
 {
 }
 
-Texture::Texture(const char* p_texturePath)
+Texture::Texture(std::string p_texturePath)
 {
 	m_texturePath = p_texturePath;
 }
 
 Texture::Texture(const Texture& p_texture)
 {
-	m_bufferObject			= p_texture.m_bufferObject;
 	m_renderer				= p_texture.m_renderer;
 	m_texturePath			= p_texture.m_texturePath;
 	m_textureImage			= p_texture.m_textureImage;
@@ -31,9 +30,8 @@ Texture::~Texture()
 {
 }
 
-void Texture::CreateTexture(VK_BufferObject* p_bufferObject, VK_Renderer* p_renderer)
+void Texture::CreateTexture(VK_Renderer* p_renderer)
 {
-	m_bufferObject = p_bufferObject;
 	m_renderer = p_renderer;
 
 	this->CreateTextureImage();
@@ -43,7 +41,7 @@ void Texture::CreateTexture(VK_BufferObject* p_bufferObject, VK_Renderer* p_rend
 
 void Texture::CreateTextureImage() {
 	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load("textures/texture.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load(m_texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	if (!pixels) {
@@ -52,7 +50,7 @@ void Texture::CreateTextureImage() {
 
 	VkBuffer stagingBuffer;
 	VkDeviceMemory stagingBufferMemory;
-	m_bufferObject->CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	VK_BufferObject::CreateBuffer(m_renderer, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
 	vkMapMemory(m_renderer->vk_device->device, stagingBufferMemory, 0, imageSize, 0, &data);
@@ -120,7 +118,7 @@ void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, 
 	m_renderer->endSingleTimeCommands(commandBuffer);
 }
 
-void Texture::cleanup() {
+void Texture::CleanUpTexture() {
 	//after cleanup swapchain
 
 	vkDestroySampler(m_renderer->vk_device->device, textureSampler, nullptr);
@@ -133,7 +131,6 @@ void Texture::cleanup() {
 
 void Texture::operator=(const Texture& p_texture)
 {
-	m_bufferObject = p_texture.m_bufferObject;
 	m_renderer = p_texture.m_renderer;
 	m_texturePath = p_texture.m_texturePath;
 	m_textureImage = p_texture.m_textureImage;
