@@ -110,7 +110,7 @@ std::vector<uint32_t>& Object::GetIndicesRef()
 
 void Object::CleanUpObject()
 {
-	m_bufferObject.CleanUpBufferObject();
+	m_bufferObject.CleanUp();
 }
 #pragma endregion
 

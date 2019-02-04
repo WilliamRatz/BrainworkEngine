@@ -44,6 +44,11 @@ public:
 	std::size_t		getHashCode				();
 	std::size_t		countRows				();
 	std::size_t		countColumns			();
+	
+	Vector3			getTransform			();
+	Matrix&			identity				();
+	Matrix&			inverse					();
+	Matrix<T, C, R>	transpose				();
 
 	Matrix&			translate2D				(float x, float y);
 	Matrix&			scale2D					(float width, float height);
@@ -52,20 +57,19 @@ public:
 	Matrix&			translate3D				(float x, float y, float z);
 	Matrix&			translate3D				(Vector3 vec3);
 	Matrix&			scale3D					(float width, float height, float depth);
-	Matrix&			rotation3DAroundX		(float angle);
-	Matrix&			rotation3DAroundY		(float angle);
-	Matrix&			rotation3DAroundZ		(float angle);
+	Matrix&			rotation3DAroundX				(float angle);
+	Matrix&			rotation3DAroundY				(float angle);
+	Matrix&			rotation3DAroundZ				(float angle);
 
-	Matrix&			rotation3DAroundXlocal	(float angle);
-	Matrix&			rotation3DAroundYlocal	(float angle);
-	Matrix&			rotation3DAroundZlocal	(float angle);
+	Matrix&			rotation3DAroundXlocal			(float angle);
+	Matrix&			rotation3DAroundYlocal			(float angle);
+	Matrix&			rotation3DAroundZlocal			(float angle);
+
+	Matrix&			rotation3DAroundArbitararyAxis	(float angle, Vector3 axis);
 
 	Matrix&			perspectivProjection	(float windowWidth, float windowHeight, float nearPlane, float farPlane);
 	Matrix&			orthogonalProjection	(float windowWidth, float windowHeight, float nearPlane, float farPlane);
 
-	Matrix&			identity				();
-	Matrix&			inverse					();
-	Matrix<T, C, R>	transpose				();
 #pragma endregion
 #pragma region arithmeticOperator
 	void		operator=			(const Matrix&);
@@ -95,6 +99,7 @@ typeMatrix inline Matrix<T, R, C>::Matrix(const Matrix& mat)
 }
 
 #pragma endregion
+
 #pragma region Methods
 
 typeMatrix inline Vector3 Matrix<T, R, C>::Forward()
@@ -298,9 +303,18 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundXlocal(float
 	if (R < 3 && C < 3) {
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"X\" check your dimensions");
 	}
-	this->transpose();
+	Vector3 transformation(columns[0][3], columns[1][3], columns[2][3]);
+
+	this->columns[0][3] = 0;
+	this->columns[1][3] = 0;
+	this->columns[2][3] = 0;
+
 	this->rotation3DAroundX(angle);
-	this->transpose();
+
+	this->columns[0][3] = transformation.x();
+	this->columns[1][3] = transformation.y();
+	this->columns[2][3] = transformation.z();
+
 	return *this;
 }
 typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundYlocal(float angle)
@@ -309,9 +323,18 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundYlocal(float
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Y\" check your dimensions");
 	}
 
-	this->transpose();
+	Vector3 transformation(columns[0][3], columns[1][3], columns[2][3]);
+
+	this->columns[0][3] = 0;
+	this->columns[1][3] = 0;
+	this->columns[2][3] = 0;
+
 	this->rotation3DAroundY(angle);
-	this->transpose();
+
+	this->columns[0][3] = transformation.x();
+	this->columns[1][3] = transformation.y();
+	this->columns[2][3] = transformation.z();
+
 	return *this;
 }
 typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundZlocal(float angle)
@@ -320,12 +343,45 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundZlocal(float
 		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Z\" check your dimensions");
 	}
 
-	this->transpose();
+	Vector3 transformation(columns[0][3], columns[1][3], columns[2][3]);
+
+	this->columns[0][3] = 0;
+	this->columns[1][3] = 0;
+	this->columns[2][3] = 0;
+
 	this->rotation3DAroundZ(angle);
-	this->transpose();
+
+	this->columns[0][3] = transformation.x();
+	this->columns[1][3] = transformation.y();
+	this->columns[2][3] = transformation.z();
+
 	return *this;
+
 }
 			
+typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::rotation3DAroundArbitararyAxis(float angle, Vector3 axis)
+{
+	if (R < 3 && C < 3) {
+		throw std::out_of_range("Your Matrix dont fit for 3D rotation around \"Z\" check your dimensions");
+	}
+
+	Matrix<T, R, C> rotat3DArbiAxis;
+	double degress = (double)angle * MathLib::PI / 180; // change from Rad to degrees
+
+	rotat3DArbiAxis[0][0] = (std::cos(angle) + MathLib::pow(axis.x(), 2)) * (1 - std::cos(angle));
+	rotat3DArbiAxis[0][1] = (axis.x() * axis.y()) * (1 - std::cos(angle)) - (axis.z()*std::sin(angle));
+	rotat3DArbiAxis[0][2] = (axis.x() * axis.z()) * (1 - std::cos(angle)) + (axis.y()*std::sin(angle));
+	rotat3DArbiAxis[1][0] = (axis.y() * axis.x()) * (1 - std::cos(angle)) + (axis.z()*std::sin(angle));
+	rotat3DArbiAxis[1][1] = (std::cos(angle) + MathLib::pow(axis.y(), 2)) * (1 - std::cos(angle));
+	rotat3DArbiAxis[1][2] = (axis.y() * axis.z()) * (1 - std::cos(angle)) - (axis.x()*std::sin(angle));
+	rotat3DArbiAxis[2][0] = (axis.z() * axis.x()) * (1 - std::cos(angle)) - (axis.y()*std::sin(angle));
+	rotat3DArbiAxis[2][1] = (axis.z() * axis.y()) * (1 - std::cos(angle)) + (axis.x()*std::sin(angle));
+	rotat3DArbiAxis[2][2] = std::cos(angle) + MathLib::pow(axis.z(), 2) * (1 - std::cos(angle));
+
+	*this *= rotat3DArbiAxis;
+	return *this;
+}
+
 typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::perspectivProjection(float windowWidth, float windowHeight, float nearPlane, float farPlane)
 {
 	if (R < 4 && C < 4) {
@@ -361,11 +417,17 @@ typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::orthogonalProjection(float w
 		perProj[3][3] = (T) 1;
 	}
 
-	this->operator*=(perProj);
+	*this = perProj;
 	return *this;
 }
-							 
-typeMatrix inline Matrix<T, R, C>&Matrix<T, R, C>::identity() {
+						
+
+typeMatrix inline Vector3 Matrix<T, R, C>::getTransform()
+{
+	return Vector3(columns[0][3], columns[1][3], columns[2][3]);
+}
+
+typeMatrix inline Matrix<T, R, C>& Matrix<T, R, C>::identity() {
 
 	for (std::size_t i = 0; i < C; ++i) {
 		for (std::size_t ii = 0; ii < R; ++ii) {
@@ -390,6 +452,7 @@ typeMatrix inline Matrix<T, C, R> Matrix<T, R, C>::transpose()
 }
 
 #pragma endregion
+
 #pragma region arithmeticOperator
 
 typeMatrix void Matrix<T, R, C>::operator=(const Matrix& mat)

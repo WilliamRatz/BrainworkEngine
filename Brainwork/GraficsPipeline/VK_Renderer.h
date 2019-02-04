@@ -28,21 +28,21 @@ struct RendererCreatInfo
 
 class VK_Renderer
 {
-public:
-	VK_Device*				vk_device;
-	VK_SwapChain*			vk_swapChain;
-
-	std::vector<VkCommandBuffer>	commandBuffers;
+private:
+	VkRenderPass					m_renderPass;
+	VkDescriptorPool				m_descriptorPool;
+	VkDescriptorSetLayout			m_descriptorSetLayout;
+	VkCommandPool					m_commandPool;
+	std::vector<VkCommandBuffer>	m_commandBuffers;
 	RendererCreatInfo				m_rendererCreatInfo;
 
 public:
-	VK_Renderer				(VK_SwapChain& vk_swapChain, RendererCreatInfo rendererCreatInfo);
-	
-	VkRenderPass			renderPass;
-	VkDescriptorPool		m_descriptorPool;
-	VkDescriptorSetLayout	m_descriptorSetLayout;
-	VkCommandPool			commandPool;
+	VK_Device*				m_pDevice;
+	VK_SwapChain*			m_pSwapChain;
 
+	VK_Renderer				(VK_SwapChain& swapChain, RendererCreatInfo rendererCreatInfo);
+	VK_Renderer				(const VK_Renderer& renderer);
+	~VK_Renderer			();
 	
 	void CreateRenderPass				();
 
@@ -56,8 +56,16 @@ public:
 	void CreateCommandBuffers			(VK_GraphicsPipeline& vk_graphicsPipeline, VK_GameObjectManager& VK_gameObjectManager);
 	void CreateCommandBuffers			(VK_GraphicsPipeline& vk_graphicsPipeline, LightManager& VK_lightManager);
 
-	VkCommandBuffer beginSingleTimeCommands();
-	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+	VkCommandBuffer beginSingleTimeCommands		();
+	void			endSingleTimeCommands		(VkCommandBuffer commandBuffer);
+
+	VkRenderPass&					GetRenderPassRef();
+	VkDescriptorPool&				GetDescriptorPoolRef();
+	VkDescriptorSetLayout&			GetDescriptorSetLayoutRef();
+	std::vector<VkCommandBuffer>&	GetCommandBuffersRef();
+	RendererCreatInfo&				GetRendererCreatInfoRef();
+
+	void CleanUp();
 };
 
 

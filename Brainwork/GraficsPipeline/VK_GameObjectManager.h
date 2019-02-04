@@ -20,14 +20,14 @@ public:
 	void UpdateGameObjects			(uint32_t currentImage);
 
 	void AddGameObject				(GameObject& gameObject);
-	void CreateBufferObjects		();
+	void CreateGameObjects			();
 	void CreateDescriptorSets		();
 
 	std::vector<GameObject>		GetGameObjects		();
 	std::vector<GameObject>&	GetGameObjectsRef	();
 
 
-	void CleanUpBuffers				();
+	void CleanUp				();
 };
 
 #endif // !VK_BUFFERMANAGER_H

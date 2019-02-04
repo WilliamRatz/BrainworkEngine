@@ -15,8 +15,9 @@ layout(location = 1) in vec2 inTexCoord;
 layout(location = 2) in vec3 inNormal;
 
 layout(location = 0) out vec3 fragColor;
-layout(location = 1) out vec2 fragTexCoord;
-layout(location = 2) out vec4 fragWorldPos;
+layout(location = 1) out vec4 fragWorldPos;
+layout(location = 2) out vec2 fragTexCoord;
+layout(location = 3) out vec3 fragNormal;
 
 
 void main() {
@@ -25,6 +26,7 @@ void main() {
 
     fragColor = ubo.groundColor.xyz;
 	fragTexCoord = inTexCoord;
+	fragNormal = mat3(ubo.model) * inNormal;
 }
 
 
@@ -48,7 +50,6 @@ layout(location = 2) in vec3 inNormal;
 
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
-layout(location = 2) out vec3 fragNormal;
 layout(location = 3) out vec3 fragViewVec;
 layout(location = 4) out vec3 fragLightVec;
 layout(location = 5) out vec3 fragLightColor;

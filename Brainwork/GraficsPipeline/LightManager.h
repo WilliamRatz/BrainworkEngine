@@ -15,6 +15,7 @@ public:
 	LightManager(VK_Renderer& renderer);
 	~LightManager();
 
+	void UpdateLightInfos(uint32_t currentImage);
 	void AddLight(PointLight);
 
 	void CalculateLightMaps();
@@ -22,7 +23,8 @@ public:
 
 	void CreateDescriptorSets();
 	void CreateFrameBuffer();
-	void CreateLightBuffer(size_t gameObjectCount);
-	void UpdateLightInfos(uint32_t currentImage, GameObject* onlyOnePossibleForNow);
+	void CreateLightBuffer();
+
+	void CleanUp();
 };
 
