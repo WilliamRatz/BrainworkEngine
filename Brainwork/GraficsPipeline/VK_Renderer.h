@@ -26,6 +26,21 @@ struct RendererCreatInfo
 	}
 };
 
+struct LayoutBinding
+{
+	uint32_t m_bindings = 0;
+	std::vector<uint32_t> m_descriptorCount;
+
+	LayoutBinding()
+	{
+	}
+	void AddBinding(uint32_t p_descriptorCount)
+	{
+		++m_bindings;
+		m_descriptorCount.push_back(p_descriptorCount);
+	}
+};
+
 class VK_Renderer
 {
 private:
@@ -49,7 +64,7 @@ public:
 	void CreateFramebuffers				(std::vector<VkFramebuffer>& p_frameBuffers, std::vector<VkImageView>& p_colorImageView, VkImageView& p_depthImageView);
 	void CreateFramebuffers				(std::vector<VkFramebuffer>& p_frameBuffers, VkImageView& p_depthImageView);
 
-	void CreateDescriptorSetLayouts		(unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
+	void CreateDescriptorSetLayouts		(LayoutBinding& uboBindings, LayoutBinding& imageSamplerBindings);
 	void CreateDescriptorPools			(unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
 
 	void CreateCommandPool				();

@@ -22,10 +22,11 @@ void VK_BufferObject::SetRenderer(VK_Renderer* p_renderer)
 
 void VK_BufferObject::CleanUp()
 {
-
-	for (size_t i = 0; i < m_uniformBuffers.size(); ++i) {
+	for (size_t i = 0; i < m_uniformBuffers.size(); ++i)
+	{
 		vkDestroyBuffer(m_pRenderer->m_pDevice->device, m_uniformBuffers[i], nullptr);
 		vkFreeMemory(m_pRenderer->m_pDevice->device, m_uniformBuffersMemory[i], nullptr);
+
 	}
 
 	vkDestroyBuffer(m_pRenderer->m_pDevice->device, m_indexBuffer, nullptr);
@@ -74,9 +75,10 @@ void VK_BufferObject::CreateIndexBuffer(std::vector<uint32_t>& indices) {
 	vkDestroyBuffer(m_pRenderer->m_pDevice->device, stagingBuffer, nullptr);
 	vkFreeMemory(m_pRenderer->m_pDevice->device, stagingBufferMemory, nullptr);
 }
-void VK_BufferObject::CreateUniformBuffers() {
+void VK_BufferObject::CreateUniformBuffers(Lighting& p_lighting) {
 
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
 	m_uniformBuffers.resize(m_pRenderer->m_pSwapChain->m_swapChainImages.size());
 	m_uniformBuffersMemory.resize(m_pRenderer->m_pSwapChain->m_swapChainImages.size());
 
@@ -92,6 +94,7 @@ void VK_BufferObject::CreateDescriptorSet(Material& p_material, Lighting& p_ligh
 	allocInfo.descriptorPool = m_pRenderer->GetDescriptorPoolRef();
 	allocInfo.descriptorSetCount = static_cast<uint32_t>(m_pRenderer->m_pSwapChain->m_swapChainImages.size());
 	allocInfo.pSetLayouts = layouts.data();
+
 
 	m_descriptorSets.resize(m_pRenderer->m_pSwapChain->m_swapChainImages.size());
 	if (vkAllocateDescriptorSets(m_pRenderer->m_pDevice->device, &allocInfo, m_descriptorSets.data()) != VK_SUCCESS) {
@@ -109,11 +112,18 @@ void VK_BufferObject::CreateDescriptorSet(Material& p_material, Lighting& p_ligh
 		diffuseMap.imageView = p_material.GetTextureRef().textureImageView;
 		diffuseMap.sampler = p_material.GetTextureRef().textureSampler;
 
-		VkDescriptorImageInfo lightInfo = {};
-		lightInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		lightInfo.imageView = p_lighting.GetPointLightRef()[0]->GetImageViewRef();
-		lightInfo.sampler = p_lighting.GetPointLightRef()[0]->GetVkSamplerRef();
+		std::vector<VkDescriptorImageInfo> lightInfo = {};
+		for (int ii = 0; ii < ((p_lighting.GetPointLightRef().size() > 16) ? 16 : p_lighting.GetPointLightRef().size()); ++ii)
+		{
+			VkDescriptorImageInfo tempInfo;
+			tempInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			tempInfo.imageView = p_lighting.GetPointLightRef()[ii]->GetImageViewRef();
+			tempInfo.sampler = p_lighting.GetPointLightRef()[ii]->GetVkSamplerRef();
 
+			lightInfo.push_back(tempInfo);
+		}
+
+		//max 16 lights
 		std::array<VkWriteDescriptorSet, 3> descriptorWrites = {};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -137,8 +147,8 @@ void VK_BufferObject::CreateDescriptorSet(Material& p_material, Lighting& p_ligh
 		descriptorWrites[2].dstBinding = 2;
 		descriptorWrites[2].dstArrayElement = 0;
 		descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[2].descriptorCount = 1;
-		descriptorWrites[2].pImageInfo = &lightInfo;
+		descriptorWrites[2].descriptorCount = static_cast<uint32_t>(lightInfo.size());
+		descriptorWrites[2].pImageInfo = lightInfo.data();
 
 		vkUpdateDescriptorSets(m_pRenderer->m_pDevice->device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
@@ -151,6 +161,7 @@ void VK_BufferObject::UpdateUniformBuffer(UniformBufferObject& ubo, uint32_t& cu
 	vkMapMemory(m_pRenderer->m_pDevice->device, m_uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
 	memcpy(data, &ubo, sizeof(ubo));
 	vkUnmapMemory(m_pRenderer->m_pDevice->device, m_uniformBuffersMemory[currentImage]);
+
 }
 
 void VK_BufferObject::CreateBuffer(VK_Renderer* p_renderer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {

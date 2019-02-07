@@ -6,6 +6,8 @@ class VK_SwapChain;
 class VK_Device;
 class LightManager;
 
+struct LayoutBinding;
+
 
 class VK_GraphicsPipeline
 {
@@ -20,7 +22,7 @@ public:
 	VK_GraphicsPipeline(const VK_GraphicsPipeline& vk_graphicsPipeline);
 	~VK_GraphicsPipeline();
 
-	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
+	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, LayoutBinding& p_uboBindings, LayoutBinding& p_imageSamplerBindings);
 
 	void RecreateGraphicsPipeline(GLFWwindow* window);
 

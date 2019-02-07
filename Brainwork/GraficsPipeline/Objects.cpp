@@ -69,7 +69,6 @@ void Object::CreateBuffer(VK_Renderer* p_renderer)
 	m_bufferObject.SetRenderer(p_renderer);
 	m_bufferObject.CreateVertexBuffer(m_vertices);
 	m_bufferObject.CreateIndexBuffer(m_indices);
-	m_bufferObject.CreateUniformBuffers();
 }
 
 UniformBufferObject	Object::GetUniformBufferObject()

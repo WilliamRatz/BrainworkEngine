@@ -39,8 +39,23 @@ void VK_Window::InitVulkan() {
 	m_renderers[0].CreateRenderPass();
 	m_renderers[1].CreateRenderPass();
 
-	m_graphicsPipelines[0].CreateGraphicsPipeline("vert", "frag", 1, 2);
-	m_graphicsPipelines[1].CreateGraphicsPipeline("LightVert", "LightFrag", 1, 0);
+	{
+		LayoutBinding uboBinding;
+		uboBinding.AddBinding(1);
+
+		LayoutBinding imageBinding;
+		imageBinding.AddBinding(1);
+		imageBinding.AddBinding(2);
+
+		m_graphicsPipelines[0].CreateGraphicsPipeline("vert", "frag", uboBinding, imageBinding);
+	}
+	{
+		LayoutBinding uboBinding;
+		uboBinding.AddBinding(1);
+
+		LayoutBinding imageBinding;
+		m_graphicsPipelines[1].CreateGraphicsPipeline("LightVert", "LightFrag", uboBinding, imageBinding);
+	}
 
 
 	this->InitObjects();
@@ -56,12 +71,12 @@ void VK_Window::InitObjects()
 		m_lightManager.AddLight(pl);
 	}
 
-	//{
-	//	PointLight pl(m_renderers[1]);
-	//	pl.GetLightInfoObjectRef().lightView.translate3D(-8.0f, 0, 10.0f);
-	//	pl.GetLightInfoObjectRef().lightView = pl.GetLightInfoObjectRef().lightView.transpose();
-	//	m_lightManager.AddLight(pl);
-	//}
+	{
+		PointLight pl(m_renderers[1]);
+		pl.GetLightInfoObjectRef().lightView.translate3D(-10.0f, 0, 10.0f);
+		pl.GetLightInfoObjectRef().lightView = pl.GetLightInfoObjectRef().lightView.transpose();
+		m_lightManager.AddLight(pl);
+	}
 
 	m_lightManager.CalculateLightMaps();
 

@@ -24,7 +24,7 @@ VK_GraphicsPipeline::~VK_GraphicsPipeline()
 {
 }
 
-void VK_GraphicsPipeline::CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, unsigned int p_uboBindings, unsigned int p_imageSamplerBindings)
+void VK_GraphicsPipeline::CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, LayoutBinding& p_uboBindings, LayoutBinding& p_imageSamplerBindings)
 {
 	std::vector<char> vertShaderCode = ReadFile("shaders/" + p_vertexShader + ".spv");
 	std::vector<char> fragShaderCode = ReadFile("shaders/" + p_fragmentShader + ".spv");
@@ -176,7 +176,7 @@ void VK_GraphicsPipeline::CreateGraphicsPipeline(std::string p_vertexShader, std
 	vkDestroyShaderModule(m_pDevice->device, vertShaderModule, nullptr);
 
 	m_pRenderer->CreateCommandPool();
-	m_pRenderer->CreateDescriptorPools(p_uboBindings, p_imageSamplerBindings);
+	m_pRenderer->CreateDescriptorPools(p_uboBindings.m_bindings, p_imageSamplerBindings.m_bindings);
 
 }
 

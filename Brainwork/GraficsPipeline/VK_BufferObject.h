@@ -12,7 +12,6 @@ class VK_BufferObject
 {
 private:
 	std::vector<VkDescriptorSet>	m_descriptorSets;
-
 	std::vector<VkBuffer>			m_uniformBuffers;
 	std::vector<VkDeviceMemory>		m_uniformBuffersMemory;
 
@@ -31,7 +30,7 @@ public:
 
 	void CreateVertexBuffer		(std::vector<Vertex>& vertices);
 	void CreateIndexBuffer		(std::vector<uint32_t>& indices);
-	void CreateUniformBuffers	();
+	void CreateUniformBuffers	(Lighting& p_lighting);
 	void CreateDescriptorSet	(Material& texture, Lighting& lighting);
 
 	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t& currentImage);

@@ -190,14 +190,14 @@ void VK_Renderer::CreateFramebuffers(std::vector<VkFramebuffer>& p_frameBuffers,
 }
 
 
-void VK_Renderer::CreateDescriptorSetLayouts(unsigned int p_uboBindings, unsigned int p_imageSamplerBindings) {
+void VK_Renderer::CreateDescriptorSetLayouts(LayoutBinding& p_uboBindings, LayoutBinding& p_imageSamplerBindings) {
 	unsigned int u = 0;
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
-	for (int i = 0; i < p_uboBindings; ++i) {
+	for (int i = 0; i < p_uboBindings.m_bindings; ++i) {
 		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 		uboLayoutBinding.binding = u;
-		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.descriptorCount = p_uboBindings.m_descriptorCount[i];
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -206,10 +206,10 @@ void VK_Renderer::CreateDescriptorSetLayouts(unsigned int p_uboBindings, unsigne
 		++u;
 	}
 
-	for (int i = 0; i < p_imageSamplerBindings; ++i) {
+	for (int i = 0; i < p_imageSamplerBindings.m_bindings; ++i) {
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
 		samplerLayoutBinding.binding = u;
-		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorCount = p_imageSamplerBindings.m_descriptorCount[i];
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -251,7 +251,7 @@ void VK_Renderer::CreateDescriptorPools(unsigned int p_uboBindings, unsigned int
 	poolTextureInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolTextureInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolTextureInfo.pPoolSizes = poolSizes.data();
-	poolTextureInfo.maxSets = static_cast<uint32_t>(m_pSwapChain->m_swapChainImages.size()) *8;
+	poolTextureInfo.maxSets = static_cast<uint32_t>(m_pSwapChain->m_swapChainImages.size()) * 16;
 
 	if (vkCreateDescriptorPool(m_pDevice->device, &poolTextureInfo, nullptr, &m_descriptorPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor pool!");
@@ -282,20 +282,20 @@ void VK_Renderer::CreateCommandBuffers(VK_GraphicsPipeline& vk_graphicsPipeline,
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
 
-	for (size_t i = 0; i < m_commandBuffers.size(); ++i) {
+	for (size_t cb = 0; cb < m_commandBuffers.size(); ++cb) {
 
 		VkCommandBufferBeginInfo beginInfo = {};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
-		if (vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo) != VK_SUCCESS) {
+		if (vkBeginCommandBuffer(m_commandBuffers[cb], &beginInfo) != VK_SUCCESS) {
 			throw std::runtime_error("failed to begin recording command buffer!");
 		}
 
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassInfo.renderPass = m_renderPass;
-		renderPassInfo.framebuffer = m_pSwapChain->m_swapChainFramebuffers[i];
+		renderPassInfo.framebuffer = m_pSwapChain->m_swapChainFramebuffers[cb];
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = m_pSwapChain->m_swapChainExtent;
 
@@ -306,28 +306,28 @@ void VK_Renderer::CreateCommandBuffers(VK_GraphicsPipeline& vk_graphicsPipeline,
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassInfo.pClearValues = clearValues.data();
 
-		vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipeline.m_graphicsPipeline);
+		vkCmdBeginRenderPass(m_commandBuffers[cb], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBindPipeline(m_commandBuffers[cb], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipeline.m_graphicsPipeline);
 
 
-		for (size_t ii = 0; ii < VK_gameObjectManager.GetGameObjectsRef().size(); ++ii)
+		for (size_t gm = 0; gm < VK_gameObjectManager.GetGameObjectsRef().size(); ++gm)
 		{
-
-			VkBuffer vertexBuffers[] = { VK_gameObjectManager.GetGameObjectsRef()[ii].GetObjectRef().GetVK_BufferObjectRef().GetVertexBufferRef() };
+			VkBuffer vertexBuffers[] = { VK_gameObjectManager.GetGameObjectsRef()[gm].GetObjectRef().GetVK_BufferObjectRef().GetVertexBufferRef() };
 			VkDeviceSize offsets[] = { 0 };
-			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(m_commandBuffers[i], VK_gameObjectManager.GetGameObjectsRef()[ii].GetObjectRef().GetVK_BufferObjectRef().GetIndexBufferRef(), 0, VK_INDEX_TYPE_UINT32);
-			vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipeline.m_pipelineLayout, 0, 1, &VK_gameObjectManager.GetGameObjectsRef()[ii].GetObjectRef().GetVK_BufferObjectRef().GetDescriptorSetsRef()[i], 0, nullptr);
+			vkCmdBindVertexBuffers(m_commandBuffers[cb], 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(m_commandBuffers[cb], VK_gameObjectManager.GetGameObjectsRef()[gm].GetObjectRef().GetVK_BufferObjectRef().GetIndexBufferRef(), 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindDescriptorSets(m_commandBuffers[cb], VK_PIPELINE_BIND_POINT_GRAPHICS, vk_graphicsPipeline.m_pipelineLayout, 0, 1, &VK_gameObjectManager.GetGameObjectsRef()[gm].GetObjectRef().GetVK_BufferObjectRef().GetDescriptorSetsRef()[cb], 0, nullptr);
 
-			vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(VK_gameObjectManager.GetGameObjectsRef()[ii].GetObject().GetIndices().size()), 1, 0, 0, 0);
+			vkCmdDrawIndexed(m_commandBuffers[cb], static_cast<uint32_t>(VK_gameObjectManager.GetGameObjectsRef()[gm].GetObject().GetIndices().size()), 1, 0, 0, 0);
 		}
 
-		vkCmdEndRenderPass(m_commandBuffers[i]);
+		vkCmdEndRenderPass(m_commandBuffers[cb]);
 
-		if (vkEndCommandBuffer(m_commandBuffers[i]) != VK_SUCCESS) {
+		if (vkEndCommandBuffer(m_commandBuffers[cb]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to record command buffer!");
 		}
 	}
+
 
 
 
@@ -386,9 +386,9 @@ void VK_Renderer::CreateCommandBuffers(VK_GraphicsPipeline& p_vk_graphicsPipelin
 				vkCmdDrawIndexed(m_commandBuffers[cb], static_cast<uint32_t>(p_vk_lightManager.m_pointLights[pl].GetGameObjectsInFrustumPtr()->at(gm).GetObject().GetIndices().size()), 1, 0, 0, 0);
 			}
 
+			vkCmdEndRenderPass(m_commandBuffers[cb]);
 		}
 
-		vkCmdEndRenderPass(m_commandBuffers[cb]);
 
 		if (vkEndCommandBuffer(m_commandBuffers[cb]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to record command buffer!");

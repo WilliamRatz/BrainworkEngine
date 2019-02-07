@@ -5,7 +5,10 @@ layout(binding = 0) uniform UniformBufferObject {
     mat4 model;
     mat4 view;
     mat4 proj;
-	mat4 lightView;
+	mat4 lightView [16];
+	int lightsCount;
+	vec3 puffer;
+
 
 	vec4 groundColor;
 }ubo;

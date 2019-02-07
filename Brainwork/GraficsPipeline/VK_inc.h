@@ -30,7 +30,10 @@ struct UniformBufferObject {
 	Matrix<float, 4, 4> model;
 	Matrix<float, 4, 4> view;
 	Matrix<float, 4, 4> proj;
-	Matrix<float, 4, 4> lightView;
+	Matrix<float, 4, 4> lightView[16];
+	int lightsCount;
+	Vector3 puffer;
+
 
 	Vector4 groundColor;
 };
