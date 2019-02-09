@@ -4,7 +4,7 @@ Camera Camera::ViewCamera = Camera();
 
 Camera::Camera()
 {
-	m_transformMatrix.translate3D(0, 0, 5);
+	m_transformMatrix.translate3D(8, 0, 5);
 }
 
 Camera::Camera(const Camera& cam)

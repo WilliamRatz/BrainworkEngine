@@ -83,6 +83,13 @@ void PointLight::CreateLightInfoBuffer()
 
 void PointLight::UpdateLightInfo(uint32_t& p_currentImage)
 {
+		m_lightInfo.lightView = m_lightInfo.lightView.transpose();
+		m_lightInfo.lightView.translate3D(0.001, 0, 0);
+		if (m_lightInfo.lightView[0][3] > 20) 
+		{
+			m_lightInfo.lightView[0][3] = -20;
+		}
+		m_lightInfo.lightView = m_lightInfo.lightView.transpose();
 
 	for (size_t i = 0; i < m_pGameObjectsInFrustum->size(); ++i)
 	{

@@ -251,7 +251,7 @@ void VK_Renderer::CreateDescriptorPools(unsigned int p_uboBindings, unsigned int
 	poolTextureInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolTextureInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolTextureInfo.pPoolSizes = poolSizes.data();
-	poolTextureInfo.maxSets = static_cast<uint32_t>(m_pSwapChain->m_swapChainImages.size()) * 16;
+	poolTextureInfo.maxSets = static_cast<uint32_t>(m_pSwapChain->m_swapChainImages.size()) * 60;
 
 	if (vkCreateDescriptorPool(m_pDevice->device, &poolTextureInfo, nullptr, &m_descriptorPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor pool!");

@@ -66,14 +66,14 @@ void VK_Window::InitObjects()
 {
 	{
 		PointLight pl(m_renderers[1]);
-		pl.GetLightInfoObjectRef().lightView.translate3D(-1.8f, 0, 6.0f);
+		pl.GetLightInfoObjectRef().lightView.translate3D(0.0f, 0, 10.0f);
 		pl.GetLightInfoObjectRef().lightView = pl.GetLightInfoObjectRef().lightView.transpose();
 		m_lightManager.AddLight(pl);
 	}
 
 	{
 		PointLight pl(m_renderers[1]);
-		pl.GetLightInfoObjectRef().lightView.translate3D(-10.0f, 0, 10.0f);
+		pl.GetLightInfoObjectRef().lightView.translate3D(19.0f, 0, 10.0f);
 		pl.GetLightInfoObjectRef().lightView = pl.GetLightInfoObjectRef().lightView.transpose();
 		m_lightManager.AddLight(pl);
 	}
