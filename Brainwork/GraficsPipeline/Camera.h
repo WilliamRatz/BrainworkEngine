@@ -1,6 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-#include <BW_Inc.h>
+#include <Inc_BWMath.h>
 #include "Controls.h"
 
 class Camera

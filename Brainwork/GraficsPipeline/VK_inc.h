@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 
-#include <BW_Inc.h>
+#include <Inc_BWMath.h>
 #include <fstream>
 #include <stdexcept>
 #include <algorithm>
