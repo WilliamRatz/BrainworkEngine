@@ -4,28 +4,30 @@
 class VK_Renderer;
 class VK_SwapChain;
 class VK_Device;
-class VK_GameObjectManager;
 class LightManager;
+
+struct LayoutBinding;
 
 
 class VK_GraphicsPipeline
 {
 public:
-	VK_Renderer*			vk_renderer;
-	VK_SwapChain*			vk_swapChain;
-	VK_Device*				vk_device;
-	VkPipeline				graphicsPipeline;
-	VkPipelineLayout		pipelineLayout;
+	VK_Renderer*			m_pRenderer;
+	VK_SwapChain*			m_pSwapChain;
+	VK_Device*				m_pDevice;
+	VkPipeline				m_graphicsPipeline;
+	VkPipelineLayout		m_pipelineLayout;
 
 	VK_GraphicsPipeline(VK_Renderer& vk_renderer);
 	VK_GraphicsPipeline(const VK_GraphicsPipeline& vk_graphicsPipeline);
 	~VK_GraphicsPipeline();
 
-	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
+	void CreateGraphicsPipeline(std::string p_vertexShader, std::string p_fragmentShader, LayoutBinding& p_uboBindings, LayoutBinding& p_imageSamplerBindings);
 
-	void RecreateSwapChain(GLFWwindow* window, VK_GameObjectManager* vk_bufferManager);
-	void CleanupSwapChain(VK_GameObjectManager* vk_bufferManager);
+	void RecreateGraphicsPipeline(GLFWwindow* window);
 
 	static std::vector<char> ReadFile(const std::string& filename);
 	VkShaderModule CreateShaderModule(const std::vector<char>& code);
+
+	void CleanUp();
 };

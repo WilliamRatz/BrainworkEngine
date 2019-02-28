@@ -3,7 +3,7 @@
 
 class Material
 {
-public:
+private:
 	Vector3 m_color = Vector3(1.0f, 1.0f, 1.0f);
 	Texture m_texture;
 

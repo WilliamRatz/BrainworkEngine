@@ -53,24 +53,24 @@ void Texture::CreateTextureImage() {
 	VK_BufferObject::CreateBuffer(m_renderer, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	void* data;
-	vkMapMemory(m_renderer->vk_device->device, stagingBufferMemory, 0, imageSize, 0, &data);
+	vkMapMemory(m_renderer->m_pDevice->device, stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(m_renderer->vk_device->device, stagingBufferMemory);
+	vkUnmapMemory(m_renderer->m_pDevice->device, stagingBufferMemory);
 
 	stbi_image_free(pixels);
 
-	m_renderer->vk_swapChain->CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
+	m_renderer->m_pSwapChain->CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
 
-	m_renderer->vk_swapChain->TransitionImageLayout(*m_renderer, m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	m_renderer->m_pSwapChain->TransitionImageLayout(*m_renderer, m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	CopyBufferToImage(stagingBuffer, m_textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	m_renderer->vk_swapChain->TransitionImageLayout(*m_renderer, m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	m_renderer->m_pSwapChain->TransitionImageLayout(*m_renderer, m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkDestroyBuffer(m_renderer->vk_device->device, stagingBuffer, nullptr);
-	vkFreeMemory(m_renderer->vk_device->device, stagingBufferMemory, nullptr);
+	vkDestroyBuffer(m_renderer->m_pDevice->device, stagingBuffer, nullptr);
+	vkFreeMemory(m_renderer->m_pDevice->device, stagingBufferMemory, nullptr);
 }
 void Texture::CreateTextureImageViews()
 {
-	textureImageView = m_renderer->vk_swapChain->CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+	textureImageView = m_renderer->m_pSwapChain->CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 }
 
 void Texture::CreateTextureSampler()
@@ -90,7 +90,7 @@ void Texture::CreateTextureSampler()
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-	if (vkCreateSampler(m_renderer->vk_device->device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+	if (vkCreateSampler(m_renderer->m_pDevice->device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create texture sampler!");
 	}
 }
@@ -121,11 +121,11 @@ void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, 
 void Texture::CleanUpTexture() {
 	//after cleanup swapchain
 
-	vkDestroySampler(m_renderer->vk_device->device, textureSampler, nullptr);
-	vkDestroyImageView(m_renderer->vk_device->device, textureImageView, nullptr);
+	vkDestroySampler(m_renderer->m_pDevice->device, textureSampler, nullptr);
+	vkDestroyImageView(m_renderer->m_pDevice->device, textureImageView, nullptr);
 
-	vkDestroyImage(m_renderer->vk_device->device, m_textureImage, nullptr);
-	vkFreeMemory(m_renderer->vk_device->device, m_textureImageMemory, nullptr);
+	vkDestroyImage(m_renderer->m_pDevice->device, m_textureImage, nullptr);
+	vkFreeMemory(m_renderer->m_pDevice->device, m_textureImageMemory, nullptr);
 
 }
 

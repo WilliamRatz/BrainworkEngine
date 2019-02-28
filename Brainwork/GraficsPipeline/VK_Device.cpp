@@ -2,7 +2,7 @@
 
 VK_Device::VK_Device()
 {
-	
+
 };
 
 void VK_Device::PickPhysicalDevice(VK_SwapChain& vk_SwapChain) {
@@ -232,6 +232,18 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VK_Device::debugCallback(VkDebugUtilsMessageSever
 	std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 	return VK_FALSE;
+}
+
+void VK_Device::CleanUp()
+{
+	vkDestroyDevice(device, nullptr);
+
+	if (enableValidationLayers) {
+		this->DestroyDebugUtilsMessengerEXT(instance, callback, nullptr);
+	}
+	vkDestroySurfaceKHR(instance, surface, nullptr);
+	vkDestroyInstance(instance, nullptr);
+
 }
 
 QueueFamilyIndices VK_Device::findQueueFamilies(VkPhysicalDevice device) {

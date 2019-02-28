@@ -1,13 +1,13 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-#include <BW_Inc.h>
+#include <Inc_BWMath.h>
 #include "Controls.h"
 
 class Camera
 {
 private:
-	Matrix<float, 4, 4> m_globalMatrix;
-	Matrix<float, 4, 4> m_localMatrix;
+	Matrix<float, 4, 4> m_rotationMatrix;
+	Matrix<float, 4, 4> m_transformMatrix;
 	float				m_moveSpeed = 0.001f;
 	float				m_rotationSpeed = 0.1f;
 

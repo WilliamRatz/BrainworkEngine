@@ -59,6 +59,9 @@ public:
 	void DestroyDebugUtilsMessengerEXT						(VkInstance instance, VkDebugUtilsMessengerEXT callback, const VkAllocationCallbacks* pAllocator);
 	QueueFamilyIndices findQueueFamilies					(VkPhysicalDevice device);
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback		(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
+
+	void CleanUp();
+	
 };
 
 #endif // !VK_DEVICE_H

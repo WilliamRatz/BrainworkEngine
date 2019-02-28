@@ -24,14 +24,22 @@ GameObject::~GameObject()
 
 void GameObject::UpdateGameObject(uint32_t currentImage) {
 
-	//m_transform.getLocalMatrixRef().rotation3DAroundY(0.05f);
+	if (m_transform.getMobility() == Mobility::m_moveable)
+	{
+		m_transform.getLocalMatrixRef().rotation3DAroundYlocal(0.05f);
+	}
+
+	m_object.GetUniformBufferObjectRef().lightsCount = ((m_lighting.GetPointLightRef().size() > 16) ? 16 : m_lighting.GetPointLightRef().size());
+	for (size_t i = 0; i < m_object.GetUniformBufferObjectRef().lightsCount; ++i)
+	{
+		m_object.GetUniformBufferObjectRef().lightView[i] = m_lighting.GetPointLightRef()[i]->GetLightInfoObjectRef().lightView;
+	}
 
 	m_object.GetUniformBufferObjectRef().model = m_transform.getGlobalMatrix();
 	m_object.GetUniformBufferObjectRef().view = Camera::ViewCamera.GetCameraMatrix();
-	m_object.GetUniformBufferObjectRef().lightView = m_lighting.GetPointLightRef()[0]->GetLightInfoObjectRef().lightView;
 	m_object.GetUniformBufferObjectRef().proj.perspectivProjection((WIDTH < HEIGHT) ? (float)WIDTH / (float)HEIGHT : 1, (HEIGHT < WIDTH) ? (float)HEIGHT / (float)WIDTH : 1, 1, 60);
 	m_object.GetUniformBufferObjectRef().proj[1][1] *= -1;
-	m_object.GetUniformBufferObjectRef().groundColor = Vector4(0.8f, 0.6f, 0.6f, 0.0f);
+	m_object.GetUniformBufferObjectRef().groundColor = Vector4(m_material.GetColorRef().x(), m_material.GetColorRef().y(), m_material.GetColorRef().z(), 1.0);
 
 	m_object.GetVK_BufferObjectRef().UpdateUniformBuffer(m_object.GetUniformBufferObjectRef(), currentImage);
 }
@@ -43,6 +51,7 @@ void GameObject::CreateBuffer()
 }
 void GameObject::CreateDescriptorSets()
 {
+	m_object.GetVK_BufferObjectRef().CreateUniformBuffers(m_lighting);
 	m_object.GetVK_BufferObjectRef().CreateDescriptorSet(m_material, m_lighting);
 }
 

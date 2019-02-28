@@ -86,22 +86,30 @@ void LightManager::CreateFrameBuffer()
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		m_pRenderer->CreateFramebuffers(p_light.m_lightFramebuffers, p_light.GetImageViewRef());
+		m_pRenderer->CreateFramebuffers(p_light.GetFrameBufferRef(), p_light.GetImageViewRef());
 	}
 }
 
-void LightManager::CreateLightBuffer(size_t p_gameObjectCount)
+void LightManager::CreateLightBuffer()
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.CreateLightInfoBuffer(p_gameObjectCount);
+		p_light.CreateLightInfoBuffer();
 	}
 }
 
-void LightManager::UpdateLightInfos(uint32_t p_currentImage, GameObject* p_gameObject)
+void LightManager::UpdateLightInfos(uint32_t p_currentImage)
 {
 	for (PointLight& p_light : m_pointLights)
 	{
-		p_light.UpdateLightInfo(p_currentImage, *p_gameObject);
+		p_light.UpdateLightInfo(p_currentImage);
+	}
+}
+
+void LightManager::CleanUp()
+{
+	for(unsigned int i = 0; i < m_pointLights.size(); ++i)
+	{
+		m_pointLights[i].CleanUp();
 	}
 }

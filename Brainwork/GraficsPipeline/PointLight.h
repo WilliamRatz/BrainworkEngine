@@ -8,12 +8,6 @@ class GameObject;
 class PointLight
 {
 	VK_Renderer*			m_pRenderer;
-
-	std::vector<std::vector<VkBuffer>>				m_lightInfoBuffer;
-	std::vector<std::vector<VkDeviceMemory>>		m_lightInfoBufferMemory;
-	std::vector<std::vector<VkDescriptorSet>>		m_descriptorSets;
-
-
 	LightInfoObject			m_lightInfo;
 	
 	VkSampler				m_pointLightSampler;
@@ -21,33 +15,34 @@ class PointLight
 	VkImage					m_pointLightImage;
 	VkDeviceMemory			m_pointLightImageMemory;
 
-public:
-	std::vector<GameObject*> 						m_gameObjectsInFrustum;
+	std::vector<GameObject>* 						m_pGameObjectsInFrustum;
 	std::vector<VkFramebuffer>						m_lightFramebuffers;
-	PointLight(VK_Renderer&);
-	PointLight(const PointLight& pointLight);
-	~PointLight();
+	std::vector<std::vector<VkBuffer>>				m_lightInfoBuffer;
+	std::vector<std::vector<VkDeviceMemory>>		m_lightInfoBufferMemory;
+	std::vector<std::vector<VkDescriptorSet>>		m_descriptorSets;
 
-	void UpdateLightInfo(uint32_t&, GameObject&);
-	void CheckForObjectsInFurustum(std::vector<GameObject>& gameObject);
 
-	void CreatePointLightImage();
-	void CreateLightSampler();
+public:
+	PointLight	(VK_Renderer&);
+	PointLight	(const PointLight& pointLight);
+	~PointLight	();
 
-	void CreateLightInfoBuffer(size_t);
-	void CreateDescriptorSets(LightManager*);
+	void UpdateLightInfo			(uint32_t&);
+	void CheckForObjectsInFurustum	(std::vector<GameObject>& gameObject);
 
-	LightInfoObject		GetLightInfoObject();
-	LightInfoObject&	GetLightInfoObjectRef();
+	void CreatePointLightImage		();
+	void CreateLightSampler			();
 
-	VkImageView		GetImageView();
-	VkImageView&	GetImageViewRef();
+	void CreateLightInfoBuffer		();
+	void CreateDescriptorSets		(LightManager*);
 
-	VkSampler		GetVkSampler();
-	VkSampler&		GetVkSamplerRef();
+	VkImageView&		GetImageViewRef			();
+	VkSampler&			GetVkSamplerRef			();
+	LightInfoObject&	GetLightInfoObjectRef	();
 
-	std::vector<std::vector<VkDescriptorSet>>		GetVkDescriptorSet();
-	std::vector<std::vector<VkDescriptorSet>>&		GetVkDescriptorSetRef();
+	std::vector<std::vector<VkDescriptorSet>>&	GetVkDescriptorSetRef();
+	std::vector<GameObject>*					GetGameObjectsInFrustumPtr();
+	std::vector<VkFramebuffer>&					GetFrameBufferRef();
 
-	void CleanUpPointLight();
+	void CleanUp();
 };

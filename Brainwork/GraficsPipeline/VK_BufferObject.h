@@ -11,17 +11,17 @@ struct Vertex;
 class VK_BufferObject
 {
 private:
-
-	VkBuffer						m_indexBuffer;
-	VkBuffer						m_vertexBuffer;
-	std::vector<VkBuffer>			m_uniformBuffers;
-	VkDeviceMemory					m_vertexBufferMemory;
-	VkDeviceMemory					m_indexBufferMemory;
-	std::vector<VkDeviceMemory>		m_uniformBuffersMemory;
 	std::vector<VkDescriptorSet>	m_descriptorSets;
+	std::vector<VkBuffer>			m_uniformBuffers;
+	std::vector<VkDeviceMemory>		m_uniformBuffersMemory;
+
+	VkDeviceMemory					m_vertexBufferMemory;
+	VkBuffer						m_vertexBuffer;
+	VkBuffer						m_indexBuffer;
+	VkDeviceMemory					m_indexBufferMemory;
 
 public:
-	VK_Renderer*					m_renderer;
+	VK_Renderer*					m_pRenderer;
 
 	VK_BufferObject				();
 	~VK_BufferObject			();
@@ -30,7 +30,7 @@ public:
 
 	void CreateVertexBuffer		(std::vector<Vertex>& vertices);
 	void CreateIndexBuffer		(std::vector<uint32_t>& indices);
-	void CreateUniformBuffers	();
+	void CreateUniformBuffers	(Lighting& p_lighting);
 	void CreateDescriptorSet	(Material& texture, Lighting& lighting);
 
 	void UpdateUniformBuffer	(UniformBufferObject& ubo, uint32_t& currentImage);
@@ -38,12 +38,12 @@ public:
 	static void CreateBuffer	(VK_Renderer* renderer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 	void CopyBuffer				(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
-	VkBuffer						GetIndexBuffer		();
-	VkBuffer						GetVertexBuffer		();
-	std::vector<VkBuffer>			GetUniformBuffers	();
-	std::vector<VkDescriptorSet>	GetDescriptorSets	();
+	VkBuffer&						GetIndexBufferRef		();
+	VkBuffer&						GetVertexBufferRef		();
+	std::vector<VkBuffer>&			GetUniformBuffersRef	();
+	std::vector<VkDescriptorSet>&	GetDescriptorSetsRef	();
 
-	void CleanUpBufferObject();
+	void CleanUp();
 };
 
 

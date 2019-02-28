@@ -15,25 +15,27 @@ struct SwapChainSupportDetails {
 class VK_SwapChain
 {
 public:
-	VK_Device*					vk_device;
+	VK_Device*					m_pDevice;
 
-	VkSwapchainKHR				swapChain;
-	VkFormat					swapChainImageFormat;
-	VkExtent2D					swapChainExtent;
+	VkSwapchainKHR				m_swapChain;
+	VkFormat					m_swapChainImageFormat;
+	VkExtent2D					m_swapChainExtent;
 
 
-	VkImage						depthImage;
-	VkDeviceMemory				depthImageMemory;
-	VkImageView					depthImageView;
-	std::vector<VkImage>		swapChainImages;
-	std::vector<VkImageView>	swapChainImageViews;
-	std::vector<VkFramebuffer>	swapChainFramebuffers;
-	std::vector<VkSemaphore>	imageAvailableSemaphores;
-	std::vector<VkSemaphore>	renderFinishedSemaphores;
-	std::vector<VkFence>		inFlightFences;
+	VkImage						m_depthImage;
+	VkDeviceMemory				m_depthImageMemory;
+	VkImageView					m_depthImageView;
+	std::vector<VkImage>		m_swapChainImages;
+	std::vector<VkImageView>	m_swapChainImageViews;
+	std::vector<VkFramebuffer>	m_swapChainFramebuffers;
+	std::vector<VkSemaphore>	m_imageAvailableSemaphores;
+	std::vector<VkSemaphore>	m_renderFinishedSemaphores;
+	std::vector<VkFence>		m_inFlightFences;
 	const int					MAX_FRAMES_IN_FLIGHT = 2;
 
-	VK_SwapChain				(VK_Device& p_vk_device);
+	VK_SwapChain				(VK_Device& device);
+	VK_SwapChain				(const VK_SwapChain& swapchain);
+	~VK_SwapChain				();
 
 	void CreateImage			(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	void CreateImageViews		();
@@ -53,10 +55,9 @@ public:
 	VkFormat				findSupportedFormat		(const std::vector<VkFormat>& formats, VkImageTiling tiling, VkFormatFeatureFlags features);
 	VkFormat				findDepthFormat			();
 	bool					isFormatSupported		(VkFormat format, VkImageTiling tiling, VkFormatFeatureFlags features);
-	bool					HasStencilComponent		(VkFormat format) {
-		return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
-	}
+	bool					HasStencilComponent		(VkFormat format);
 
+	void CleanUp();
 };
 
 #endif // !VK_SWAPCHAIN_H

@@ -1,6 +1,18 @@
 
 #include "VK_Window.h"
 
+/*
+	   _---~~(~~-_.
+	 _{        )   )
+   ,   ) -~~- ( ,-' )_
+  (  `-,_..`., )-- '_,)
+ ( ` _)  (  -~( -_ `,  }
+ (_-  _  ~_-~~~~`,  ,' )
+   `~ -^(    __;-,((()))
+		 ~~~~ {_ -_(())
+				`\  }
+				  { }
+*/
 
 int main() {
 
@@ -13,8 +25,6 @@ int main() {
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
-
-	
 	
 
 	return EXIT_SUCCESS;

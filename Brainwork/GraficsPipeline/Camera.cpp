@@ -4,13 +4,13 @@ Camera Camera::ViewCamera = Camera();
 
 Camera::Camera()
 {
-	m_localMatrix.translate3D(0, 0, 5);
+	m_transformMatrix.translate3D(8, 0, 5);
 }
 
 Camera::Camera(const Camera& cam)
 {
-	m_localMatrix = cam.m_localMatrix;
-	m_globalMatrix = cam.m_globalMatrix;
+	m_transformMatrix = cam.m_transformMatrix;
+	m_rotationMatrix = cam.m_rotationMatrix;
 }
 
 Camera::~Camera()
@@ -50,7 +50,6 @@ void Camera::CameraUpdate(GLFWwindow *window)
 	if (Controls::E_PRESSING)
 	{
 		Camera::ViewCamera.MoveDown();
-
 	}
 
 	if (Controls::MOUSE_LEFT_PRESSING) 
@@ -65,7 +64,7 @@ void Camera::CameraUpdate(GLFWwindow *window)
 
 Matrix<float, 4, 4> Camera::GetCameraMatrix()
 {
-	return (m_globalMatrix * m_localMatrix).transpose();
+	return (m_rotationMatrix * m_transformMatrix).transpose();
 }
 
 void Camera::SetCameraToWindow(GLFWwindow* window)
@@ -79,31 +78,33 @@ void Camera::SetCameraToWindow(GLFWwindow* window)
 
 void Camera::MoveForward()
 {
-	m_localMatrix.translate3D(this->GetCameraMatrix().Backwards().normalize() * m_moveSpeed);
+	m_transformMatrix.translate3D(this->GetCameraMatrix().Backwards().normalize() * m_moveSpeed);
 }
 void Camera::MoveBackward()
 {
-	m_localMatrix.translate3D(this->GetCameraMatrix().Forward().normalize() * m_moveSpeed);
+	m_transformMatrix.translate3D(this->GetCameraMatrix().Forward().normalize() * m_moveSpeed);
 }
 void Camera::MoveLeft()
 {
-	m_localMatrix.translate3D(this->GetCameraMatrix().Right().normalize() * m_moveSpeed);
+	m_transformMatrix.translate3D(this->GetCameraMatrix().Right().normalize() * m_moveSpeed);
 }
 void Camera::MoveRight()
 {
-	m_localMatrix.translate3D(this->GetCameraMatrix().Left().normalize() * m_moveSpeed);
+	m_transformMatrix.translate3D(this->GetCameraMatrix().Left().normalize() * m_moveSpeed);
 }
 void Camera::MoveUp()
 {
-	m_localMatrix.translate3D(0, m_moveSpeed, 0);
+	m_transformMatrix.translate3D(0, m_moveSpeed, 0);
 }
 void Camera::MoveDown()
 {
-	m_localMatrix.translate3D(0, -m_moveSpeed, 0);
+	m_transformMatrix.translate3D(0, -m_moveSpeed, 0);
 
 }
 void Camera::RotateCamera(double p_cursorX, double p_cursorY)
 {
-	/*dontworks*/m_globalMatrix.rotation3DAroundXlocal((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
-	/*works*/m_globalMatrix.rotation3DAroundYlocal((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
+	//m_rotationMatrix.rotation3DAroundArbitararyAxis(m_rotationSpeed, m_transformMatrix.getTransform().normalize());
+	m_rotationMatrix.rotation3DAroundY((p_cursorX - Controls::CURSOR_POS_X)*m_rotationSpeed);
+	m_rotationMatrix.rotation3DAroundX((p_cursorY - Controls::CURSOR_POS_Y)*m_rotationSpeed);
 }
+

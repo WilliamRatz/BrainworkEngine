@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 
-#include <BW_Inc.h>
+#include <Inc_BWMath.h>
 #include <fstream>
 #include <stdexcept>
 #include <algorithm>
@@ -17,8 +17,8 @@
 #include <optional>
 #include <set>
 
-const int WIDTH = 1000;
-const int HEIGHT = 800;
+const int WIDTH = 1920;
+const int HEIGHT = 1080;
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -30,7 +30,10 @@ struct UniformBufferObject {
 	Matrix<float, 4, 4> model;
 	Matrix<float, 4, 4> view;
 	Matrix<float, 4, 4> proj;
-	Matrix<float, 4, 4> lightView;
+	Matrix<float, 4, 4> lightView[16];
+	int lightsCount;
+	Vector3 puffer;
+
 
 	Vector4 groundColor;
 };

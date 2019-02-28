@@ -3,12 +3,19 @@
 
 class GameObject;
 
+enum Mobility
+{
+	m_moveable,
+	m_static
+};
+
 class Transform
 {
 private:
 	Matrix<float, 4, 4>			m_globalMatrix;
 	Matrix<float, 4, 4>			m_localMatrix;
 
+	Mobility					m_mobility = Mobility::m_moveable;
 	GameObject*					m_pParentObject = NULL;
 	std::vector<GameObject>		m_children;
 
@@ -27,6 +34,7 @@ public:
 	void						addChild		(GameObject& childObject);
 	void						addChildren		(std::vector<GameObject>& childrenObject);
 
+	Mobility&					getMobility		();
 	GameObject*					getParent		();
 	GameObject&					getChild		(uint16_t index);
 	std::vector<GameObject>&	getChildren		();

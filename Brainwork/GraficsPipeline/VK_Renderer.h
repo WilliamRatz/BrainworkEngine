@@ -26,38 +26,61 @@ struct RendererCreatInfo
 	}
 };
 
+struct LayoutBinding
+{
+	uint32_t m_bindings = 0;
+	std::vector<uint32_t> m_descriptorCount;
+
+	LayoutBinding()
+	{
+	}
+	void AddBinding(uint32_t p_descriptorCount)
+	{
+		++m_bindings;
+		m_descriptorCount.push_back(p_descriptorCount);
+	}
+};
+
 class VK_Renderer
 {
-public:
-	VK_Device*				vk_device;
-	VK_SwapChain*			vk_swapChain;
-
-	std::vector<VkCommandBuffer>	commandBuffers;
+private:
+	VkRenderPass					m_renderPass;
+	VkDescriptorPool				m_descriptorPool;
+	VkDescriptorSetLayout			m_descriptorSetLayout;
+	VkCommandPool					m_commandPool;
+	std::vector<VkCommandBuffer>	m_commandBuffers;
 	RendererCreatInfo				m_rendererCreatInfo;
 
 public:
-	VK_Renderer				(VK_SwapChain& vk_swapChain, RendererCreatInfo rendererCreatInfo);
-	
-	VkRenderPass			renderPass;
-	VkDescriptorPool		m_descriptorPool;
-	VkDescriptorSetLayout	m_descriptorSetLayout;
-	VkCommandPool			commandPool;
+	VK_Device*				m_pDevice;
+	VK_SwapChain*			m_pSwapChain;
 
+	VK_Renderer				(VK_SwapChain& swapChain, RendererCreatInfo rendererCreatInfo);
+	VK_Renderer				(const VK_Renderer& renderer);
+	~VK_Renderer			();
 	
 	void CreateRenderPass				();
 
 	void CreateFramebuffers				(std::vector<VkFramebuffer>& p_frameBuffers, std::vector<VkImageView>& p_colorImageView, VkImageView& p_depthImageView);
 	void CreateFramebuffers				(std::vector<VkFramebuffer>& p_frameBuffers, VkImageView& p_depthImageView);
 
-	void CreateDescriptorSetLayouts		(unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
+	void CreateDescriptorSetLayouts		(LayoutBinding& uboBindings, LayoutBinding& imageSamplerBindings);
 	void CreateDescriptorPools			(unsigned int p_uboBindings, unsigned int p_imageSamplerBindings);
 
 	void CreateCommandPool				();
 	void CreateCommandBuffers			(VK_GraphicsPipeline& vk_graphicsPipeline, VK_GameObjectManager& VK_gameObjectManager);
 	void CreateCommandBuffers			(VK_GraphicsPipeline& vk_graphicsPipeline, LightManager& VK_lightManager);
 
-	VkCommandBuffer beginSingleTimeCommands();
-	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+	VkCommandBuffer beginSingleTimeCommands		();
+	void			endSingleTimeCommands		(VkCommandBuffer commandBuffer);
+
+	VkRenderPass&					GetRenderPassRef();
+	VkDescriptorPool&				GetDescriptorPoolRef();
+	VkDescriptorSetLayout&			GetDescriptorSetLayoutRef();
+	std::vector<VkCommandBuffer>&	GetCommandBuffersRef();
+	RendererCreatInfo&				GetRendererCreatInfoRef();
+
+	void CleanUp();
 };
 
 
