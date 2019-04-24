@@ -159,10 +159,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Rigidbody2D.cpp" />
+    <ClCompile Include="Rigidbody3D.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VK_BufferObject.cpp" />
@@ -179,10 +182,14 @@
     <ClCompile Include="VK_Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="Inc_Components.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Rigidbody2D.h" />
+    <ClInclude Include="Rigidbody3D.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VK_BufferObject.h" />
