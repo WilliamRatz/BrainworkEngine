@@ -1,9 +1,9 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include "Inc_Components.h"
 #include "Objects.h"
 #include "Material.h"
-
 
 #include "Lighting.h"
 #include "Transform.h"
@@ -21,6 +21,8 @@ private:
 	Transform			m_transform;
 	Material			m_material;
 	Lighting			m_lighting;
+
+	std::vector<Component*> m_components; //Rigidbody3D& b = dynamic_cast<Rigidbody3D&>(*m_components[0]);
 
 public:
 	GameObject					(VK_Renderer* renderer);

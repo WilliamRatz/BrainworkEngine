@@ -3,6 +3,7 @@
 #include "VK_Device.h"
 #include "Camera.h"
 #include "PointLight.h"
+#include <typeinfo>
 
 
 GameObject::GameObject(VK_Renderer* p_renderer)
@@ -10,6 +11,8 @@ GameObject::GameObject(VK_Renderer* p_renderer)
 	m_pRenderer = p_renderer;
 	m_object.GetVK_BufferObjectRef().SetRenderer(m_pRenderer);
 }
+
+
 GameObject::GameObject(const GameObject& p_gameObject)
 {
 	m_pRenderer = p_gameObject.m_pRenderer;
