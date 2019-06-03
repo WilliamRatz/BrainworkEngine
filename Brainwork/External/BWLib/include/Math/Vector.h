@@ -28,14 +28,14 @@ public:
 
 	T& operator[](const std::size_t index) {
 		if (index >= N) {
-			throw std::out_of_range("Indexüberschreitung!");
+			throw std::out_of_range("Index out of Range");
 		}
 		return elements[index];
 	}
 
 	const T& operator[](const std::size_t index) const{
 		if (index > N) {
-			throw std::out_of_range("Indexüberschreitung!");
+			throw std::out_of_range("Index out of Range");
 		}
 		return elements[index];
 	}

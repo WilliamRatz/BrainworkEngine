@@ -9,7 +9,7 @@ private:
 	Matrix<float, 4, 4> m_rotationMatrix;
 	Matrix<float, 4, 4> m_transformMatrix;
 	float				m_moveSpeed = 0.001f;
-	float				m_rotationSpeed = 0.1f;
+	float				m_rotationSpeed = 0.061f;
 
 	void MoveForward();
 	void MoveBackward();
@@ -31,4 +31,4 @@ public:
 	static	void		CameraUpdate(GLFWwindow *window);
 };
 
-#endif // !CAMERA_H
+#endif // CAMERA_H

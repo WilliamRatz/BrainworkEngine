@@ -17,7 +17,7 @@
 #include <optional>
 #include <set>
 
-const int WIDTH = 800;
+const int WIDTH = 1000;
 const int HEIGHT = 900;
 
 #ifdef NDEBUG
