@@ -90,8 +90,8 @@ public:
 #pragma endregion
 
 #pragma region comparisonOperator
-	bool operator==(Vector3&);
-	bool operator!=(Vector3&);
+	bool operator==(const Vector3&) const;
+	bool operator!=(const Vector3&) const;
 #pragma endregion
 
 };

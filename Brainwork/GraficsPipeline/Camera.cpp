@@ -60,7 +60,6 @@ void Camera::CameraUpdate(GLFWwindow* window)
 		double tempY = Controls::CURSOR_POS_Y;
 		glfwGetCursorPos(window, &Controls::CURSOR_POS_X, &Controls::CURSOR_POS_Y);
 		
-
 		Camera::ViewCamera.RotateCamera(tempX, tempY);
 	}
 }

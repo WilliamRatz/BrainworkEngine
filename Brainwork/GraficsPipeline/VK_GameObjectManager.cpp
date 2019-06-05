@@ -44,38 +44,37 @@ void VK_GameObjectManager::CreateGameObjects()
 	{
 		//Cube
 		GameObject temp(m_pRenderer);
-		temp.GetObjectRef().SetMesh("models/Cube.obj");
-		temp.GetMaterialRef().SetTexture(Texture("textures/emptyTexture.png"));
-		temp.GetTransformRef().getLocalMatrixRef().translate3D(-10.6f, 0, 0);
-		temp.GetTransformRef().getLocalMatrixRef().scale3D(2, 2, 2);
-		temp.GetMaterialRef().SetColor(Vector3(0.6f, 0.0f, 0.0f));
+		temp.GetObjectRef().SetMesh("models/Dodecahedron.obj");
+		temp.GetMaterialRef().SetTexture(Texture("textures/Dodecahedron.jpg"));
+		temp.GetTransformRef().getLocalMatrixRef().translate3D(-8.0f, 0, 0);
+		temp.GetTransformRef().getLocalMatrixRef().scale3D(4, 4, 4);
 		temp.CreateBuffer();
 		this->AddGameObject(temp);
 	}
-	{
-		//Sphere
-		GameObject temp(m_pRenderer);
-		temp.GetObjectRef().SetMesh("models/Sphere.obj");
-		temp.GetMaterialRef().SetTexture(Texture("textures/emptyTexture.png"));
-		temp.GetTransformRef().getLocalMatrixRef().translate3D(-8, 0, 0);
-		temp.GetTransformRef().getLocalMatrixRef().scale3D(2, 2, 2);
-		temp.GetTransformRef().getMobility() = Mobility::m_static;
-		temp.GetMaterialRef().SetColor(Vector3(0.0f, 0.6f, 0.0f));
-		temp.CreateBuffer();
-		this->AddGameObject(temp);
-	}
-	{
-		//Capsule
-		GameObject temp(m_pRenderer);
-		temp.GetObjectRef().SetMesh("models/Capsule.obj");
-		temp.GetMaterialRef().SetTexture(Texture("textures/emptyTexture.png"));
-		temp.GetTransformRef().getLocalMatrixRef().translate3D(-5.4, 0, 0);
-		temp.GetTransformRef().getLocalMatrixRef().scale3D(2, 2, 2);
-		temp.GetTransformRef().getMobility() = Mobility::m_static;
-		temp.GetMaterialRef().SetColor(Vector3(0.0f, 0.0f, 0.6f));
-		temp.CreateBuffer();
-		this->AddGameObject(temp);
-	}
+	//{
+	//	//Sphere
+	//	GameObject temp(m_pRenderer);
+	//	temp.GetObjectRef().SetMesh("models/Sphere.obj");
+	//	temp.GetMaterialRef().SetTexture(Texture("textures/emptyTexture.png"));
+	//	temp.GetTransformRef().getLocalMatrixRef().translate3D(-8, 0, 0);
+	//	temp.GetTransformRef().getLocalMatrixRef().scale3D(2, 2, 2);
+	//	temp.GetTransformRef().getMobility() = Mobility::m_static;
+	//	temp.GetMaterialRef().SetColor(Vector3(0.0f, 0.6f, 0.0f));
+	//	temp.CreateBuffer();
+	//	this->AddGameObject(temp);
+	//}
+	//{
+	//	//Capsule
+	//	GameObject temp(m_pRenderer);
+	//	temp.GetObjectRef().SetMesh("models/Capsule.obj");
+	//	temp.GetMaterialRef().SetTexture(Texture("textures/emptyTexture.png"));
+	//	temp.GetTransformRef().getLocalMatrixRef().translate3D(-5.4, 0, 0);
+	//	temp.GetTransformRef().getLocalMatrixRef().scale3D(2, 2, 2);
+	//	temp.GetTransformRef().getMobility() = Mobility::m_static;
+	//	temp.GetMaterialRef().SetColor(Vector3(0.0f, 0.0f, 0.6f));
+	//	temp.CreateBuffer();
+	//	this->AddGameObject(temp);
+	//}
 
 
 	{

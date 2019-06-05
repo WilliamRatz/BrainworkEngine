@@ -57,7 +57,9 @@ struct Vertex {
 
 		return attributeDescriptions;
 	}
+
 };
+
 
 class Object 
 {
