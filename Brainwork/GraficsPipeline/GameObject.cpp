@@ -29,7 +29,7 @@ void GameObject::UpdateGameObject(uint32_t currentImage) {
 
 	if (m_transform.getMobility() == Mobility::m_moveable)
 	{
-		m_transform.getLocalMatrixRef().rotation3DAroundYlocal(0.05f);
+		m_transform.setLocalMatrix(m_transform.getLocalMatrix().rotation3DAroundZlocal(0.05f));
 	}
 
 	m_object.GetUniformBufferObjectRef().lightsCount = ((m_lighting.GetPointLightRef().size() > 16) ? 16 : m_lighting.GetPointLightRef().size());

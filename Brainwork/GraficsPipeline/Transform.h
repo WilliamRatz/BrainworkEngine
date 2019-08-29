@@ -12,32 +12,34 @@ enum Mobility
 class Transform
 {
 private:
-	Matrix<float, 4, 4>			m_globalMatrix;
+	Matrix<float, 4, 4>			m_startDependencieMatrix;
+	Matrix<float, 4, 4>			m_dependencieMatrix;
 	Matrix<float, 4, 4>			m_localMatrix;
 
 	Mobility					m_mobility = Mobility::m_moveable;
-	GameObject*					m_pParentObject = NULL;
-	std::vector<GameObject>		m_children;
+	Transform*					m_pParentTransform = nullptr;
+	std::vector<Transform*>		m_childrenTransform;
 
-	Matrix<float, 4, 4>			recalculateMatrix();
+	void						recalculateMatrix();
 
 public:
 	Transform		();
-	Transform		(const Transform&);
+	Transform		(const Transform&) = default;
 	~Transform		();
 
-	Matrix<float, 4, 4>			getGlobalMatrix		();
-	Matrix<float, 4, 4>			getLocalMatrix		();
-	Matrix<float, 4, 4>&		getLocalMatrixRef	();
+	Matrix<float, 4, 4>				getGlobalMatrix		();
+	Matrix<float, 4, 4>				getLocalMatrix		();
+	void							setLocalMatrix		(Matrix<float, 4, 4> localMatrix);
 
-	void						setParent		(GameObject* parentObject);
-	void						addChild		(GameObject& childObject);
-	void						addChildren		(std::vector<GameObject>& childrenObject);
+	void						setParent		(Transform* parentTransform);
+	void						removeParent	();
+	void						addChild		(Transform* childTransform);
+	void						addChildren		(std::vector<Transform*>& childrenTransform);
 
 	Mobility&					getMobility		();
-	GameObject*					getParent		();
-	GameObject&					getChild		(uint16_t index);
-	std::vector<GameObject>&	getChildren		();
+	Transform*					getParent		();
+	Transform*					getChild		(uint16_t index);
+	std::vector<Transform*>&	getChildren		();
 
 	void CleanUpTransform	();
 };

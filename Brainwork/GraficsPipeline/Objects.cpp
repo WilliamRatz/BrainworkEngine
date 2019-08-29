@@ -3,6 +3,7 @@
 #include "Objects.h"
 #include "Material.h"
 #include "VK_Renderer.h"
+#include <unordered_map>
 
 #pragma region Object
 Object::Object()
@@ -34,18 +35,24 @@ void Object::SetMesh(std::string directoryPath)
 		throw std::runtime_error(warn + err);
 	}
 
+
 	if (shapes[0].mesh.indices[0].texcoord_index == 0)
 	{
 		for (const auto& shape : shapes) {
 			for (const auto& index : shape.mesh.indices) {
 				Vertex vertex(
-					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
-					Vector2(attrib.texcoords[2 * index.texcoord_index + 0], 2 * attrib.texcoords[index.texcoord_index + 1]),
-					Vector3(-attrib.normals[3 * index.normal_index + 0], -attrib.normals[3 * index.normal_index + 1], -attrib.normals[3 * index.normal_index + 2])
-				);
+					Vector3(attrib.vertices[3 * (__int64)index.vertex_index + 0],
+							attrib.vertices[3 * (__int64)index.vertex_index + 1],
+							attrib.vertices[3 * (__int64)index.vertex_index + 2]),
+					Vector2(attrib.texcoords[2 * (__int64)index.texcoord_index + 0],
+							1.0f - attrib.texcoords[2 * (__int64)index.texcoord_index + 1]),
+					Vector3(-attrib.normals[3 * (__int64)index.normal_index + 0],
+							-attrib.normals[3 * (__int64)index.normal_index + 1],
+							-attrib.normals[3 * (__int64)index.normal_index + 2]));
 
 				m_vertices.push_back(vertex);
-				m_indices.push_back(m_indices.size());
+
+				m_indices.push_back((unsigned int)m_indices.size());
 			}
 		}
 	}
@@ -53,18 +60,22 @@ void Object::SetMesh(std::string directoryPath)
 		for (const auto& shape : shapes) {
 			for (const auto& index : shape.mesh.indices) {
 				Vertex vertex(
-					Vector3(attrib.vertices[3 * index.vertex_index + 0], attrib.vertices[3 * index.vertex_index + 1], attrib.vertices[3 * index.vertex_index + 2]),
+					Vector3(attrib.vertices[3 * (__int64)index.vertex_index + 0],
+						attrib.vertices[3 * (__int64)index.vertex_index + 1],
+						attrib.vertices[3 * (__int64)index.vertex_index + 2]),
 					Vector2(0.0f, 0.0f),
-					Vector3(attrib.normals[3 * index.normal_index + 0], attrib.normals[3 * index.normal_index + 1], attrib.normals[3 * index.normal_index + 2])
+					Vector3(attrib.normals[3 * (__int64)index.normal_index + 0],
+						attrib.normals[3 * (__int64)index.normal_index + 1],
+						attrib.normals[3 * (__int64)index.normal_index + 2])
 				);
 
 				m_vertices.push_back(vertex);
-				m_indices.push_back(m_indices.size());
+				m_indices.push_back((unsigned int)m_indices.size());
 			}
 		}
 	}
 }
-void Object::CreateBuffer(VK_Renderer* p_renderer)
+void Object::CreateBuffer(VK_Renderer * p_renderer)
 {
 	m_bufferObject.SetRenderer(p_renderer);
 	m_bufferObject.CreateVertexBuffer(m_vertices);

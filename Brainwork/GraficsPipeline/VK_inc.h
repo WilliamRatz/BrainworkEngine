@@ -44,7 +44,4 @@ struct LightInfoObject {
 	Matrix<float, 4, 4> proj;
 };
 
-#define Print(x) std::cout << x << std::endl;
-
-
 #endif // !VK_INC
