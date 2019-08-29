@@ -82,8 +82,8 @@ public:
 #pragma endregion
 
 #pragma region comparisonOperator
-	bool operator==(const Vector2&)const;
-	bool operator!=(const Vector2&)const;
+	bool operator==(Vector2&);
+	bool operator!=(Vector2&);
 #pragma endregion
 };
 
